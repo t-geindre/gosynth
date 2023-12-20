@@ -41,7 +41,7 @@ func (a *Adsr) Init(rate beep.SampleRate) {
 		EnvPhase{time.Millisecond * 20, 1},  // Attack
 		EnvPhase{time.Millisecond * 20, .5}, // Decay
 		EnvPhase{0, .5},                     // Sustain
-		EnvPhase{time.Millisecond * 15, 0},  // Release
+		EnvPhase{time.Millisecond * 20, 0},  // Release
 	}
 	a.AddInput("gate", PortInGate)
 	a.AddInput("trigger", PortIn)

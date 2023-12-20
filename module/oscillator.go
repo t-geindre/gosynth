@@ -20,10 +20,12 @@ type Oscillator struct {
 	Freq     float64
 	Shape    OscillatorShape
 	OctShift float64
+	Amp      float64
 }
 
 func (o *Oscillator) Init(rate beep.SampleRate) {
 	o.Module.Init(rate)
+	o.Amp = 1
 	o.AddInput("freq", PortInFreq)
 	o.AddOutput("out", PortOut)
 }
@@ -41,6 +43,10 @@ func (o *Oscillator) Write(port Port, value float64) {
 
 func (o *Oscillator) SetFreq(freq float64) {
 	o.Freq = freq
+}
+
+func (o *Oscillator) SetAmplitude(amp float64) {
+	o.Amp = amp
 }
 
 func (o *Oscillator) SetShape(shape OscillatorShape) {
@@ -70,5 +76,5 @@ func (o *Oscillator) Update(time time.Duration) {
 		val = math.Abs(2*(time.Seconds()*freq-math.Floor(0.5+time.Seconds()*freq))) - 1
 	}
 
-	o.ConnectionWrite(PortOut, val)
+	o.ConnectionWrite(PortOut, val*o.Amp)
 }

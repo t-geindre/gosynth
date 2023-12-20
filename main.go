@@ -10,6 +10,7 @@ import (
 	"github.com/gopxl/beep"
 	"github.com/gopxl/beep/speaker"
 	"gosynth/module"
+	"gosynth/note"
 	"gosynth/output"
 	clock "gosynth/time"
 	"image/color"
@@ -35,24 +36,23 @@ func main() {
 	str := output.NewStreamer(clk, rck)
 
 	oscA := &module.Oscillator{}
-	oscA.SetShape(module.OscillatorShapeSquare)
 	rck.AddModule(oscA)
+	oscA.SetShape(module.OscillatorShapeTriangle)
+	oscA.SetOctaveShift(1)
 
 	oscB := &module.Oscillator{}
-	oscB.SetShape(module.OscillatorShapeSaw)
-	oscB.SetOctaveShift(-2)
 	rck.AddModule(oscB)
+	oscB.SetAmplitude(.3)
+	oscB.SetShape(module.OscillatorShapeSquare)
+	oscB.SetOctaveShift(-2)
 
 	gain := &module.Gain{}
-	gain.SetGain(.5)
+	gain.SetMasterGain(.5)
 	rck.AddModule(gain)
 
 	sqr := &module.Sequencer{}
 	rck.AddModule(sqr)
-	sqr.AppendAfter(220, time.Second/8, time.Second/10)
-	sqr.AppendAfter(440, time.Second/8, time.Second/10)
-	sqr.AppendAfter(880, time.Second/8, time.Second/10)
-	sqr.AppendAfter(440, time.Second/8, time.Second/10)
+	AddTetrisSequence(sqr, time.Millisecond*10, time.Millisecond*80)
 	sqr.SetLoop(true)
 
 	adsr := &module.Adsr{}
@@ -60,17 +60,12 @@ func main() {
 
 	delay := &module.Delay{}
 	rck.AddModule(delay)
-	delay.SetDelay(time.Millisecond * 300)
-	delay.SetFeedback(.1)
+	delay.SetDelay(time.Millisecond * 200)
+	delay.SetFeedback(.15)
 
 	lmt := &module.Limiter{}
 	lmt.SetThreshold(1)
 	rck.AddModule(lmt)
-
-	pfi := &module.PassFilter{}
-	rck.AddModule(pfi)
-	pfi.SetMode(module.PassFilterModeLow)
-	pfi.SetCutOff(880)
 
 	sqr.Connect(module.PortOutFreq, oscA, module.PortInFreq)
 	sqr.Connect(module.PortOutFreq, oscB, module.PortInFreq)
@@ -81,14 +76,12 @@ func main() {
 
 	adsr.Connect(module.PortOut, delay, module.PortIn)
 
-	delay.Connect(module.PortOut, pfi, module.PortIn)
+	delay.Connect(module.PortOut, gain, module.PortIn)
 
-	pfi.Connect(module.PortOut, lmt, module.PortIn)
+	gain.Connect(module.PortOut, lmt, module.PortIn)
 
-	lmt.Connect(module.PortOut, gain, module.PortIn)
-
-	gain.Connect(module.PortOut, rck, module.PortInL)
-	gain.Connect(module.PortOut, rck, module.PortInR)
+	lmt.Connect(module.PortOut, rck, module.PortInL)
+	lmt.Connect(module.PortOut, rck, module.PortInR)
 
 	err := speaker.Init(SampleRate, SampleRate.N(time.Second/10))
 	if err != nil {
@@ -119,4 +112,27 @@ func run(w *app.Window) error {
 			e.Frame(gtx.Ops)
 		}
 	}
+}
+
+func AddTetrisSequence(sqr *module.Sequencer, interval, duration time.Duration) {
+	sqr.AppendAfter(note.E5, interval+duration, duration*2)
+	sqr.AppendAfter(note.B4, interval+duration*2, duration)
+	sqr.AppendAfter(note.C5, interval+duration, duration)
+	sqr.AppendAfter(note.D5, interval+duration, duration*2)
+	sqr.AppendAfter(note.C5, interval+duration*2, duration)
+	sqr.AppendAfter(note.B4, interval+duration, duration)
+	sqr.AppendAfter(note.A4, interval+duration, duration*2)
+	sqr.AppendAfter(note.A4, interval+duration*2, duration)
+	sqr.AppendAfter(note.C5, interval+duration, duration)
+	sqr.AppendAfter(note.E5, interval+duration, duration*2)
+	sqr.AppendAfter(note.D5, interval+duration*2, duration)
+	sqr.AppendAfter(note.C5, interval+duration, duration)
+	sqr.AppendAfter(note.B4, interval+duration, duration*3)
+	sqr.AppendAfter(note.C5, interval+duration*3, duration)
+	sqr.AppendAfter(note.D5, interval+duration, duration*2)
+	sqr.AppendAfter(note.E5, interval+duration*2, duration*2)
+	sqr.AppendAfter(note.C5, interval+duration*2, duration*2)
+	sqr.AppendAfter(note.A4, interval+duration*2, duration*2)
+	sqr.AppendAfter(note.A4, interval+duration*2, duration*3)
+	sqr.AppendAfter(0, interval+duration*4, 0)
 }

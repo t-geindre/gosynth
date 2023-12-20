@@ -11,6 +11,7 @@ const (
 	PortIn
 	PortInL
 	PortInR
+	PortInVol
 )
 
 // Outputs
