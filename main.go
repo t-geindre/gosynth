@@ -49,10 +49,10 @@ func main() {
 
 	sqr := &module.Sequencer{}
 	rck.AddModule(sqr)
-	sqr.AppendAfter(220, time.Second/8, time.Second/8)
-	sqr.AppendAfter(440, time.Second/8, time.Second/8)
-	sqr.AppendAfter(880, time.Second/8, time.Second/8)
-	sqr.AppendAfter(440, time.Second/8, time.Second/8)
+	sqr.AppendAfter(220, time.Second/8, time.Second/10)
+	sqr.AppendAfter(440, time.Second/8, time.Second/10)
+	sqr.AppendAfter(880, time.Second/8, time.Second/10)
+	sqr.AppendAfter(440, time.Second/8, time.Second/10)
 	sqr.SetLoop(true)
 
 	adsr := &module.Adsr{}
@@ -63,6 +63,15 @@ func main() {
 	delay.SetDelay(time.Millisecond * 300)
 	delay.SetFeedback(.1)
 
+	lmt := &module.Limiter{}
+	lmt.SetThreshold(1)
+	rck.AddModule(lmt)
+
+	pfi := &module.PassFilter{}
+	rck.AddModule(pfi)
+	pfi.SetMode(module.PassFilterModeLow)
+	pfi.SetCutOff(880)
+
 	sqr.Connect(module.PortOutFreq, oscA, module.PortInFreq)
 	sqr.Connect(module.PortOutFreq, oscB, module.PortInFreq)
 	sqr.Connect(module.PortOutGate, adsr, module.PortInGate)
@@ -72,7 +81,11 @@ func main() {
 
 	adsr.Connect(module.PortOut, delay, module.PortIn)
 
-	delay.Connect(module.PortOut, gain, module.PortIn)
+	delay.Connect(module.PortOut, pfi, module.PortIn)
+
+	pfi.Connect(module.PortOut, lmt, module.PortIn)
+
+	lmt.Connect(module.PortOut, gain, module.PortIn)
 
 	gain.Connect(module.PortOut, rck, module.PortInL)
 	gain.Connect(module.PortOut, rck, module.PortInR)

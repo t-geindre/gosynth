@@ -15,7 +15,7 @@ type SeqItem struct {
 type Sequencer struct {
 	Module
 	Sequence []SeqItem
-	Playing  []SeqItem
+	Playing  *SeqItem
 	Len      time.Duration
 	Shift    time.Duration
 	Time     time.Duration
@@ -26,7 +26,6 @@ type Sequencer struct {
 func (s *Sequencer) Init(rate beep.SampleRate) {
 	s.Module.Init(rate)
 	s.Sequence = make([]SeqItem, 0)
-	s.Playing = make([]SeqItem, 0)
 
 	s.AddOutput("freq", PortOutFreq)
 	s.AddOutput("gate", PortOutGate)
@@ -44,14 +43,9 @@ func (s *Sequencer) Update(time time.Duration) {
 	s.Time = time
 	time -= s.Shift
 
-	for i := 0; i < len(s.Playing); i++ {
-		item := s.Playing[i]
-
-		if item.At+item.Len < time {
-			s.ConnectionWrite(PortOutGate, 0)
-			s.Playing = append(s.Playing[:i], s.Playing[i+1:]...)
-			i--
-		}
+	if s.Playing != nil && s.Playing.At+s.Playing.Len < time {
+		s.Playing = nil
+		s.ConnectionWrite(PortOutGate, 0)
 	}
 
 	for i := s.Cursor; i < uint32(len(s.Sequence)); i++ {
@@ -61,15 +55,18 @@ func (s *Sequencer) Update(time time.Duration) {
 			break
 		}
 
+		if s.Playing != nil {
+			s.ConnectionWrite(PortOutGate, 0)
+		}
+
 		s.ConnectionWrite(PortOutFreq, item.Freq)
 		s.ConnectionWrite(PortOutGate, 1)
-
-		s.Playing = append(s.Playing, item)
+		s.Playing = &item
 
 		s.Cursor++
 	}
 
-	if s.Loop && s.Cursor >= uint32(len(s.Sequence)) && len(s.Playing) == 0 {
+	if s.Loop && s.Cursor >= uint32(len(s.Sequence)) && s.Playing == nil {
 		s.Seek(0)
 	}
 }
