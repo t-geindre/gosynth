@@ -11,4 +11,7 @@ type INode interface {
 	Update() error
 	GetNodeAt(x, y int) INode
 	SetPosition(x, y int)
+	Dispose()
+	SetParent(parent INode)
+	GetINode() INode
 }

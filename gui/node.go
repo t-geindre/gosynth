@@ -5,34 +5,44 @@ import (
 )
 
 type Node struct {
-	Parent     INode
-	Children   []INode
-	Options    *ebiten.DrawImageOptions
-	Image      *ebiten.Image
-	PosX, PosY int
+	Parent        INode
+	Children      []INode
+	Options       *ebiten.DrawImageOptions
+	Image         *ebiten.Image
+	PosX, PosY    int
+	Width, Height int
+	INode         INode
 }
 
-func NewNode(parent INode, width, height int) *Node {
+func NewNode(width, height int, inode INode) *Node {
 	n := &Node{}
-	n.Parent = parent
 	n.Children = make([]INode, 0)
 	n.Options = &ebiten.DrawImageOptions{}
-	n.Image = ebiten.NewImage(width, height)
+	n.INode = inode
+	n.Resize(width, height)
 
 	return n
 }
 
 func (n *Node) Resize(width, height int) {
+	if n.Width == width && n.Height == height {
+		return
+	}
+
+	n.Width = width
+	n.Height = height
+
 	n.Image = ebiten.NewImage(width, height)
 }
 
 func (n *Node) Append(child INode) {
+	child.SetParent(n)
 	n.Children = append(n.Children, child)
 }
 
 func (n *Node) Remove(child INode) {
 	for i, c := range n.Children {
-		if c == child {
+		if c.GetINode() == child.GetINode() {
 			n.Children = append(n.Children[:i], n.Children[i+1:]...)
 			return
 		}
@@ -48,6 +58,7 @@ func (n *Node) GetParent() INode {
 }
 
 func (n *Node) Draw(dest *ebiten.Image) {
+	n.Image.Clear() // Todo remove image from node, create a sprite type to handle image
 	for _, child := range n.Children {
 		child.Draw(n.Image)
 	}
@@ -67,10 +78,20 @@ func (n *Node) Update() error {
 
 func (n *Node) GetNodeAt(x, y int) INode {
 	var node INode = nil
-	for _, child := range n.Children {
-		node := child.GetNodeAt(x, y)
-		if node != nil {
-			return node
+
+	if x >= n.PosX && x <= n.PosX+n.Image.Bounds().Dx() &&
+		y >= n.PosY && y <= n.PosY+n.Image.Bounds().Dy() {
+
+		x -= n.PosX
+		y -= n.PosY
+
+		node = n
+
+		for _, child := range n.Children {
+			node := child.GetNodeAt(x, y)
+			if node != nil {
+				return node
+			}
 		}
 	}
 
@@ -83,4 +104,16 @@ func (n *Node) SetPosition(x, y int) {
 
 	n.PosX = x
 	n.PosY = y
+}
+
+func (n *Node) Dispose() {
+	n.Image.Dispose()
+}
+
+func (n *Node) SetParent(parent INode) {
+	n.Parent = parent
+}
+
+func (n *Node) GetINode() INode {
+	return n.INode
 }

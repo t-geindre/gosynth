@@ -15,7 +15,7 @@ func NewApp() *App {
 	ebiten.SetWindowSize(800, 600)
 
 	a := &App{}
-	a.Root = NewNode(nil, 800, 600)
+	a.Root = NewNode(800, 600, a.Root)
 
 	return a
 }
@@ -27,12 +27,15 @@ func (a *App) Draw(screen *ebiten.Image) {
 func (a *App) Update() error {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
 		mod := NewModule()
-		x, y := ebiten.CursorPosition()
-		mod.SetPosition(x, y)
+		mod.SetPosition(ebiten.CursorPosition())
 		a.Root.Append(mod)
 	}
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		node := a.Root.GetNodeAt(ebiten.CursorPosition())
+		if node != nil && node.GetParent() != nil {
+			node.GetParent().Remove(node)
+			node.Dispose()
+		}
 	}
 
 	return nil
