@@ -74,3 +74,7 @@ func (r *Rack) Update(time time.Duration) {
 func (r *Rack) GetSamples() (float64, float64) {
 	return r.SampleL, r.SampleR
 }
+
+func (r *Rack) GetModules() []IModule {
+	return r.Modules
+}

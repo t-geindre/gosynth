@@ -7,11 +7,9 @@ const (
 	PortInGain Port = iota
 	PortInFreq
 	PortInGate
-	PortInTime
 	PortIn
 	PortInL
 	PortInR
-	PortInVol
 )
 
 // Outputs

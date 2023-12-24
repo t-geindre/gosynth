@@ -5,7 +5,6 @@ import (
 	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
-	"gioui.org/text"
 	"gioui.org/widget/material"
 	"github.com/gopxl/beep"
 	"github.com/gopxl/beep/speaker"
@@ -13,27 +12,27 @@ import (
 	"gosynth/note"
 	"gosynth/output"
 	clock "gosynth/time"
-	"image/color"
+	"image"
 	"log"
 	"os"
 	"time"
 )
 
 func main() {
-	go func() {
-		w := app.NewWindow()
-		err := run(w)
-		if err != nil {
-			log.Fatal(err)
-		}
-		os.Exit(0)
-	}()
-
 	SampleRate := beep.SampleRate(44100)
 
 	clk := clock.NewClock(SampleRate.D(1))
 	rck := module.NewRack(clk, SampleRate)
 	str := output.NewStreamer(clk, rck)
+
+	go func() {
+		w := app.NewWindow()
+		err := run(w, rck)
+		if err != nil {
+			log.Fatal(err)
+		}
+		os.Exit(0)
+	}()
 
 	oscA := &module.Oscillator{}
 	rck.AddModule(oscA)
@@ -42,7 +41,7 @@ func main() {
 
 	oscB := &module.Oscillator{}
 	rck.AddModule(oscB)
-	oscB.SetAmplitude(.3)
+	oscB.SetAmplitude(.1)
 	oscB.SetShape(module.OscillatorShapeSquare)
 	oscB.SetOctaveShift(-2)
 
@@ -52,7 +51,7 @@ func main() {
 
 	sqr := &module.Sequencer{}
 	rck.AddModule(sqr)
-	AddTetrisSequence(sqr, time.Millisecond*10, time.Millisecond*80)
+	AddTetrisSequence(sqr, time.Millisecond*10, time.Millisecond*100)
 	sqr.SetLoop(true)
 
 	adsr := &module.Adsr{}
@@ -92,24 +91,47 @@ func main() {
 	app.Main()
 }
 
-func run(w *app.Window) error {
-	th := material.NewTheme()
+func run(w *app.Window, rck *module.Rack) error {
+	//th := material.NewTheme()
 	var ops op.Ops
 	for {
 		e := w.NextEvent()
+		th := material.NewTheme()
 		switch e := e.(type) {
 		case system.DestroyEvent:
 			return e.Err
 		case system.FrameEvent:
 			gtx := layout.NewContext(&ops, e)
+			for i, md := range rck.Modules {
+				offset := op.Offset(image.Pt(10, i*25+10)).Push(&ops)
+				title := material.Body1(th, md.GetName())
+				title.Layout(gtx)
+				offset.Pop()
+			}
+			/*
 
-			title := material.H1(th, "bip")
-			maroon := color.NRGBA{R: 127, G: 0, B: 0, A: 255}
-			title.Color = maroon
-			title.Alignment = text.Middle
-			title.Layout(gtx)
 
-			e.Frame(gtx.Ops)
+					wg := new(widget.Clickable)
+					btn := material.Button(th, wg, "click me")
+					//btn.Background = red
+					btn.Text = "Play"
+					btn.Layout(gtx)
+
+					offset := op.Offset(image.Pt(10, 10)).Push(&ops)
+				rect := clip.Rect{Max: image.Pt(200, 400)}
+				_ = rect
+				line := clip.Path{}
+				line.Begin(&ops)
+				line.Move(f32.Pt(0, 0))
+				line.Line(f32.Pt(200, 400))
+				//line.End()
+				clp := clip.Stroke{Path: line.End(), Width: 2}.Op().Push(&ops)
+				paint.ColorOp{Color: color.NRGBA{R: 50, G: 50, B: 50, A: 255}}.Add(&ops)
+				paint.PaintOp{}.Add(&ops)
+				clp.Pop()
+				offset.Pop()
+			*/
+			e.Frame(&ops)
 		}
 	}
 }

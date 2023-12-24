@@ -31,7 +31,7 @@ func (o *Oscillator) Init(rate beep.SampleRate) {
 }
 
 func (o *Oscillator) GetName() string {
-	return "Oscillator oscillator"
+	return "Oscillator"
 }
 
 func (o *Oscillator) Write(port Port, value float64) {
