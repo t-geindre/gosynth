@@ -1,20 +1,15 @@
 package main
 
 import (
-	"gioui.org/app"
-	"gioui.org/io/system"
-	"gioui.org/layout"
-	"gioui.org/op"
-	"gioui.org/widget/material"
 	"github.com/gopxl/beep"
 	"github.com/gopxl/beep/speaker"
+	"github.com/hajimehoshi/ebiten/v2"
+	"gosynth/gui"
 	"gosynth/module"
 	"gosynth/note"
 	"gosynth/output"
 	clock "gosynth/time"
-	"image"
 	"log"
-	"os"
 	"time"
 )
 
@@ -24,15 +19,6 @@ func main() {
 	clk := clock.NewClock(SampleRate.D(1))
 	rck := module.NewRack(clk, SampleRate)
 	str := output.NewStreamer(clk, rck)
-
-	go func() {
-		w := app.NewWindow()
-		err := run(w, rck)
-		if err != nil {
-			log.Fatal(err)
-		}
-		os.Exit(0)
-	}()
 
 	oscA := &module.Oscillator{}
 	rck.AddModule(oscA)
@@ -82,58 +68,19 @@ func main() {
 	lmt.Connect(module.PortOut, rck, module.PortInL)
 	lmt.Connect(module.PortOut, rck, module.PortInR)
 
-	err := speaker.Init(SampleRate, SampleRate.N(time.Second/10))
+	err := speaker.Init(SampleRate, SampleRate.N(time.Millisecond*10))
 	if err != nil {
 		panic(err)
 	}
 
-	speaker.Play(str)
-	app.Main()
-}
+	_ = str
+	//speaker.Play(str)
 
-func run(w *app.Window, rck *module.Rack) error {
-	//th := material.NewTheme()
-	var ops op.Ops
-	for {
-		e := w.NextEvent()
-		th := material.NewTheme()
-		switch e := e.(type) {
-		case system.DestroyEvent:
-			return e.Err
-		case system.FrameEvent:
-			gtx := layout.NewContext(&ops, e)
-			for i, md := range rck.Modules {
-				offset := op.Offset(image.Pt(10, i*25+10)).Push(&ops)
-				title := material.Body1(th, md.GetName())
-				title.Layout(gtx)
-				offset.Pop()
-			}
-			/*
-
-
-					wg := new(widget.Clickable)
-					btn := material.Button(th, wg, "click me")
-					//btn.Background = red
-					btn.Text = "Play"
-					btn.Layout(gtx)
-
-					offset := op.Offset(image.Pt(10, 10)).Push(&ops)
-				rect := clip.Rect{Max: image.Pt(200, 400)}
-				_ = rect
-				line := clip.Path{}
-				line.Begin(&ops)
-				line.Move(f32.Pt(0, 0))
-				line.Line(f32.Pt(200, 400))
-				//line.End()
-				clp := clip.Stroke{Path: line.End(), Width: 2}.Op().Push(&ops)
-				paint.ColorOp{Color: color.NRGBA{R: 50, G: 50, B: 50, A: 255}}.Add(&ops)
-				paint.PaintOp{}.Add(&ops)
-				clp.Pop()
-				offset.Pop()
-			*/
-			e.Frame(&ops)
-		}
+	app := gui.NewApp()
+	if err := ebiten.RunGame(app); err != nil {
+		log.Fatal(err)
 	}
+
 }
 
 func AddTetrisSequence(sqr *module.Sequencer, interval, duration time.Duration) {
