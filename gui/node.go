@@ -117,3 +117,13 @@ func (n *Node) SetParent(parent INode) {
 func (n *Node) GetINode() INode {
 	return n.INode
 }
+
+func (n *Node) MoveFront(child INode) {
+	for i, c := range n.Children {
+		if c.GetINode() == child.GetINode() {
+			n.Children = append(n.Children[:i], n.Children[i+1:]...)
+			n.Children = append(n.Children, child.GetINode())
+			return
+		}
+	}
+}

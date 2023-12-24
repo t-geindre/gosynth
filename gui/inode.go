@@ -14,4 +14,5 @@ type INode interface {
 	Dispose()
 	SetParent(parent INode)
 	GetINode() INode
+	MoveFront(child INode)
 }

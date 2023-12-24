@@ -33,8 +33,7 @@ func (a *App) Update() error {
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		node := a.Root.GetNodeAt(ebiten.CursorPosition())
 		if node != nil && node.GetParent() != nil {
-			node.GetParent().Remove(node)
-			node.Dispose()
+			node.GetParent().MoveFront(node)
 		}
 	}
 
