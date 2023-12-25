@@ -97,7 +97,11 @@ func (n *Node) GetNodeAt(x, y int) INode {
 		}
 	}
 
-	return node
+	if node == nil {
+		return nil
+	}
+
+	return node.GetINode()
 }
 
 func (n *Node) SetPosition(x, y int) {
@@ -132,6 +136,12 @@ func (n *Node) MoveFront(child INode) {
 
 func (n *Node) MoveBy(x, y int) {
 	n.SetPosition(n.PosX+x, n.PosY+y)
+}
+
+func (n *Node) MoveChildrenBy(x, y int) {
+	for _, child := range n.Children {
+		child.MoveBy(x, y)
+	}
 }
 
 func (n *Node) MouseLeftDown() {

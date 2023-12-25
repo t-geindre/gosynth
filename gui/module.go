@@ -13,10 +13,10 @@ type Module struct {
 	LastMouseX, LastMouseY int
 }
 
-func NewModule() *Module {
+func NewModule(width, height int) *Module {
 	m := &Module{}
-	m.Node = *NewNode(300, 500, m)
-	m.Layout = ebiten.NewImage(300, 500)
+	m.Node = *NewNode(width, height, m)
+	m.Layout = ebiten.NewImage(width, height)
 	col := color.RGBA{
 		R: uint8(rand.Intn(255)),
 		G: uint8(rand.Intn(255)),
@@ -44,12 +44,15 @@ func (m *Module) Update() error {
 }
 func (m *Module) MouseLeftDown() {
 	if m.GetParent() != nil {
+		// Todo click on sub child wont move module to front
 		m.GetParent().MoveFront(m)
 	}
 	m.MouseLDown = true
 	m.LastMouseX, m.LastMouseY = ebiten.CursorPosition()
+	m.Options.ColorScale.ScaleAlpha(0.5)
 }
 
 func (m *Module) MouseLeftUp() {
+	m.Options.ColorScale.Reset()
 	m.MouseLDown = false
 }

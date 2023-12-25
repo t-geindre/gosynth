@@ -6,7 +6,7 @@ import (
 )
 
 type App struct {
-	Root        *Node
+	Root        *Rack
 	MouseTarget INode
 }
 
@@ -16,7 +16,7 @@ func NewApp() *App {
 	ebiten.SetWindowSize(800, 600)
 
 	a := &App{}
-	a.Root = NewNode(800, 600, a.Root)
+	a.Root = NewRack(800, 600)
 
 	return a
 }
@@ -30,7 +30,7 @@ func (a *App) Update() error {
 		if a.MouseTarget != nil {
 			a.MouseTarget.MouseLeftUp()
 		}
-		a.MouseTarget = a.Root.GetNodeAt(ebiten.CursorPosition()).GetINode()
+		a.MouseTarget = a.Root.GetNodeAt(ebiten.CursorPosition())
 		if a.MouseTarget != nil {
 			a.MouseTarget.MouseLeftDown()
 		}
@@ -42,7 +42,7 @@ func (a *App) Update() error {
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		mod := NewModule()
+		mod := NewModule(100, 100)
 		mod.SetPosition(ebiten.CursorPosition())
 		a.Root.Append(mod)
 	}
