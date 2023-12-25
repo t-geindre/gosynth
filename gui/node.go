@@ -87,8 +87,9 @@ func (n *Node) GetNodeAt(x, y int) INode {
 
 		node = n
 
-		for _, child := range n.Children {
-			node := child.GetNodeAt(x, y)
+		// range backward on children
+		for i := len(n.Children) - 1; i >= 0; i-- {
+			node := n.Children[i].GetNodeAt(x, y)
 			if node != nil {
 				return node
 			}
