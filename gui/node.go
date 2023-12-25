@@ -15,6 +15,7 @@ type Node struct {
 }
 
 func NewNode(width, height int, inode INode) *Node {
+	// Todo fix this inode shit
 	n := &Node{}
 	n.Children = make([]INode, 0)
 	n.Options = &ebiten.DrawImageOptions{}
@@ -87,7 +88,7 @@ func (n *Node) GetNodeAt(x, y int) INode {
 
 		node = n
 
-		// range backward on children
+		// range backward on children, so the top most child will be returned
 		for i := len(n.Children) - 1; i >= 0; i-- {
 			node := n.Children[i].GetNodeAt(x, y)
 			if node != nil {
@@ -127,4 +128,16 @@ func (n *Node) MoveFront(child INode) {
 			return
 		}
 	}
+}
+
+func (n *Node) MoveBy(x, y int) {
+	n.SetPosition(n.PosX+x, n.PosY+y)
+}
+
+func (n *Node) MouseLeftDown() {
+
+}
+
+func (n *Node) MouseLeftUp() {
+
 }

@@ -8,7 +8,9 @@ import (
 
 type Module struct {
 	Node
-	Layout *ebiten.Image
+	Layout                 *ebiten.Image
+	MouseLDown             bool
+	LastMouseX, LastMouseY int
 }
 
 func NewModule() *Module {
@@ -29,4 +31,25 @@ func NewModule() *Module {
 func (m *Module) Draw(dest *ebiten.Image) {
 	m.Node.Draw(dest)
 	dest.DrawImage(m.Layout, m.Options)
+}
+
+func (m *Module) Update() error {
+	if m.MouseLDown {
+		x, y := ebiten.CursorPosition()
+		m.MoveBy(x-m.LastMouseX, y-m.LastMouseY)
+		m.LastMouseX, m.LastMouseY = x, y
+	}
+
+	return m.Node.Update()
+}
+func (m *Module) MouseLeftDown() {
+	if m.GetParent() != nil {
+		m.GetParent().MoveFront(m)
+	}
+	m.MouseLDown = true
+	m.LastMouseX, m.LastMouseY = ebiten.CursorPosition()
+}
+
+func (m *Module) MouseLeftUp() {
+	m.MouseLDown = false
 }

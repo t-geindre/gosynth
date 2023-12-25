@@ -11,8 +11,11 @@ type INode interface {
 	Update() error
 	GetNodeAt(x, y int) INode
 	SetPosition(x, y int)
+	MoveBy(x, y int)
 	Dispose()
 	SetParent(parent INode)
 	GetINode() INode
 	MoveFront(child INode)
+	MouseLeftDown()
+	MouseLeftUp()
 }
