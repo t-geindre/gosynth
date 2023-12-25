@@ -3,34 +3,51 @@ package gui
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"gosynth/output"
 )
 
 type App struct {
-	Root        *Rack
+	Rack        *Rack
 	MouseTarget INode
+	Streamer    *output.Streamer
 }
 
-func NewApp() *App {
+func NewApp(str *output.Streamer) *App {
 	ebiten.SetWindowTitle("Gosynth")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowSize(800, 600)
 
 	a := &App{}
-	a.Root = NewRack(800, 600)
+	a.Rack = NewRack(800, 600)
+	a.Streamer = str
 
 	return a
 }
 
 func (a *App) Draw(screen *ebiten.Image) {
-	a.Root.Draw(screen)
+	a.Rack.Draw(screen)
 }
 
 func (a *App) Update() error {
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		if a.Streamer.IsPlaying() {
+			a.Streamer.Play() <- false
+		} else {
+			a.Streamer.Play() <- true
+		}
+	}
+
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		if a.MouseTarget != nil {
 			a.MouseTarget.MouseLeftUp()
 		}
-		a.MouseTarget = a.Root.GetNodeAt(ebiten.CursorPosition())
+
+		if ebiten.IsKeyPressed(ebiten.KeyAlt) {
+			a.MouseTarget = a.Rack
+		} else {
+			a.MouseTarget = a.Rack.GetNodeAt(ebiten.CursorPosition())
+		}
+
 		if a.MouseTarget != nil {
 			a.MouseTarget.MouseLeftDown()
 		}
@@ -44,13 +61,13 @@ func (a *App) Update() error {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
 		mod := NewModule(100, 100)
 		mod.SetPosition(ebiten.CursorPosition())
-		a.Root.Append(mod)
+		a.Rack.Append(mod)
 	}
 
-	return a.Root.Update()
+	return a.Rack.Update()
 }
 
 func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	a.Root.Resize(outsideWidth, outsideHeight)
+	a.Rack.Resize(outsideWidth, outsideHeight)
 	return outsideWidth, outsideHeight
 }

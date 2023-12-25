@@ -73,10 +73,9 @@ func main() {
 		panic(err)
 	}
 
-	_ = str
-	//speaker.Play(str)
+	speaker.Play(str)
 
-	app := gui.NewApp()
+	app := gui.NewApp(str)
 	if err := ebiten.RunGame(app); err != nil {
 		log.Fatal(err)
 	}
