@@ -39,7 +39,7 @@ func (a *App) Update() error {
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		if a.MouseTarget != nil {
-			a.MouseTarget.MouseLeftUp()
+			a.MouseTarget.MouseLeftUp(a.MouseTarget)
 		}
 
 		if ebiten.IsKeyPressed(ebiten.KeyAlt) {
@@ -49,12 +49,12 @@ func (a *App) Update() error {
 		}
 
 		if a.MouseTarget != nil {
-			a.MouseTarget.MouseLeftDown()
+			a.MouseTarget.MouseLeftDown(a.MouseTarget)
 		}
 	}
 
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) && a.MouseTarget != nil {
-		a.MouseTarget.MouseLeftUp()
+		a.MouseTarget.MouseLeftUp(a.MouseTarget)
 		a.MouseTarget = nil
 	}
 

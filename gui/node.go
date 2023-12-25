@@ -144,10 +144,14 @@ func (n *Node) MoveChildrenBy(x, y int) {
 	}
 }
 
-func (n *Node) MouseLeftDown() {
-
+func (n *Node) MouseLeftDown(target INode) {
+	if parent := n.GetParent(); parent != nil {
+		parent.GetINode().MouseLeftDown(target)
+	}
 }
 
-func (n *Node) MouseLeftUp() {
-
+func (n *Node) MouseLeftUp(target INode) {
+	if parent := n.GetParent(); parent != nil {
+		parent.GetINode().MouseLeftUp(target)
+	}
 }

@@ -42,17 +42,22 @@ func (m *Module) Update() error {
 
 	return m.Node.Update()
 }
-func (m *Module) MouseLeftDown() {
+func (m *Module) MouseLeftDown(target INode) {
 	if m.GetParent() != nil {
-		// Todo click on sub child wont move module to front
 		m.GetParent().MoveFront(m)
 	}
-	m.MouseLDown = true
-	m.LastMouseX, m.LastMouseY = ebiten.CursorPosition()
-	m.Options.ColorScale.ScaleAlpha(0.5)
+	if m.GetINode() == target {
+		m.MouseLDown = true
+		m.LastMouseX, m.LastMouseY = ebiten.CursorPosition()
+		m.Options.ColorScale.ScaleAlpha(0.5)
+	}
+	m.Node.MouseLeftDown(target)
 }
 
-func (m *Module) MouseLeftUp() {
-	m.Options.ColorScale.Reset()
-	m.MouseLDown = false
+func (m *Module) MouseLeftUp(target INode) {
+	if m.GetINode() == target {
+		m.Options.ColorScale.Reset()
+		m.MouseLDown = false
+	}
+	m.Node.MouseLeftUp(target)
 }

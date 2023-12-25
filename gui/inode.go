@@ -16,7 +16,7 @@ type INode interface {
 	SetParent(parent INode)
 	GetINode() INode
 	MoveFront(child INode)
-	MouseLeftDown()
-	MouseLeftUp()
+	MouseLeftDown(target INode)
+	MouseLeftUp(target INode)
 	MoveChildrenBy(x, y int)
 }

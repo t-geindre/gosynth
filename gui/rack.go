@@ -26,11 +26,13 @@ func (r *Rack) Update() error {
 
 	return r.Node.Update()
 }
-func (r *Rack) MouseLeftDown() {
-	r.MouseLDown = true
-	r.LastMouseX, r.LastMouseY = ebiten.CursorPosition()
+func (r *Rack) MouseLeftDown(target INode) {
+	if r == target {
+		r.MouseLDown = true
+		r.LastMouseX, r.LastMouseY = ebiten.CursorPosition()
+	}
 }
 
-func (r *Rack) MouseLeftUp() {
+func (r *Rack) MouseLeftUp(target INode) {
 	r.MouseLDown = false
 }
