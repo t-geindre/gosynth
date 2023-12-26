@@ -10,7 +10,7 @@ type Clock struct {
 	tickDuration time.Duration
 	event.Dispatcher
 	Events struct {
-		Tick event.Event
+		Tick event.Id
 	}
 }
 
@@ -29,7 +29,7 @@ func (c *Clock) Init(tickDuration time.Duration) {
 
 func (c *Clock) Tick() {
 	c.time += c.tickDuration
-	c.Dispatch(c.Events.Tick, c.time)
+	c.Dispatch(event.NewEvent(c.Events.Tick, c))
 }
 
 func (c *Clock) GetTime() time.Duration {

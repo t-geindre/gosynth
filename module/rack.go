@@ -29,8 +29,8 @@ func (r *Rack) Init(SampleRate beep.SampleRate) {
 	r.SampleRate = SampleRate
 	r.Modules = make([]IModule, 0)
 
-	r.Clock.AddListener(r, r.Clock.Events.Tick, func(e event.ListenerArgs) {
-		r.Update(e.(time.Duration))
+	r.Clock.AddListener(r, r.Clock.Events.Tick, func(e event.IEvent) {
+		r.Update(e.GetSource().(*clock.Clock).GetTime())
 	})
 
 	r.AddInput("In L", PortInL)
