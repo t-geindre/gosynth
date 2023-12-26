@@ -24,7 +24,7 @@ func NewApp(str *output.Streamer) *App {
 	a.Rack = node.NewRack(800, 600)
 	a.Streamer = str
 
-	mod := node.NewModule(65, 500)
+	mod := node.NewVCA()
 	a.Rack.Append(mod)
 
 	return a
@@ -70,7 +70,7 @@ func (a *App) Update() error {
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		mod := node.NewModule(150, 510)
+		mod := node.NewVCA()
 		mod.SetPosition(ebiten.CursorPosition())
 		a.Rack.Append(mod)
 	}
