@@ -160,3 +160,21 @@ func (n *Node) MouseLeftUp(target INode) {
 		parent.GetINode().MouseLeftUp(target)
 	}
 }
+
+func (n *Node) GetSize() (int, int) {
+	return n.Width, n.Height
+}
+
+func (n *Node) GetPosition() (int, int) {
+	return n.PosX, n.PosY
+}
+
+func (n *Node) GetAbsolutePosition() (int, int) {
+	x, y := n.PosX, n.PosY
+	if parent := n.GetParent(); parent != nil {
+		px, py := parent.GetINode().GetAbsolutePosition()
+		x += px
+		y += py
+	}
+	return x, y
+}

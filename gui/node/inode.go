@@ -13,6 +13,9 @@ type INode interface {
 	GetNodeAt(x, y int) INode
 	SetPosition(x, y int)
 	MoveBy(x, y int)
+	GetPosition() (int, int)
+	GetAbsolutePosition() (int, int)
+	GetSize() (int, int)
 	Dispose()
 	SetParent(parent INode)
 	GetINode() INode

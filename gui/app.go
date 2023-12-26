@@ -1,7 +1,9 @@
 package gui
 
 import (
+	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"gosynth/gui/node"
 	"gosynth/output"
@@ -31,6 +33,10 @@ func NewApp(str *output.Streamer) *App {
 func (a *App) Draw(screen *ebiten.Image) {
 	a.Rack.Clear()
 	a.Rack.Draw(screen)
+	// Draw FPS
+	w, _ := a.Rack.GetSize()
+	y, _ := a.Rack.GetPosition()
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%0.2f", ebiten.ActualFPS()), w-40, y+10)
 }
 
 func (a *App) Update() error {
