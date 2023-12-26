@@ -1,17 +1,11 @@
 package event
 
 type Dispatcher struct {
-	EventCounter Id
-	Listeners    map[Id][]Listener
+	Listeners map[Id][]Listener
 }
 
 func (d *Dispatcher) Init() {
 	d.Listeners = make(map[Id][]Listener)
-}
-
-func (d *Dispatcher) RegisterEvent() Id {
-	d.EventCounter++
-	return d.EventCounter
 }
 
 func (d *Dispatcher) AddListener(ref any, id Id, call func(e IEvent)) {

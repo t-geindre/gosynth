@@ -29,7 +29,7 @@ func (r *Rack) Init(SampleRate beep.SampleRate) {
 	r.SampleRate = SampleRate
 	r.Modules = make([]IModule, 0)
 
-	r.Clock.AddListener(r, r.Clock.Events.Tick, func(e event.IEvent) {
+	r.Clock.AddListener(r, clock.TickEvent, func(e event.IEvent) {
 		r.Update(e.GetSource().(*clock.Clock).GetTime())
 	})
 
@@ -46,7 +46,7 @@ func (r *Rack) Dispose() {
 	for _, module := range r.Modules {
 		module.Dispose()
 	}
-	r.Clock.RemoveListener(r, r.Clock.Events.Tick)
+	r.Clock.RemoveListener(r, clock.TickEvent)
 }
 
 func (r *Rack) Write(port Port, value float64) {
