@@ -30,10 +30,6 @@ func (o *Oscillator) Init(rate beep.SampleRate) {
 	o.AddOutput("out", PortOut)
 }
 
-func (o *Oscillator) GetName() string {
-	return "Oscillator"
-}
-
 func (o *Oscillator) Write(port Port, value float64) {
 	switch port {
 	case PortInFreq:

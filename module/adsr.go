@@ -30,10 +30,6 @@ type Adsr struct {
 	Sample float64
 }
 
-func (a *Adsr) GetName() string {
-	return "ADSR envelope"
-}
-
 func (a *Adsr) Init(rate beep.SampleRate) {
 	a.Module.Init(rate)
 	a.State = EnvStateOff

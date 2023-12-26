@@ -31,10 +31,6 @@ func (s *Sequencer) Init(rate beep.SampleRate) {
 	s.AddOutput("gate", PortOutGate)
 }
 
-func (s *Sequencer) GetName() string {
-	return "Sequencer"
-}
-
 func (s *Sequencer) SetLoop(loop bool) {
 	s.Loop = loop
 }

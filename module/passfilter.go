@@ -30,10 +30,6 @@ func (h *PassFilter) Init(SampleRate beep.SampleRate) {
 	h.AddOutput("out", PortOut)
 }
 
-func (h *PassFilter) GetName() string {
-	return "Highpass Filter"
-}
-
 func (h *PassFilter) SetCutOff(cutoff float64) {
 	tan := math.Tan(math.Pi * cutoff / float64(h.SampleRate))
 	h.Alpha = (tan - 1) / (tan + 1)

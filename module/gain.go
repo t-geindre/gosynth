@@ -23,10 +23,6 @@ func (g *Gain) Init(rate beep.SampleRate) {
 	g.AddOutput("out", PortOut)
 }
 
-func (g *Gain) GetName() string {
-	return "Gain"
-}
-
 func (g *Gain) SetMasterGain(gain float64) {
 	g.MasterGain = gain
 }

@@ -49,10 +49,6 @@ func (r *Rack) Dispose() {
 	r.Clock.RemoveListener(r, r.Clock.Events.Tick)
 }
 
-func (r *Rack) GetName() string {
-	return "Rack"
-}
-
 func (r *Rack) Write(port Port, value float64) {
 	switch port {
 	case PortInL:

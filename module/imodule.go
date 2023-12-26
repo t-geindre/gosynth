@@ -12,7 +12,6 @@ type IO struct {
 
 type IModule interface {
 	Init(rate beep.SampleRate)
-	GetName() string
 	GetInputs() []IO
 	GetOutputs() []IO
 	Write(port Port, value float64)

@@ -25,10 +25,6 @@ func (d *Delay) Init(SampleRate beep.SampleRate) {
 	d.AddOutput("out", PortOut)
 }
 
-func (d *Delay) GetName() string {
-	return "Delay"
-}
-
 func (d *Delay) SetDelay(delay time.Duration) {
 	d.Delay = delay
 	d.Buffer = make([]float64, d.SampleRate.N(delay))

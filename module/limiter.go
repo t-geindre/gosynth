@@ -17,10 +17,6 @@ func (l *Limiter) Init(rate beep.SampleRate) {
 	l.AddOutput("out", PortOut)
 }
 
-func (l *Limiter) GetName() string {
-	return "Limiter"
-}
-
 func (l *Limiter) SetThreshold(thresh float64) {
 	l.Thresh = thresh
 }
