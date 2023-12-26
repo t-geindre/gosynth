@@ -45,6 +45,7 @@ func (n *Node) Remove(child INode) {
 	for i, c := range n.Children {
 		if c.GetINode() == child.GetINode() {
 			n.Children = append(n.Children[:i], n.Children[i+1:]...)
+			child.SetParent(nil)
 			return
 		}
 	}
@@ -55,7 +56,11 @@ func (n *Node) RemoveAll() {
 }
 
 func (n *Node) GetParent() INode {
-	return n.Parent
+	if n.Parent != nil {
+		return n.Parent.GetINode()
+	}
+
+	return nil
 }
 
 func (n *Node) Clear() {
@@ -82,7 +87,7 @@ func (n *Node) Update() error {
 	return nil
 }
 
-func (n *Node) GetNodeAt(x, y int) INode {
+func (n *Node) GetTargetNodeAt(x, y int) INode {
 	var node INode = nil
 
 	if x >= n.PosX && x <= n.PosX+n.Image.Bounds().Dx() &&
@@ -91,11 +96,13 @@ func (n *Node) GetNodeAt(x, y int) INode {
 		x -= n.PosX
 		y -= n.PosY
 
-		node = n
+		if n.GetINode().Targetable() {
+			node = n
+		}
 
 		// range backward on children, so the top most child will be returned
 		for i := len(n.Children) - 1; i >= 0; i-- {
-			node := n.Children[i].GetNodeAt(x, y)
+			node := n.Children[i].GetTargetNodeAt(x, y)
 			if node != nil {
 				return node
 			}
@@ -177,4 +184,16 @@ func (n *Node) GetAbsolutePosition() (int, int) {
 		y += py
 	}
 	return x, y
+}
+
+func (n *Node) Targetable() bool {
+	return true
+}
+
+func (n *Node) HCenter() {
+	if parent := n.GetParent(); parent != nil {
+		pw, _ := parent.GetINode().GetSize()
+		w, _ := n.GetSize()
+		n.SetPosition(pw/2-w/2, n.PosY)
+	}
 }

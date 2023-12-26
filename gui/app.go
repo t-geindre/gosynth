@@ -56,7 +56,7 @@ func (a *App) Update() error {
 		if ebiten.IsKeyPressed(ebiten.KeyAlt) {
 			a.MouseTarget = a.Rack
 		} else {
-			a.MouseTarget = a.Rack.GetNodeAt(ebiten.CursorPosition())
+			a.MouseTarget = a.Rack.GetTargetNodeAt(ebiten.CursorPosition())
 		}
 
 		if a.MouseTarget != nil {
@@ -70,7 +70,7 @@ func (a *App) Update() error {
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		mod := node.NewModule(150, 500)
+		mod := node.NewModule(150, 510)
 		mod.SetPosition(ebiten.CursorPosition())
 		a.Rack.Append(mod)
 	}
@@ -79,6 +79,8 @@ func (a *App) Update() error {
 }
 
 func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	a.Rack.Resize(outsideWidth, outsideHeight)
-	return outsideWidth, outsideHeight
+	s := ebiten.DeviceScaleFactor()
+	w, h := int(float64(outsideWidth)*s), int(float64(outsideHeight)*s)
+	a.Rack.Resize(w, h)
+	return w, h
 }

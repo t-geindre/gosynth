@@ -10,7 +10,8 @@ type INode interface {
 	Clear()
 	Draw(dest *ebiten.Image)
 	Update() error
-	GetNodeAt(x, y int) INode
+	GetTargetNodeAt(x, y int) INode
+	Targetable() bool
 	SetPosition(x, y int)
 	MoveBy(x, y int)
 	GetPosition() (int, int)
@@ -23,4 +24,5 @@ type INode interface {
 	MouseLeftDown(target INode)
 	MouseLeftUp(target INode)
 	MoveChildrenBy(x, y int)
+	HCenter()
 }
