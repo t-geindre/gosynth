@@ -3,12 +3,13 @@ package gui
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"gosynth/gui/node"
 	"gosynth/output"
 )
 
 type App struct {
-	Rack        *Rack
-	MouseTarget INode
+	Rack        *node.Rack
+	MouseTarget node.INode
 	Streamer    *output.Streamer
 }
 
@@ -18,13 +19,17 @@ func NewApp(str *output.Streamer) *App {
 	ebiten.SetWindowSize(800, 600)
 
 	a := &App{}
-	a.Rack = NewRack(800, 600)
+	a.Rack = node.NewRack(800, 600)
 	a.Streamer = str
+
+	mod := node.NewModule(65, 500)
+	a.Rack.Append(mod)
 
 	return a
 }
 
 func (a *App) Draw(screen *ebiten.Image) {
+	a.Rack.Clear()
 	a.Rack.Draw(screen)
 }
 
@@ -59,7 +64,7 @@ func (a *App) Update() error {
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		mod := NewModule(100, 100)
+		mod := node.NewModule(150, 500)
 		mod.SetPosition(ebiten.CursorPosition())
 		a.Rack.Append(mod)
 	}

@@ -1,12 +1,13 @@
-package gui
+package node
 
 import "github.com/hajimehoshi/ebiten/v2"
 
 type INode interface {
 	Append(child INode)
 	Remove(child INode)
-	Clear()
+	RemoveAll()
 	GetParent() INode
+	Clear()
 	Draw(dest *ebiten.Image)
 	Update() error
 	GetNodeAt(x, y int) INode

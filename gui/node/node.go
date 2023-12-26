@@ -1,4 +1,4 @@
-package gui
+package node
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
@@ -50,7 +50,7 @@ func (n *Node) Remove(child INode) {
 	}
 }
 
-func (n *Node) Clear() {
+func (n *Node) RemoveAll() {
 	n.Children = make([]INode, 0)
 }
 
@@ -58,8 +58,13 @@ func (n *Node) GetParent() INode {
 	return n.Parent
 }
 
+func (n *Node) Clear() {
+	for _, child := range n.Children {
+		child.Clear()
+	}
+}
+
 func (n *Node) Draw(dest *ebiten.Image) {
-	n.Image.Clear() // Todo remove image from node, create a sprite type to handle image
 	for _, child := range n.Children {
 		child.Draw(n.Image)
 	}
