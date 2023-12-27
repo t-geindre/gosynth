@@ -23,7 +23,7 @@ type PassFilter struct {
 }
 
 func (h *PassFilter) Init(SampleRate beep.SampleRate) {
-	h.Module.Init(SampleRate)
+	h.Module.Init(SampleRate, h)
 	h.SampleRate = SampleRate
 	h.Alpha = 0
 	h.AddInput("in", PortIn)

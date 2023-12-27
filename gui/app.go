@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"gosynth/event"
 	"gosynth/gui/node"
+	"gosynth/module"
 	"gosynth/output"
 )
 
@@ -14,6 +15,7 @@ type App struct {
 	Rack        *node.Rack
 	MouseTarget node.INode
 	Streamer    *output.Streamer
+	AudioVca    *module.VCA // TODO TEST PURPOSE REMOVE ME
 }
 
 func NewApp(str *output.Streamer) *App {
@@ -25,9 +27,13 @@ func NewApp(str *output.Streamer) *App {
 	a.Rack = node.NewRack(800, 600)
 	a.Streamer = str
 
-	mod := node.NewVCA()
-	a.Rack.Append(mod)
-
+	for _, audioModule := range str.GetRack().GetModules() {
+		if aVca, ok := audioModule.(*module.VCA); ok {
+			vca := node.NewVCA(aVca)
+			a.Rack.Append(vca)
+			a.AudioVca = aVca
+		}
+	}
 	return a
 }
 
@@ -71,7 +77,7 @@ func (a *App) Update() error {
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		mod := node.NewVCA()
+		mod := node.NewVCA(a.AudioVca) // TODO TEST PURPOSE REMOVE ME
 		mod.SetPosition(ebiten.CursorPosition())
 		a.Rack.Append(mod)
 	}

@@ -21,13 +21,15 @@ type Module struct {
 	Outputs     []IO
 	Connections []Connection
 	CommandChan chan Command
+	IModule     IModule
 }
 
-func (m *Module) Init(_ beep.SampleRate) {
+func (m *Module) Init(_ beep.SampleRate, imodule IModule) {
 	m.Inputs = make([]IO, 0)
 	m.Outputs = make([]IO, 0)
 	m.Connections = make([]Connection, 0)
 	m.CommandChan = make(chan Command, 3)
+	m.IModule = imodule
 }
 
 func (m *Module) AddInput(name string, port Port) {
@@ -82,7 +84,11 @@ func (m *Module) Dispose() {
 func (m *Module) Update(time time.Duration) {
 	select {
 	case cmd := <-m.CommandChan:
-		m.Write(cmd.Port, cmd.Value)
+		m.GetIModule().Write(cmd.Port, cmd.Value)
 	default:
 	}
+}
+
+func (m *Module) GetIModule() IModule {
+	return m.IModule
 }

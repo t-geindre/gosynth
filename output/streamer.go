@@ -7,15 +7,15 @@ import (
 
 type Streamer struct {
 	clock    *time.Clock
-	input    *module.Rack
+	rack     *module.Rack
 	silenced bool
 	command  chan bool
 }
 
-func NewStreamer(clock *time.Clock, input *module.Rack) *Streamer {
+func NewStreamer(clock *time.Clock, rack *module.Rack) *Streamer {
 	s := &Streamer{}
 	s.clock = clock
-	s.input = input
+	s.rack = rack
 	s.silenced = true
 	s.command = make(chan bool, 3)
 
@@ -35,7 +35,7 @@ func (s *Streamer) Stream(samples [][2]float64) (n int, ok bool) {
 	}
 
 	for i := range samples {
-		samples[i][0], samples[i][1] = s.input.GetSamples()
+		samples[i][0], samples[i][1] = s.rack.GetSamples()
 		s.clock.Tick()
 	}
 
@@ -52,4 +52,8 @@ func (s *Streamer) Silence() chan bool {
 
 func (s *Streamer) IsSilenced() bool {
 	return s.silenced
+}
+
+func (s *Streamer) GetRack() *module.Rack {
+	return s.rack
 }

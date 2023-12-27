@@ -24,7 +24,7 @@ type Sequencer struct {
 }
 
 func (s *Sequencer) Init(rate beep.SampleRate) {
-	s.Module.Init(rate)
+	s.Module.Init(rate, s)
 	s.Sequence = make([]SeqItem, 0)
 
 	s.AddOutput("freq", PortOutFreq)

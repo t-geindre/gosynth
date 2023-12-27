@@ -31,9 +31,9 @@ func main() {
 	oscB.SetShape(module.OscillatorShapeSquare)
 	oscB.SetOctaveShift(-2)
 
-	gain := &module.VCA{}
-	gain.SetGain(.5)
-	rck.AddModule(gain)
+	vca := &module.VCA{}
+	vca.SetGain(.5)
+	rck.AddModule(vca)
 
 	sqr := &module.Sequencer{}
 	rck.AddModule(sqr)
@@ -61,9 +61,9 @@ func main() {
 
 	adsr.Connect(module.PortOut, delay, module.PortIn)
 
-	delay.Connect(module.PortOut, gain, module.PortIn)
+	delay.Connect(module.PortOut, vca, module.PortIn)
 
-	gain.Connect(module.PortOut, lmt, module.PortIn)
+	vca.Connect(module.PortOut, lmt, module.PortIn)
 
 	lmt.Connect(module.PortOut, rck, module.PortInL)
 	lmt.Connect(module.PortOut, rck, module.PortInR)

@@ -24,7 +24,7 @@ func NewRack(clock *clock.Clock, rate beep.SampleRate) *Rack {
 }
 
 func (r *Rack) Init(SampleRate beep.SampleRate) {
-	r.Module.Init(SampleRate)
+	r.Module.Init(SampleRate, r)
 
 	r.SampleRate = SampleRate
 	r.Modules = make([]IModule, 0)

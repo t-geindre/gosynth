@@ -71,5 +71,5 @@ func (m *Module) MouseLeftUp(target INode) {
 
 func (m *Module) SetParent(parent INode) {
 	m.Node.SetParent(parent)
-	m.Node.SetAppendOptions(NewAppendOptions().Padding(5))
+	m.Node.SetAppendOptions(NewAppendOptions().Padding(10))
 }

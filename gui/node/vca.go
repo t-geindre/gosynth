@@ -1,22 +1,28 @@
 package node
 
 import (
+	"gosynth/event"
 	"gosynth/gui/theme"
+	"gosynth/module"
 )
 
 type VCA struct {
 	*Module
+	audioVca *module.VCA
+	slider   *Slider
 }
 
-func NewVCA() *VCA {
+func NewVCA(audioVca *module.VCA) *VCA {
 	v := &VCA{}
 	width, height := 65, 500
 	v.Module = NewModule(width, height, v)
 
-	slider := NewSlider()
-	slider.SetRange(0, 1)
-	slider.SetValue(0.5)
-	v.AppendWithOptions(slider, NewAppendOptions().HorizontallyFill(100).VerticallyFill(100))
+	v.audioVca = audioVca
+
+	v.slider = NewSlider()
+	v.slider.SetRange(-1, 1)
+	v.slider.SetValue(0.5)
+	v.AppendWithOptions(v.slider, NewAppendOptions().HorizontallyFill(100).VerticallyFill(100))
 
 	lineToCv := NewLine(10, 1, LineOrientationVertical)
 	v.AppendWithOptions(lineToCv, NewAppendOptions().HorizontallyCentered())
@@ -33,7 +39,7 @@ func NewVCA() *VCA {
 		NewAppendOptions().
 			HorizontallyCentered().
 			HorizontallyFill(100).
-			Margins(20, 20, 10, 10),
+			Margins(15, 15, 10, 10),
 	)
 
 	inLabel := NewLabel("IN", theme.Fonts.Small)
@@ -45,12 +51,31 @@ func NewVCA() *VCA {
 	inOutLine := NewLine(10, 1, LineOrientationVertical)
 	v.AppendWithOptions(inOutLine, NewAppendOptions().HorizontallyCentered())
 
+	outPlugLabel := NewLabel("OUT", theme.Fonts.Small)
+
 	outPlug := NewPlug()
-	outPlugContainer := NewContainer(outPlug.GetOuterWidth()+10, outPlug.GetOuterHeight()+10)
+	outPlugContainer := NewContainer(
+		// TODO some kind of fluid container would be nice
+		outPlug.GetOuterWidth()+10, outPlug.GetOuterHeight()+outPlugLabel.GetOuterHeight()+17,
+	)
 	outPlugContainer.SetInverted(true)
+
 	v.AppendWithOptions(outPlugContainer, NewAppendOptions().HorizontallyCentered().Padding(5))
 
+	outPlugContainer.AppendWithOptions(outPlugLabel, NewAppendOptions().HorizontallyCentered().Margin(3))
 	outPlugContainer.AppendWithOptions(outPlug, NewAppendOptions().HorizontallyCentered())
 
+	v.Dispatcher.AddListener(&v, ValueChangedEvent, v.OnSliderValueChanged)
+
 	return v
+}
+
+func (v *VCA) Update() error {
+	v.slider.SetValue(v.audioVca.GetGain())
+	return v.Module.Update()
+}
+
+func (v *VCA) OnSliderValueChanged(e event.IEvent) {
+	e.StopPropagation()
+	v.audioVca.SendCommand(module.PortInGain, e.GetSource().(*Slider).GetValue())
 }

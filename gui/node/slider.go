@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
 	"gosynth/gui/theme"
+	"math"
 )
 
 type Slider struct {
@@ -40,8 +41,8 @@ func (s *Slider) Update() error {
 	if s.MouseLDown {
 		_, py := s.GetAbsolutePosition()
 		_, my := ebiten.CursorPosition()
-		my -= py
-		s.SetValue(float64(my) / float64(s.Height-s.PaddingY*2))
+		s.SetValue(s.ValueMin + (s.ValueMax-s.ValueMin)*(1-(float64(my-py-s.PaddingY)/float64(s.Height-s.PaddingY*2))))
+		s.Dispatch(event.NewEvent(ValueChangedEvent, s))
 	}
 
 	return s.Node.Update()
@@ -56,10 +57,10 @@ func (s *Slider) Clear() {
 		// Draw marks
 		markWidth := float32(s.Width - s.PaddingX*2)
 		markHeight := float32(s.Height-s.PaddingY*2-(s.Marks-1)*s.MarkMargin) / float32(s.Marks)
-		markOnTrigger := float32(s.Value-s.ValueMin) / float32(s.ValueMax-s.ValueMin) * float32(s.Marks)
+		markOnTrigger := float32(s.Marks) - float32(s.Value-s.ValueMin)/float32(s.ValueMax-s.ValueMin)*float32(s.Marks)
 		for i := 0; i < s.Marks; i++ {
 			col := theme.Colors.Off
-			if float32(i) > markOnTrigger {
+			if float32(i) >= markOnTrigger {
 				col = theme.Colors.On
 			}
 			x := float32(s.PaddingX)
@@ -72,10 +73,15 @@ func (s *Slider) Clear() {
 }
 
 func (s *Slider) SetValue(value float64) {
+	value = math.Min(math.Max(value, s.ValueMin), s.ValueMax)
 	if value != s.Value {
 		s.Value = value
 		s.Dirty = true
 	}
+}
+
+func (s *Slider) GetValue() float64 {
+	return s.Value
 }
 
 func (s *Slider) SetRange(min, max float64) {

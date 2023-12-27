@@ -6,14 +6,15 @@ import (
 )
 
 type VCA struct {
-	Module
+	*Module
 	Gain       float64
 	MasterGain float64
 	Sample     float64
 }
 
 func (g *VCA) Init(rate beep.SampleRate) {
-	g.Module.Init(rate)
+	g.Module = &Module{}
+	g.Module.Init(rate, g)
 
 	g.Gain = 1
 
@@ -33,6 +34,10 @@ func (g *VCA) Write(port Port, value float64) {
 	case PortIn:
 		g.Sample += value
 	}
+}
+
+func (g *VCA) GetGain() float64 {
+	return g.Gain*2 - 1
 }
 
 func (g *VCA) Update(t time.Duration) {

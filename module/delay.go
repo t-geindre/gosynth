@@ -16,7 +16,7 @@ type Delay struct {
 }
 
 func (d *Delay) Init(SampleRate beep.SampleRate) {
-	d.Module.Init(SampleRate)
+	d.Module.Init(SampleRate, d)
 	d.SampleRate = SampleRate
 
 	d.Buffer = make([]float64, 0)

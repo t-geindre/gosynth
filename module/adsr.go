@@ -31,7 +31,7 @@ type Adsr struct {
 }
 
 func (a *Adsr) Init(rate beep.SampleRate) {
-	a.Module.Init(rate)
+	a.Module.Init(rate, a)
 	a.State = EnvStateOff
 	a.Phases = [4]EnvPhase{
 		EnvPhase{time.Millisecond * 20, 1},  // Attack
