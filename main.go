@@ -31,8 +31,8 @@ func main() {
 	oscB.SetShape(module.OscillatorShapeSquare)
 	oscB.SetOctaveShift(-2)
 
-	gain := &module.Gain{}
-	gain.SetMasterGain(.5)
+	gain := &module.VCA{}
+	gain.SetGain(.5)
 	rck.AddModule(gain)
 
 	sqr := &module.Sequencer{}

@@ -59,6 +59,8 @@ func (r *Rack) Write(port Port, value float64) {
 }
 
 func (r *Rack) Update(time time.Duration) {
+	r.Module.Update(time)
+
 	r.SampleL = 0
 	r.SampleR = 0
 

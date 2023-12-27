@@ -46,7 +46,9 @@ func (h *PassFilter) Write(port Port, value float64) {
 	}
 }
 
-func (h *PassFilter) Update(time.Duration) {
+func (h *PassFilter) Update(t time.Duration) {
+	h.Module.Update(t)
+
 	pass := h.Alpha*h.Sample + h.Buffer
 	h.Buffer = h.Sample - h.Alpha*pass
 

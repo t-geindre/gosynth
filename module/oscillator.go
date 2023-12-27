@@ -54,6 +54,8 @@ func (o *Oscillator) SetOctaveShift(octShift float64) {
 }
 
 func (o *Oscillator) Update(time time.Duration) {
+	o.Module.Update(time)
+
 	freq := o.Freq * math.Pow(2, o.OctShift)
 	val := 0.0
 

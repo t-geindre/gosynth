@@ -29,6 +29,7 @@ func (l *Limiter) Write(port Port, value float64) {
 }
 
 func (l *Limiter) Update(time time.Duration) {
+	l.Module.Update(time)
 	if l.Sample > l.Thresh {
 		l.Sample = l.Thresh
 	} else if l.Sample < -l.Thresh {

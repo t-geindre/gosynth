@@ -54,6 +54,7 @@ func (a *Adsr) Write(port Port, value float64) {
 }
 
 func (a *Adsr) Update(time time.Duration) {
+	a.Module.Update(time)
 	switch a.State {
 	case EnvStateAttack:
 		if a.Ramp.IsFinished() {

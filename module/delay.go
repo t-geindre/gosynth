@@ -43,6 +43,7 @@ func (d *Delay) Write(port Port, value float64) {
 }
 
 func (d *Delay) Update(time time.Duration) {
+	d.Module.Update(time)
 	if d.Delay != 0 {
 		d.Sample += d.Buffer[d.Cursor] * d.Feedback
 		d.Buffer[d.Cursor] = d.Sample

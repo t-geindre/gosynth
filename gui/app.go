@@ -42,10 +42,10 @@ func (a *App) Draw(screen *ebiten.Image) {
 
 func (a *App) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		if a.Streamer.IsPlaying() {
-			a.Streamer.Play() <- false
+		if a.Streamer.IsSilenced() {
+			a.Streamer.Silence() <- false
 		} else {
-			a.Streamer.Play() <- true
+			a.Streamer.Silence() <- true
 		}
 	}
 

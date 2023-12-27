@@ -36,6 +36,8 @@ func (s *Sequencer) SetLoop(loop bool) {
 }
 
 func (s *Sequencer) Update(time time.Duration) {
+	s.Module.Update(time)
+
 	s.Time = time
 	time -= s.Shift
 
