@@ -6,13 +6,17 @@ import (
 )
 
 type Node struct {
-	Parent        INode
-	Children      []INode
-	Options       *ebiten.DrawImageOptions
-	Image         *ebiten.Image
-	PosX, PosY    int
-	Width, Height int
-	INode         INode
+	Parent          INode
+	Children        []INode
+	Options         *ebiten.DrawImageOptions
+	AppendOptions   *AppendOptions
+	Image           *ebiten.Image
+	PosX, PosY      int
+	Width, Height   int
+	INode           INode
+	LayoutDirty     bool
+	LayoutComputing bool
+	Dirty           bool
 	event.Dispatcher
 }
 
@@ -21,13 +25,18 @@ func NewNode(width, height int, inode INode) *Node {
 	n.Children = make([]INode, 0)
 	n.Options = &ebiten.DrawImageOptions{}
 	n.INode = inode
-	n.Resize(width, height)
+	n.LayoutComputing = true
+	n.SetSize(width, height)
 	n.Dispatcher.Init()
 
 	return n
 }
 
-func (n *Node) Resize(width, height int) {
+func (n *Node) DisableLayoutComputing() {
+	n.LayoutComputing = false
+}
+
+func (n *Node) SetSize(width, height int) {
 	if n.Width == width && n.Height == height {
 		return
 	}
@@ -36,11 +45,24 @@ func (n *Node) Resize(width, height int) {
 	n.Height = height
 
 	n.Image = ebiten.NewImage(width, height)
+
+	n.Dirty = true
+	n.LayoutDirty = n.LayoutComputing
 }
 
 func (n *Node) Append(child INode) {
+	n.AppendWithOptions(child, nil)
+}
+
+func (n *Node) AppendWithOptions(child INode, options *AppendOptions) {
+	child.SetAppendOptions(options)
 	child.SetParent(n)
+
 	n.Children = append(n.Children, child)
+}
+
+func (n *Node) GetChildren() []INode {
+	return n.Children
 }
 
 func (n *Node) Remove(child INode) {
@@ -68,6 +90,11 @@ func (n *Node) GetParent() INode {
 func (n *Node) Clear() {
 	for _, child := range n.Children {
 		child.Clear()
+	}
+
+	if n.LayoutDirty {
+		ComputeLayout(n)
+		n.LayoutDirty = false
 	}
 }
 
@@ -124,6 +151,16 @@ func (n *Node) SetPosition(x, y int) {
 
 	n.PosX = x
 	n.PosY = y
+
+	n.Dirty = true
+}
+
+func (n *Node) SetPositionX(x int) {
+	n.SetPosition(x, n.PosY)
+}
+
+func (n *Node) SetPositionY(y int) {
+	n.SetPosition(n.PosX, y)
 }
 
 func (n *Node) Dispose() {
@@ -162,8 +199,32 @@ func (n *Node) GetSize() (int, int) {
 	return n.Width, n.Height
 }
 
+func (n *Node) GetWidth() int {
+	return n.Width
+}
+
+func (n *Node) GetHeight() int {
+	return n.Height
+}
+
+func (n *Node) SetWidth(width int) {
+	n.SetSize(width, n.Height)
+}
+
+func (n *Node) SetHeight(height int) {
+	n.SetSize(n.Width, height)
+}
+
 func (n *Node) GetPosition() (int, int) {
 	return n.PosX, n.PosY
+}
+
+func (n *Node) GetPositionX() int {
+	return n.PosX
+}
+
+func (n *Node) GetPositionY() int {
+	return n.PosY
 }
 
 func (n *Node) GetAbsolutePosition() (int, int) {
@@ -198,4 +259,31 @@ func (n *Node) Dispatch(e event.IEvent) {
 	if parent := n.GetParent(); parent != nil {
 		parent.Dispatch(e)
 	}
+}
+
+func (n *Node) SetAppendOptions(options *AppendOptions) {
+	n.AppendOptions = options
+}
+
+func (n *Node) GetAppendOptions() *AppendOptions {
+	return n.AppendOptions
+}
+
+func (n *Node) GetOuterSize() (int, int) {
+	w, h := n.GetSize()
+	if options := n.GetAppendOptions(); options != nil {
+		w += options.MarginLeft + options.MarginRight
+		h += options.MarginTop + options.MarginBottom
+	}
+	return w, h
+}
+
+func (n *Node) GetOuterWidth() int {
+	w, _ := n.GetOuterSize()
+	return w
+}
+
+func (n *Node) GetOuterHeight() int {
+	_, h := n.GetOuterSize()
+	return h
 }

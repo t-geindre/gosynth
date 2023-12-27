@@ -3,11 +3,9 @@ package node
 import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/gui/theme"
-	"image/color"
 )
 
 const plugRadius = 18
-const shadowOffset = 3
 
 type Plug struct {
 	*Node
@@ -17,7 +15,7 @@ type Plug struct {
 
 func NewPlug() *Plug {
 	p := &Plug{}
-	p.Node = NewNode(plugRadius*2+shadowOffset+3, plugRadius*2+shadowOffset+3, p)
+	p.Node = NewNode(plugRadius*2+2, plugRadius*2+2, p)
 	p.Inverted = false
 	p.Dirty = true
 
@@ -31,6 +29,7 @@ func (p *Plug) SetParent(parent INode) {
 
 func (p *Plug) Clear() {
 	if p.Dirty {
+		p.Inverted = IsNodeInverted(p)
 		p.Image.Clear()
 
 		// Draw a rect behind the plug to allow correct blending
@@ -39,11 +38,6 @@ func (p *Plug) Clear() {
 			bgColor = theme.Colors.BackgroundInverted
 		}
 		vector.DrawFilledRect(p.Image, float32(p.Width/2-plugRadius-3), float32(p.Height/2-plugRadius-3), float32(plugRadius*2+6), float32(plugRadius*2+6), bgColor, false)
-
-		if !p.Inverted {
-			shadowColor := color.RGBA{A: 40}
-			vector.DrawFilledCircle(p.Image, float32(p.Width/2), float32(p.Height/2)+1, plugRadius, shadowColor, true)
-		}
 
 		vector.StrokeCircle(p.Image, float32(p.Width/2), plugRadius+1, plugRadius, 1, theme.Colors.Off, true)
 		vector.DrawFilledCircle(p.Image, float32(p.Width/2), plugRadius+1, plugRadius-1, theme.Colors.Background, true)

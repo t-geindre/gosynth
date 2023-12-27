@@ -2,22 +2,20 @@ package node
 
 import "gosynth/gui/theme"
 
-type Inverted struct {
+type Container struct {
 	*Node
 	Inverted bool
-	Dirty    bool
 }
 
-func NewInverted(width, height int) *Inverted {
-	i := &Inverted{}
+func NewContainer(width, height int) *Container {
+	i := &Container{}
 	i.Node = NewNode(width, height, i)
-	i.Inverted = true
 	i.Dirty = true
 
 	return i
 }
 
-func (i *Inverted) Clear() {
+func (i *Container) Clear() {
 	if i.Dirty {
 		if i.Inverted {
 			i.Image.Fill(theme.Colors.BackgroundInverted)
@@ -30,23 +28,26 @@ func (i *Inverted) Clear() {
 	i.Node.Clear()
 }
 
-func (i *Inverted) SetParent(parent INode) {
-	i.Node.SetParent(parent)
-	i.Inverted = IsNodeInverted(i)
+func (i *Container) IsInverted() bool {
+	return i.Inverted
 }
 
-func (i *Inverted) Targetable() bool {
+func (i *Container) SetInverted(inverted bool) {
+	i.Inverted = inverted
+	i.Dirty = true
+}
+
+func (i *Container) Targetable() bool {
 	return false
 }
 
 func IsNodeInverted(n INode) bool {
-	inverted := false
 	for n != nil {
-		if _, ok := n.(*Inverted); ok {
-			inverted = !inverted
+		if c, ok := n.(*Container); ok {
+			return c.IsInverted()
 		}
 		n = n.GetParent()
 	}
 
-	return inverted
+	return false
 }

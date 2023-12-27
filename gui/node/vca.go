@@ -1,7 +1,6 @@
 package node
 
 import (
-	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/gui/theme"
 )
 
@@ -14,48 +13,44 @@ func NewVCA() *VCA {
 	width, height := 65, 500
 	v.Module = NewModule(width, height, v)
 
-	// Components
-	sl := NewSlider(width-20, 200)
-	sl.SetPosition(10, 35)
-	sl.SetRange(0, 1)
-	sl.SetValue(0.5)
-	v.Append(sl)
+	slider := NewSlider()
+	slider.SetRange(0, 1)
+	slider.SetValue(0.5)
+	v.AppendWithOptions(slider, NewAppendOptions().HorizontallyFill(100).VerticallyFill(100))
 
-	// todo Make it a node
-	vector.StrokeLine(v.Image, float32(width/2), float32(237), float32(width/2), 243, 1, theme.Colors.Off, false)
+	lineToCv := NewLine(10, 1, LineOrientationVertical)
+	v.AppendWithOptions(lineToCv, NewAppendOptions().HorizontallyCentered())
 
-	cvPl := NewPlug()
-	cvPl.SetPosition(0, 245)
-	v.Append(cvPl)
-	cvPl.HCenter()
+	cvPlug := NewPlug()
+	v.AppendWithOptions(cvPlug, NewAppendOptions().HorizontallyCentered())
 
-	lb := NewLabel(width, 10, "CV", theme.Fonts.Small)
-	lb.SetPosition(0, 287)
-	v.Append(lb)
+	cvLabel := NewLabel("CV", theme.Fonts.Small)
+	v.AppendWithOptions(cvLabel, NewAppendOptions().HorizontallyCentered().Margins(3, 0, 0, 0))
 
-	inLb := NewLabel(width-20, 10, "IN", theme.Fonts.Small)
-	inLb.SetPosition(0, height-122)
-	v.Append(inLb)
-	inLb.HCenter()
+	separatorLine := NewLine(10, 1, LineOrientationHorizontal)
+	v.AppendWithOptions(
+		separatorLine,
+		NewAppendOptions().
+			HorizontallyCentered().
+			HorizontallyFill(100).
+			Margins(20, 20, 10, 10),
+	)
 
-	inPl := NewPlug()
-	inPl.SetPosition(0, height-110)
-	v.Append(inPl)
-	inPl.HCenter()
+	inLabel := NewLabel("IN", theme.Fonts.Small)
+	v.AppendWithOptions(inLabel, NewAppendOptions().HorizontallyCentered().Margins(0, 3, 0, 0))
 
-	// todo make it a node
-	// todo add append options to make components placement easier
-	vector.StrokeLine(v.Image, float32(width/2), float32(height-60), float32(width/2), float32(height-90), 1, theme.Colors.Off, false)
+	inPlug := NewPlug()
+	v.AppendWithOptions(inPlug, NewAppendOptions().HorizontallyCentered())
 
-	iv := NewInverted(width-20, 48)
-	iv.SetPosition(10, height-58)
-	v.Append(iv)
+	inOutLine := NewLine(10, 1, LineOrientationVertical)
+	v.AppendWithOptions(inOutLine, NewAppendOptions().HorizontallyCentered())
 
-	outPl := NewPlug()
-	outPl.SetPosition(0, 5)
-	iv.Append(outPl)
-	outPl.HCenter()
+	outPlug := NewPlug()
+	outPlugContainer := NewContainer(outPlug.GetOuterWidth()+10, outPlug.GetOuterHeight()+10)
+	outPlugContainer.SetInverted(true)
+	v.AppendWithOptions(outPlugContainer, NewAppendOptions().HorizontallyCentered().Padding(5))
+
+	outPlugContainer.AppendWithOptions(outPlug, NewAppendOptions().HorizontallyCentered())
 
 	return v
-
 }

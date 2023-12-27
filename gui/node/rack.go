@@ -2,6 +2,7 @@ package node
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"gosynth/event"
 	"image/color"
 )
 
@@ -15,7 +16,17 @@ type Rack struct {
 func NewRack(width, height int) *Rack {
 	r := &Rack{}
 	r.Node = NewNode(width, height, r)
+	r.Node.DisableLayoutComputing()
+
 	r.BgColor = &color.RGBA{R: 12, G: 12, B: 12, A: 255}
+
+	r.Dispatcher.AddListener(&r, LeftMouseDownEvent, func(e event.IEvent) {
+		r.MouseLeftDown(e.GetSource().(INode))
+	})
+
+	r.Dispatcher.AddListener(&r, LeftMouseUpEvent, func(e event.IEvent) {
+		r.MouseLeftUp(e.GetSource().(INode))
+	})
 
 	return r
 }

@@ -11,13 +11,14 @@ type Module struct {
 	*Node
 	MouseLDown             bool
 	LastMouseX, LastMouseY int
-	Dirty                  bool
 }
 
 func NewModule(width, height int, inode INode) *Module {
 	m := &Module{}
 	m.Node = NewNode(width, height, inode)
-	m.Dirty = true
+
+	tl := NewLabel("VCA", theme.Fonts.Title)
+	m.AppendWithOptions(tl, NewAppendOptions().Margins(5, 10, 0, 0).HorizontallyCentered())
 
 	m.Dispatcher.AddListener(&m, LeftMouseDownEvent, func(e event.IEvent) {
 		m.OnMouseLeftDown(e.GetSource().(INode))
@@ -34,10 +35,6 @@ func (m *Module) Clear() {
 	if m.Dirty {
 		m.Image.Fill(theme.Colors.Background)
 		vector.StrokeRect(m.Image, 0, 0, float32(m.Width), float32(m.Height), 2, theme.Colors.Off, false)
-
-		tl := NewLabel(m.Width, 35, "VCA", theme.Fonts.Title)
-		tl.SetPosition(0, 0)
-		m.Append(tl)
 
 		m.Dirty = false
 	}
@@ -70,4 +67,9 @@ func (m *Module) MouseLeftUp(target INode) {
 		m.Options.ColorScale.Reset()
 		m.MouseLDown = false
 	}
+}
+
+func (m *Module) SetParent(parent INode) {
+	m.Node.SetParent(parent)
+	m.Node.SetAppendOptions(NewAppendOptions().Padding(5))
 }

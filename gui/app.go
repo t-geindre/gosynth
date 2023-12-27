@@ -82,6 +82,6 @@ func (a *App) Update() error {
 func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	s := ebiten.DeviceScaleFactor()
 	w, h := int(float64(outsideWidth)*s), int(float64(outsideHeight)*s)
-	a.Rack.Resize(w, h)
+	a.Rack.SetSize(w, h)
 	return w, h
 }

@@ -13,7 +13,7 @@ func NewStreamer(width, height int, streamer *output.Streamer) *Streamer {
 	s := &Streamer{}
 	s.Node = NewNode(width, height, s)
 	s.Streamer = streamer
-	s.Resize(width, height)
+	s.SetSize(width, height)
 
 	return s
 }

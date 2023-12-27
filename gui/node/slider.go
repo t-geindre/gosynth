@@ -9,7 +9,6 @@ import (
 
 type Slider struct {
 	*Node
-	Dirty              bool
 	Marks              int
 	PaddingX, PaddingY int
 	MarkMargin         int
@@ -18,10 +17,9 @@ type Slider struct {
 	MouseLDown         bool
 }
 
-func NewSlider(width, height int) *Slider {
+func NewSlider() *Slider {
 	s := &Slider{}
-	s.Node = NewNode(width, height, s)
-	s.Dirty = true
+	s.Node = NewNode(1, 1, s)
 	s.Marks = 25
 	s.PaddingX = 5
 	s.PaddingY = 5
@@ -74,8 +72,10 @@ func (s *Slider) Clear() {
 }
 
 func (s *Slider) SetValue(value float64) {
-	s.Value = value
-	s.Dirty = true
+	if value != s.Value {
+		s.Value = value
+		s.Dirty = true
+	}
 }
 
 func (s *Slider) SetRange(min, max float64) {
