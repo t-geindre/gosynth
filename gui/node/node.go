@@ -2,6 +2,7 @@ package node
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"gosynth/event"
 )
 
 type Node struct {
@@ -12,15 +13,16 @@ type Node struct {
 	PosX, PosY    int
 	Width, Height int
 	INode         INode
+	event.Dispatcher
 }
 
 func NewNode(width, height int, inode INode) *Node {
-	// Todo fix this inode shit
 	n := &Node{}
 	n.Children = make([]INode, 0)
 	n.Options = &ebiten.DrawImageOptions{}
 	n.INode = inode
 	n.Resize(width, height)
+	n.Dispatcher.Init()
 
 	return n
 }
@@ -156,18 +158,6 @@ func (n *Node) MoveChildrenBy(x, y int) {
 	}
 }
 
-func (n *Node) MouseLeftDown(target INode) {
-	if parent := n.GetParent(); parent != nil {
-		parent.GetINode().MouseLeftDown(target)
-	}
-}
-
-func (n *Node) MouseLeftUp(target INode) {
-	if parent := n.GetParent(); parent != nil {
-		parent.GetINode().MouseLeftUp(target)
-	}
-}
-
 func (n *Node) GetSize() (int, int) {
 	return n.Width, n.Height
 }
@@ -195,5 +185,17 @@ func (n *Node) HCenter() {
 		pw, _ := parent.GetINode().GetSize()
 		w, _ := n.GetSize()
 		n.SetPosition(pw/2-w/2, n.PosY)
+	}
+}
+
+func (n *Node) Dispatch(e event.IEvent) {
+	n.Dispatcher.Dispatch(e)
+
+	if e.IsPropagationStopped() {
+		return
+	}
+
+	if parent := n.GetParent(); parent != nil {
+		parent.Dispatch(e)
 	}
 }

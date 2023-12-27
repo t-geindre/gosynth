@@ -6,7 +6,7 @@ import (
 )
 
 type Rack struct {
-	Node
+	*Node
 	MouseLDown             bool
 	LastMouseX, LastMouseY int
 	BgColor                *color.RGBA
@@ -14,7 +14,7 @@ type Rack struct {
 
 func NewRack(width, height int) *Rack {
 	r := &Rack{}
-	r.Node = *NewNode(width, height, r)
+	r.Node = NewNode(width, height, r)
 	r.BgColor = &color.RGBA{R: 12, G: 12, B: 12, A: 255}
 
 	return r

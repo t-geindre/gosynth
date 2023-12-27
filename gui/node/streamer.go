@@ -5,13 +5,13 @@ import (
 )
 
 type Streamer struct {
-	Node
+	*Node
 	Streamer *output.Streamer
 }
 
 func NewStreamer(width, height int, streamer *output.Streamer) *Streamer {
 	s := &Streamer{}
-	s.Node = *NewNode(width, height, s)
+	s.Node = NewNode(width, height, s)
 	s.Streamer = streamer
 	s.Resize(width, height)
 

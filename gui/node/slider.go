@@ -3,11 +3,12 @@ package node
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"gosynth/event"
 	"gosynth/gui/theme"
 )
 
 type Slider struct {
-	Node
+	*Node
 	Dirty              bool
 	Marks              int
 	PaddingX, PaddingY int
@@ -19,12 +20,20 @@ type Slider struct {
 
 func NewSlider(width, height int) *Slider {
 	s := &Slider{}
-	s.Node = *NewNode(width, height, s)
+	s.Node = NewNode(width, height, s)
 	s.Dirty = true
 	s.Marks = 25
 	s.PaddingX = 5
 	s.PaddingY = 5
 	s.MarkMargin = 2
+
+	s.Dispatcher.AddListener(&s, LeftMouseDownEvent, func(e event.IEvent) {
+		s.MouseLeftDown()
+	})
+
+	s.Dispatcher.AddListener(&s, LeftMouseUpEvent, func(e event.IEvent) {
+		s.MouseLeftUp()
+	})
 
 	return s
 }
@@ -75,12 +84,10 @@ func (s *Slider) SetRange(min, max float64) {
 	s.Dirty = true
 }
 
-func (s *Slider) MouseLeftDown(target INode) {
-	s.Node.MouseLeftDown(target)
+func (s *Slider) MouseLeftDown() {
 	s.MouseLDown = true
 }
 
-func (s *Slider) MouseLeftUp(target INode) {
-	s.Node.MouseLeftUp(target)
+func (s *Slider) MouseLeftUp() {
 	s.MouseLDown = false
 }

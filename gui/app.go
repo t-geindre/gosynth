@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"gosynth/event"
 	"gosynth/gui/node"
 	"gosynth/output"
 )
@@ -50,7 +51,7 @@ func (a *App) Update() error {
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		if a.MouseTarget != nil {
-			a.MouseTarget.MouseLeftUp(a.MouseTarget)
+			a.MouseTarget.Dispatch(event.NewEvent(node.LeftMouseUpEvent, a.MouseTarget))
 		}
 
 		if ebiten.IsKeyPressed(ebiten.KeyAlt) {
@@ -60,12 +61,12 @@ func (a *App) Update() error {
 		}
 
 		if a.MouseTarget != nil {
-			a.MouseTarget.MouseLeftDown(a.MouseTarget)
+			a.MouseTarget.Dispatch(event.NewEvent(node.LeftMouseDownEvent, a.MouseTarget))
 		}
 	}
 
 	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) && a.MouseTarget != nil {
-		a.MouseTarget.MouseLeftUp(a.MouseTarget)
+		a.MouseTarget.Dispatch(event.NewEvent(node.LeftMouseUpEvent, a.MouseTarget))
 		a.MouseTarget = nil
 	}
 

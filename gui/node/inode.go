@@ -1,6 +1,9 @@
 package node
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"gosynth/event"
+)
 
 type INode interface {
 	Append(child INode)
@@ -21,8 +24,7 @@ type INode interface {
 	SetParent(parent INode)
 	GetINode() INode
 	MoveFront(child INode)
-	MouseLeftDown(target INode)
-	MouseLeftUp(target INode)
 	MoveChildrenBy(x, y int)
 	HCenter()
+	event.IDispatcher
 }

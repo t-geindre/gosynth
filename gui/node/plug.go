@@ -10,14 +10,14 @@ const plugRadius = 18
 const shadowOffset = 3
 
 type Plug struct {
-	Node
+	*Node
 	Inverted bool
 	Dirty    bool
 }
 
 func NewPlug() *Plug {
 	p := &Plug{}
-	p.Node = *NewNode(plugRadius*2+shadowOffset+3, plugRadius*2+shadowOffset+3, p)
+	p.Node = NewNode(plugRadius*2+shadowOffset+3, plugRadius*2+shadowOffset+3, p)
 	p.Inverted = false
 	p.Dirty = true
 

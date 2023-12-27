@@ -3,28 +3,45 @@ package node
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"gosynth/event"
 	"gosynth/gui/theme"
 )
 
 type Module struct {
-	Node
+	*Node
 	MouseLDown             bool
 	LastMouseX, LastMouseY int
+	Dirty                  bool
 }
 
 func NewModule(width, height int, inode INode) *Module {
 	m := &Module{}
-	m.Node = *NewNode(width, height, inode)
+	m.Node = NewNode(width, height, inode)
+	m.Dirty = true
 
-	// Layout
-	m.Image.Fill(theme.Colors.Background)
-	vector.StrokeRect(m.Image, 0, 0, float32(width), float32(height), 2, theme.Colors.Off, false)
+	m.Dispatcher.AddListener(&m, LeftMouseDownEvent, func(e event.IEvent) {
+		m.OnMouseLeftDown(e.GetSource().(INode))
+	})
 
-	tl := NewLabel(width, 35, "VCA", theme.Fonts.Title)
-	tl.SetPosition(0, 0)
-	m.Append(tl)
+	m.Dispatcher.AddListener(&m, LeftMouseUpEvent, func(e event.IEvent) {
+		m.MouseLeftUp(e.GetSource().(INode))
+	})
 
 	return m
+}
+
+func (m *Module) Clear() {
+	if m.Dirty {
+		m.Image.Fill(theme.Colors.Background)
+		vector.StrokeRect(m.Image, 0, 0, float32(m.Width), float32(m.Height), 2, theme.Colors.Off, false)
+
+		tl := NewLabel(m.Width, 35, "VCA", theme.Fonts.Title)
+		tl.SetPosition(0, 0)
+		m.Append(tl)
+
+		m.Dirty = false
+	}
+	m.Node.Clear()
 }
 
 func (m *Module) Update() error {
@@ -36,16 +53,16 @@ func (m *Module) Update() error {
 
 	return m.Node.Update()
 }
-func (m *Module) MouseLeftDown(target INode) {
+func (m *Module) OnMouseLeftDown(target INode) {
 	if m.GetParent() != nil {
-		m.GetParent().MoveFront(m)
+		m.GetParent().GetINode().MoveFront(m.GetINode())
 	}
+
 	if m.GetINode() == target {
 		m.MouseLDown = true
 		m.LastMouseX, m.LastMouseY = ebiten.CursorPosition()
 		m.Options.ColorScale.ScaleAlpha(0.8)
 	}
-	m.Node.MouseLeftDown(target)
 }
 
 func (m *Module) MouseLeftUp(target INode) {
@@ -53,5 +70,4 @@ func (m *Module) MouseLeftUp(target INode) {
 		m.Options.ColorScale.Reset()
 		m.MouseLDown = false
 	}
-	m.Node.MouseLeftUp(target)
 }

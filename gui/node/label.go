@@ -8,7 +8,7 @@ import (
 )
 
 type Label struct {
-	Node
+	*Node
 	Text     string
 	Font     font.Face
 	Inverted bool
@@ -17,7 +17,7 @@ type Label struct {
 
 func NewLabel(width, height int, text string, font font.Face) *Label {
 	t := &Label{}
-	t.Node = *NewNode(width, height, t)
+	t.Node = NewNode(width, height, t)
 	t.Font = font
 	t.Inverted = false
 	t.SetText(text)

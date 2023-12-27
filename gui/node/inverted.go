@@ -3,14 +3,14 @@ package node
 import "gosynth/gui/theme"
 
 type Inverted struct {
-	Node
+	*Node
 	Inverted bool
 	Dirty    bool
 }
 
 func NewInverted(width, height int) *Inverted {
 	i := &Inverted{}
-	i.Node = *NewNode(width, height, i)
+	i.Node = NewNode(width, height, i)
 	i.Inverted = true
 	i.Dirty = true
 

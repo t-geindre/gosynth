@@ -6,13 +6,13 @@ import (
 )
 
 type VCA struct {
-	Module
+	*Module
 }
 
 func NewVCA() *VCA {
 	v := &VCA{}
 	width, height := 65, 500
-	v.Module = *NewModule(width, height, v)
+	v.Module = NewModule(width, height, v)
 
 	// Components
 	sl := NewSlider(width-20, 200)
@@ -21,6 +21,7 @@ func NewVCA() *VCA {
 	sl.SetValue(0.5)
 	v.Append(sl)
 
+	// todo Make it a node
 	vector.StrokeLine(v.Image, float32(width/2), float32(237), float32(width/2), 243, 1, theme.Colors.Off, false)
 
 	cvPl := NewPlug()
@@ -42,6 +43,8 @@ func NewVCA() *VCA {
 	v.Append(inPl)
 	inPl.HCenter()
 
+	// todo make it a node
+	// todo add append options to make components placement easier
 	vector.StrokeLine(v.Image, float32(width/2), float32(height-60), float32(width/2), float32(height-90), 1, theme.Colors.Off, false)
 
 	iv := NewInverted(width-20, 48)
