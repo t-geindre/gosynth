@@ -52,14 +52,19 @@ func main() {
 	lmt.SetThreshold(1)
 	rck.AddModule(lmt)
 
+	adsrVca := &module.VCA{}
+	rck.AddModule(adsrVca)
+
 	sqr.Connect(module.PortOutFreq, oscA, module.PortInFreq)
 	sqr.Connect(module.PortOutFreq, oscB, module.PortInFreq)
 	sqr.Connect(module.PortOutGate, adsr, module.PortInGate)
 
-	oscA.Connect(module.PortOut, adsr, module.PortIn)
-	oscB.Connect(module.PortOut, adsr, module.PortIn)
+	oscA.Connect(module.PortOut, adsrVca, module.PortIn)
+	oscB.Connect(module.PortOut, adsrVca, module.PortIn)
 
-	adsr.Connect(module.PortOut, delay, module.PortIn)
+	adsr.Connect(module.PortCvOut, adsrVca, module.PortCvIn)
+
+	adsrVca.Connect(module.PortOut, delay, module.PortIn)
 
 	delay.Connect(module.PortOut, vca, module.PortIn)
 

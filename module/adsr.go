@@ -27,7 +27,6 @@ type Adsr struct {
 	Phases [4]EnvPhase
 	On     bool
 	Ramp   ramp.Linear
-	Sample float64
 }
 
 func (a *Adsr) Init(rate beep.SampleRate) {
@@ -45,8 +44,6 @@ func (a *Adsr) Write(port Port, value float64) {
 	switch port {
 	case PortInGate:
 		a.On = value > 0
-	case PortIn:
-		a.Sample += value
 	}
 }
 
@@ -75,8 +72,7 @@ func (a *Adsr) Update(time time.Duration) {
 		}
 	}
 
-	a.ConnectionWrite(PortOut, a.Sample*a.Ramp.Value(time))
-	a.Sample = 0
+	a.ConnectionWrite(PortCvOut, a.Ramp.Value(time)*2-1)
 }
 
 func (a *Adsr) GoToState(state EnvState, time time.Duration) {
