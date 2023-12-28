@@ -3,6 +3,7 @@ package node
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
+	"time"
 )
 
 type INode interface {
@@ -21,7 +22,7 @@ type INode interface {
 	// Life cycle
 	Clear()
 	Draw(dest *ebiten.Image)
-	Update() error
+	Update(time time.Duration) error
 	Dispose()
 
 	// Targetting

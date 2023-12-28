@@ -19,7 +19,11 @@ func NewLinear() *Linear {
 }
 
 func (l *Linear) GoTo(target float64, duration, time time.Duration) {
-	l.From = l.Value(time)
+	l.GoFromTo(l.Value(time), target, duration, time)
+}
+
+func (l *Linear) GoFromTo(from, target float64, duration, time time.Duration) {
+	l.From = from
 	l.Target = target
 	l.Duration = duration
 	l.Start = time

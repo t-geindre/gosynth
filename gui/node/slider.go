@@ -5,7 +5,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
 	"gosynth/gui/theme"
+	"gosynth/math/ramp"
 	"math"
+	"time"
 )
 
 type Slider struct {
@@ -16,6 +18,7 @@ type Slider struct {
 	Value              float64
 	ValueMin, ValueMax float64
 	MouseLDown         bool
+	Ramp               *ramp.Linear
 }
 
 func NewSlider() *Slider {
@@ -37,7 +40,7 @@ func NewSlider() *Slider {
 	return s
 }
 
-func (s *Slider) Update() error {
+func (s *Slider) Update(time time.Duration) error {
 	if s.MouseLDown {
 		_, py := s.GetAbsolutePosition()
 		_, my := ebiten.CursorPosition()
@@ -45,7 +48,7 @@ func (s *Slider) Update() error {
 		s.Dispatch(event.NewEvent(ValueChangedEvent, s))
 	}
 
-	return s.Node.Update()
+	return s.Node.Update(time)
 }
 
 func (s *Slider) Clear() {

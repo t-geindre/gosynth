@@ -9,12 +9,15 @@ import (
 	"gosynth/gui/node"
 	"gosynth/module"
 	"gosynth/output"
+	clock "gosynth/time"
+	"time"
 )
 
 type App struct {
 	Rack        *node.Rack
 	MouseTarget node.INode
 	Streamer    *output.Streamer
+	Clock       *clock.Clock
 	AudioVca    *module.VCA // TODO TEST PURPOSE REMOVE ME
 }
 
@@ -26,6 +29,8 @@ func NewApp(str *output.Streamer) *App {
 	a := &App{}
 	a.Rack = node.NewRack(800, 600)
 	a.Streamer = str
+
+	a.Clock = clock.NewClock(time.Second / time.Duration(ebiten.TPS()))
 
 	for _, audioModule := range str.GetRack().GetModules() {
 		if aVca, ok := audioModule.(*module.VCA); ok {
@@ -47,6 +52,8 @@ func (a *App) Draw(screen *ebiten.Image) {
 }
 
 func (a *App) Update() error {
+	a.Clock.Tick()
+
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		if a.Streamer.IsSilenced() {
 			a.Streamer.Silence() <- false
@@ -82,7 +89,7 @@ func (a *App) Update() error {
 		a.Rack.Append(mod)
 	}
 
-	return a.Rack.Update()
+	return a.Rack.Update(a.Clock.GetTime())
 }
 
 func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {

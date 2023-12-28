@@ -5,6 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
 	"gosynth/gui/theme"
+	"time"
 )
 
 type Module struct {
@@ -41,14 +42,14 @@ func (m *Module) Clear() {
 	m.Node.Clear()
 }
 
-func (m *Module) Update() error {
+func (m *Module) Update(time time.Duration) error {
 	if m.MouseLDown {
 		x, y := ebiten.CursorPosition()
 		m.MoveBy(x-m.LastMouseX, y-m.LastMouseY)
 		m.LastMouseX, m.LastMouseY = x, y
 	}
 
-	return m.Node.Update()
+	return m.Node.Update(time)
 }
 func (m *Module) OnMouseLeftDown(target INode) {
 	if m.GetParent() != nil {

@@ -3,6 +3,7 @@ package node
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
+	"time"
 )
 
 type Node struct {
@@ -106,9 +107,9 @@ func (n *Node) Draw(dest *ebiten.Image) {
 	dest.DrawImage(n.Image, n.Options)
 }
 
-func (n *Node) Update() error {
+func (n *Node) Update(time time.Duration) error {
 	for _, child := range n.Children {
-		err := child.Update()
+		err := child.Update(time)
 		if err != nil {
 			return err
 		}

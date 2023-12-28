@@ -32,12 +32,11 @@ func main() {
 	oscB.SetOctaveShift(-2)
 
 	vca := &module.VCA{}
-	vca.SetGain(.5)
 	rck.AddModule(vca)
 
 	sqr := &module.Sequencer{}
 	rck.AddModule(sqr)
-	AddTetrisSequence(sqr, time.Millisecond*10, time.Millisecond*100)
+	AddTetrisSequence(sqr, time.Millisecond*100, time.Millisecond*100)
 	sqr.SetLoop(true)
 
 	adsr := &module.Adsr{}

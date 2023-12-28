@@ -4,6 +4,7 @@ import (
 	"gosynth/event"
 	"gosynth/gui/theme"
 	"gosynth/module"
+	"time"
 )
 
 type VCA struct {
@@ -21,7 +22,6 @@ func NewVCA(audioVca *module.VCA) *VCA {
 
 	v.slider = NewSlider()
 	v.slider.SetRange(-1, 1)
-	v.slider.SetValue(0.5)
 	v.AppendWithOptions(v.slider, NewAppendOptions().HorizontallyFill(100).VerticallyFill(100))
 
 	lineToCv := NewLine(10, 1, LineOrientationVertical)
@@ -70,9 +70,9 @@ func NewVCA(audioVca *module.VCA) *VCA {
 	return v
 }
 
-func (v *VCA) Update() error {
-	v.slider.SetValue(v.audioVca.GetGain())
-	return v.Module.Update()
+func (v *VCA) Update(time time.Duration) error {
+	v.slider.SetValue(v.audioVca.Read(module.PortCvIn))
+	return v.Module.Update(time)
 }
 
 func (v *VCA) OnSliderValueChanged(e event.IEvent) {

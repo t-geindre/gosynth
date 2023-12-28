@@ -52,6 +52,10 @@ func (m *Module) SendInput(port Port, value float64) {
 func (m *Module) Write(port Port, value float64) {
 }
 
+func (m *Module) Read(port Port) float64 {
+	return 0
+}
+
 func (m *Module) Dispose() {
 }
 

@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
 	"image/color"
+	"time"
 )
 
 type Rack struct {
@@ -31,14 +32,14 @@ func NewRack(width, height int) *Rack {
 	return r
 }
 
-func (r *Rack) Update() error {
+func (r *Rack) Update(time time.Duration) error {
 	if r.MouseLDown {
 		x, y := ebiten.CursorPosition()
 		r.MoveChildrenBy(x-r.LastMouseX, y-r.LastMouseY)
 		r.LastMouseX, r.LastMouseY = x, y
 	}
 
-	return r.Node.Update()
+	return r.Node.Update(time)
 }
 func (r *Rack) MouseLeftDown(target INode) {
 	if r == target {

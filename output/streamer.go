@@ -16,7 +16,7 @@ func NewStreamer(clock *time.Clock, rack *module.Rack) *Streamer {
 	s := &Streamer{}
 	s.clock = clock
 	s.rack = rack
-	s.silenced = true
+	s.silenced = false
 	s.command = make(chan bool, 3)
 
 	return s
@@ -29,13 +29,12 @@ func (s *Streamer) Stream(samples [][2]float64) (n int, ok bool) {
 	default:
 	}
 
-	if s.silenced {
-		s.clock.Tick()
-		return 0, true
-	}
-
 	for i := range samples {
-		samples[i][0], samples[i][1] = s.rack.GetSamples()
+		if !s.silenced {
+			samples[i][0], samples[i][1] = s.rack.GetSamples()
+		} else {
+			samples[i][0], samples[i][1] = 0, 0
+		}
 		s.clock.Tick()
 	}
 
