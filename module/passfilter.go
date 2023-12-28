@@ -26,8 +26,6 @@ func (h *PassFilter) Init(SampleRate beep.SampleRate) {
 	h.Module.Init(SampleRate, h)
 	h.SampleRate = SampleRate
 	h.Alpha = 0
-	h.AddInput("in", PortIn)
-	h.AddOutput("out", PortOut)
 }
 
 func (h *PassFilter) SetCutOff(cutoff float64) {

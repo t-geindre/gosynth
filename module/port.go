@@ -4,17 +4,21 @@ type Port uint8
 
 // Inputs
 const (
-	PortInGain Port = iota
-	PortInFreq
-	PortInGate
+	PortCvIn Port = iota
 	PortIn
+	PortInGate
 	PortInL
 	PortInR
+
+	PortInGain
+	PortInFreq
 )
 
 // Outputs
 const (
 	PortOut Port = iota
+	PortCvOut
+
 	PortOutFreq
 	PortOutGate
 )

@@ -39,9 +39,6 @@ func (a *Adsr) Init(rate beep.SampleRate) {
 		EnvPhase{0, .5},                     // Sustain
 		EnvPhase{time.Millisecond * 20, 0},  // Release
 	}
-	a.AddInput("gate", PortInGate)
-	a.AddInput("trigger", PortIn)
-	a.AddOutput("out", PortOut)
 }
 
 func (a *Adsr) Write(port Port, value float64) {

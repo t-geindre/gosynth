@@ -77,5 +77,5 @@ func (v *VCA) Update() error {
 
 func (v *VCA) OnSliderValueChanged(e event.IEvent) {
 	e.StopPropagation()
-	v.audioVca.SendCommand(module.PortInGain, e.GetSource().(*Slider).GetValue())
+	v.audioVca.SendInput(module.PortCvIn, e.GetSource().(*Slider).GetValue())
 }

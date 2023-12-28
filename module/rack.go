@@ -32,9 +32,6 @@ func (r *Rack) Init(SampleRate beep.SampleRate) {
 	r.Clock.AddListener(r, clock.TickEvent, func(e event.IEvent) {
 		r.Update(e.GetSource().(*clock.Clock).GetTime())
 	})
-
-	r.AddInput("In L", PortInL)
-	r.AddInput("In R", PortInR)
 }
 
 func (r *Rack) AddModule(module IModule) {

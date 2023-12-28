@@ -17,41 +17,15 @@ type Connection struct {
 }
 
 type Module struct {
-	Inputs      []IO
-	Outputs     []IO
 	Connections []Connection
 	CommandChan chan Command
 	IModule     IModule
 }
 
 func (m *Module) Init(_ beep.SampleRate, imodule IModule) {
-	m.Inputs = make([]IO, 0)
-	m.Outputs = make([]IO, 0)
 	m.Connections = make([]Connection, 0)
 	m.CommandChan = make(chan Command, 3)
 	m.IModule = imodule
-}
-
-func (m *Module) AddInput(name string, port Port) {
-	m.Inputs = append(m.Inputs, IO{
-		Name: name,
-		Port: port,
-	})
-}
-
-func (m *Module) AddOutput(name string, port Port) {
-	m.Outputs = append(m.Outputs, IO{
-		Name: name,
-		Port: port,
-	})
-}
-
-func (m *Module) GetInputs() []IO {
-	return m.Inputs
-}
-
-func (m *Module) GetOutputs() []IO {
-	return m.Outputs
 }
 
 func (m *Module) Connect(srcPort Port, destModule IModule, destPort Port) {
@@ -70,8 +44,8 @@ func (m *Module) ConnectionWrite(srcPort Port, value float64) {
 	}
 }
 
-// SendCommand Thread-safe way to send a command to a module
-func (m *Module) SendCommand(port Port, value float64) {
+// SendInput Thread-safe way to send a command to a module
+func (m *Module) SendInput(port Port, value float64) {
 	m.CommandChan <- Command{Port: port, Value: value}
 }
 

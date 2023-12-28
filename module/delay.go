@@ -20,9 +20,6 @@ func (d *Delay) Init(SampleRate beep.SampleRate) {
 	d.SampleRate = SampleRate
 
 	d.Buffer = make([]float64, 0)
-
-	d.AddInput("in", PortIn)
-	d.AddOutput("out", PortOut)
 }
 
 func (d *Delay) SetDelay(delay time.Duration) {

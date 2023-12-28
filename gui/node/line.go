@@ -54,3 +54,7 @@ func (l *Line) ComputeImageSize(length, width int, orientation LineOrientation) 
 		return width, length
 	}
 }
+
+func (l *Line) Targetable() bool {
+	return false
+}

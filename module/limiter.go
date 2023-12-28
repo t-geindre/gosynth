@@ -13,8 +13,6 @@ type Limiter struct {
 
 func (l *Limiter) Init(rate beep.SampleRate) {
 	l.Module.Init(rate, l)
-	l.AddInput("in", PortIn)
-	l.AddOutput("out", PortOut)
 }
 
 func (l *Limiter) SetThreshold(thresh float64) {

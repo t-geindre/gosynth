@@ -67,6 +67,8 @@ func (a *AppendOptions) HorizontallyFill(fill int) *AppendOptions {
 	return a
 }
 
+// TODO move margins/paddings on node
+// TODO move the layout code in a "good" place
 func ComputeLayout(parent INode) {
 	if len(parent.GetChildren()) == 0 {
 		return

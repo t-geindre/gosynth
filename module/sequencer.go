@@ -26,9 +26,6 @@ type Sequencer struct {
 func (s *Sequencer) Init(rate beep.SampleRate) {
 	s.Module.Init(rate, s)
 	s.Sequence = make([]SeqItem, 0)
-
-	s.AddOutput("freq", PortOutFreq)
-	s.AddOutput("gate", PortOutGate)
 }
 
 func (s *Sequencer) SetLoop(loop bool) {
