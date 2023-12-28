@@ -48,7 +48,7 @@ func (n *Node) SetSize(width, height int) {
 	n.Image = ebiten.NewImage(width, height)
 
 	n.Dirty = true
-	n.LayoutDirty = n.LayoutComputing
+	n.LayoutDirty = true
 }
 
 func (n *Node) Append(child INode) {
@@ -60,6 +60,7 @@ func (n *Node) AppendWithOptions(child INode, options *AppendOptions) {
 	child.SetParent(n)
 
 	n.Children = append(n.Children, child)
+	n.LayoutDirty = true
 }
 
 func (n *Node) GetChildren() []INode {
@@ -94,7 +95,9 @@ func (n *Node) Clear() {
 	}
 
 	if n.LayoutDirty {
-		ComputeLayout(n)
+		if n.LayoutComputing {
+			ComputeLayout(n)
+		}
 		n.LayoutDirty = false
 	}
 }

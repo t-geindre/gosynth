@@ -34,10 +34,13 @@ func main() {
 	vca := &module.VCA{}
 	rck.AddModule(vca)
 
+	demoVca := &module.VCA{}
+	rck.AddModule(demoVca)
+
 	sqr := &module.Sequencer{}
 	rck.AddModule(sqr)
-	AddTetrisSequence(sqr, time.Millisecond*100, time.Millisecond*100)
-	sqr.SetLoop(true)
+	AddTetrisSequence(sqr, time.Millisecond*50, time.Millisecond*100)
+	//sqr.SetLoop(true)
 
 	adsr := &module.Adsr{}
 	rck.AddModule(adsr)
@@ -46,10 +49,6 @@ func main() {
 	rck.AddModule(delay)
 	delay.SetDelay(time.Millisecond * 200)
 	delay.SetFeedback(.15)
-
-	lmt := &module.Limiter{}
-	lmt.SetThreshold(1)
-	rck.AddModule(lmt)
 
 	adsrVca := &module.VCA{}
 	rck.AddModule(adsrVca)
@@ -67,10 +66,13 @@ func main() {
 
 	delay.Connect(module.PortOut, vca, module.PortIn)
 
-	vca.Connect(module.PortOut, lmt, module.PortIn)
+	oscA.Connect(module.PortOut, demoVca, module.PortIn)
+	demoVca.Connect(module.PortOut, vca, module.PortIn)
+	demoVca.Write(module.PortCvIn, -1)
 
-	lmt.Connect(module.PortOut, rck, module.PortInL)
-	lmt.Connect(module.PortOut, rck, module.PortInR)
+	vca.Connect(module.PortOut, rck, module.PortInL)
+	vca.Connect(module.PortOut, rck, module.PortInR)
+	vca.Write(module.PortCvIn, 0)
 
 	err := speaker.Init(SampleRate, SampleRate.N(time.Millisecond*10))
 	if err != nil {
@@ -87,7 +89,7 @@ func main() {
 }
 
 func AddTetrisSequence(sqr *module.Sequencer, interval, duration time.Duration) {
-	sqr.AppendAfter(note.E5, interval+duration, duration*2)
+	sqr.AppendAfter(note.E5, interval+duration*2, duration*2)
 	sqr.AppendAfter(note.B4, interval+duration*2, duration)
 	sqr.AppendAfter(note.C5, interval+duration, duration)
 	sqr.AppendAfter(note.D5, interval+duration, duration*2)
@@ -106,5 +108,5 @@ func AddTetrisSequence(sqr *module.Sequencer, interval, duration time.Duration) 
 	sqr.AppendAfter(note.C5, interval+duration*2, duration*2)
 	sqr.AppendAfter(note.A4, interval+duration*2, duration*2)
 	sqr.AppendAfter(note.A4, interval+duration*2, duration*3)
-	sqr.AppendAfter(0, interval+duration*4, 0)
+	sqr.AppendAfter(0, interval+duration*2, duration*20)
 }

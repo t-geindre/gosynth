@@ -33,10 +33,10 @@ func (a *Adsr) Init(rate beep.SampleRate) {
 	a.Module.Init(rate, a)
 	a.State = EnvStateOff
 	a.Phases = [4]EnvPhase{
-		EnvPhase{time.Millisecond * 50, 1},   // Attack
-		EnvPhase{time.Millisecond * 100, .5}, // Decay
-		EnvPhase{0, .5},                      // Sustain
-		EnvPhase{time.Millisecond * 100, 0},  // Release
+		EnvPhase{time.Millisecond * 40, 1},  // Attack
+		EnvPhase{time.Millisecond * 20, .5}, // Decay
+		EnvPhase{0, .5},                     // Sustain
+		EnvPhase{time.Millisecond * 20, 0},  // Release
 	}
 }
 

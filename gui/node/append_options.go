@@ -69,6 +69,10 @@ func (a *AppendOptions) HorizontallyFill(fill int) *AppendOptions {
 
 // TODO move margins/paddings on node
 // TODO move the layout code in a "good" place
+// Crate a Layout package
+// Add a Layout interface
+// Add a LayoutManager struct
+
 func ComputeLayout(parent INode) {
 	if len(parent.GetChildren()) == 0 {
 		return

@@ -9,6 +9,8 @@ type colorsList struct {
 	BackgroundInverted *color.RGBA
 	On                 *color.RGBA
 	Off                *color.RGBA
+	LedInOff           *color.RGBA
+	LedInOn            *color.RGBA
 }
 
 var Colors colorsList
@@ -21,5 +23,7 @@ func init() {
 		BackgroundInverted: &color.RGBA{R: 0, G: 0, B: 0, A: 255},
 		On:                 &color.RGBA{R: 33, G: 95, B: 169, A: 255},
 		Off:                &color.RGBA{R: 80, G: 80, B: 80, A: 255},
+		LedInOff:           &color.RGBA{R: 0, G: 0, B: 0, A: 255},
+		LedInOn:            &color.RGBA{R: 0, G: 173, B: 1, A: 255},
 	}
 }

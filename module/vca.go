@@ -26,6 +26,7 @@ func (g *VCA) Write(port Port, value float64) {
 	case PortIn:
 		g.Sample += value
 	}
+	g.Module.Write(port, value)
 }
 
 func (g *VCA) Read(port Port) float64 {

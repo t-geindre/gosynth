@@ -45,7 +45,9 @@ func (s *Slider) Update(time time.Duration) error {
 		_, py := s.GetAbsolutePosition()
 		_, my := ebiten.CursorPosition()
 		s.SetValue(s.ValueMin + (s.ValueMax-s.ValueMin)*(1-(float64(my-py-s.PaddingY)/float64(s.Height-s.PaddingY*2))))
-		s.Dispatch(event.NewEvent(ValueChangedEvent, s))
+		if s.Dirty {
+			s.Dispatch(event.NewEvent(ValueChangedEvent, s))
+		}
 	}
 
 	return s.Node.Update(time)

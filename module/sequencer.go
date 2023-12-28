@@ -54,8 +54,10 @@ func (s *Sequencer) Update(time time.Duration) {
 			s.ConnectionWrite(PortOutGate, 0)
 		}
 
-		s.ConnectionWrite(PortOutFreq, item.Freq)
-		s.ConnectionWrite(PortOutGate, 1)
+		if item.Freq > 0 {
+			s.ConnectionWrite(PortOutFreq, item.Freq)
+			s.ConnectionWrite(PortOutGate, 1)
+		}
 		s.Playing = &item
 
 		s.Cursor++

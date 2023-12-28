@@ -16,7 +16,7 @@ func NewStreamer(clock *time.Clock, rack *module.Rack) *Streamer {
 	s := &Streamer{}
 	s.clock = clock
 	s.rack = rack
-	s.silenced = false
+	s.silenced = true
 	s.command = make(chan bool, 3)
 
 	return s

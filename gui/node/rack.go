@@ -41,6 +41,7 @@ func (r *Rack) Update(time time.Duration) error {
 
 	return r.Node.Update(time)
 }
+
 func (r *Rack) MouseLeftDown(target INode) {
 	if r == target {
 		r.MouseLDown = true
