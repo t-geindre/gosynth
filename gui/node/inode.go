@@ -40,7 +40,6 @@ type INode interface {
 	MoveBy(x, y int)
 	SetAppendOptions(options *AppendOptions)
 	GetAppendOptions() *AppendOptions
-	HCenter()
 
 	// Sizing
 	SetSize(width, height int)

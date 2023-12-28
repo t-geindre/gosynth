@@ -245,14 +245,6 @@ func (n *Node) Targetable() bool {
 	return true
 }
 
-func (n *Node) HCenter() {
-	if parent := n.GetParent(); parent != nil {
-		pw, _ := parent.GetINode().GetSize()
-		w, _ := n.GetSize()
-		n.SetPosition(pw/2-w/2, n.PosY)
-	}
-}
-
 func (n *Node) Dispatch(e event.IEvent) {
 	n.Dispatcher.Dispatch(e)
 

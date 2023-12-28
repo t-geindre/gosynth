@@ -1,6 +1,8 @@
 package node
 
-import "gosynth/gui/theme"
+import (
+	"gosynth/gui/theme"
+)
 
 type Container struct {
 	*Node
