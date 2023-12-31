@@ -2,6 +2,7 @@ package graphic
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"gosynth/event"
 )
 
 type Graphic struct {
@@ -11,9 +12,8 @@ type Graphic struct {
 	image           *ebiten.Image
 	width, height   int
 	updateScheduled bool
-	updateFunc      func()
-	disabled        bool
 	imageDirty      bool
+	dispatcher      *event.Dispatcher
 }
 
 func NewGraphic() *Graphic {
@@ -21,11 +21,16 @@ func NewGraphic() *Graphic {
 		children:   make([]IGraphic, 0),
 		options:    &ebiten.DrawImageOptions{},
 		imageDirty: true,
+		dispatcher: event.NewDispatcher(),
 	}
 
 	g.ScheduleUpdate()
 
 	return g
+}
+
+func (g *Graphic) GetDispatcher() *event.Dispatcher {
+	return g.dispatcher
 }
 
 func (g *Graphic) GetChildren() []IGraphic {
@@ -55,26 +60,10 @@ func (g *Graphic) Remove(child IGraphic) {
 }
 
 func (g *Graphic) Draw(dest *ebiten.Image) {
-	if g.disabled {
-		g.disabledDraw(dest)
-		return
-	}
-
 	if g.width <= 0 || g.height <= 0 {
 		return
-
 	}
 
-	g.enabledDraw(dest)
-}
-
-func (g *Graphic) disabledDraw(dest *ebiten.Image) {
-	for _, child := range g.children {
-		child.Draw(dest)
-	}
-}
-
-func (g *Graphic) enabledDraw(dest *ebiten.Image) {
 	if g.imageDirty {
 		g.imageDirty = false
 
@@ -90,11 +79,11 @@ func (g *Graphic) enabledDraw(dest *ebiten.Image) {
 	}
 
 	if g.updateScheduled {
-		if g.updateFunc != nil {
-			g.updateFunc()
-		}
+		g.dispatcher.Dispatch(event.NewEvent(DrawUpdateRequiredEvent, g))
 		g.updateScheduled = false
 	}
+
+	g.dispatcher.Dispatch(event.NewEvent(DrawEvent, g))
 
 	for _, child := range g.children {
 		child.Draw(g.image)
@@ -128,11 +117,6 @@ func (g *Graphic) ScheduleUpdate() {
 	g.updateScheduled = true
 }
 
-func (g *Graphic) SetUpdateFunc(f func()) {
-	// Todo : use a dispatcher instead
-	g.updateFunc = f
-}
-
 func (g *Graphic) GetImage() *ebiten.Image {
 	return g.image
 }
@@ -149,13 +133,4 @@ func (g *Graphic) MoveFront(child IGraphic) {
 			return
 		}
 	}
-}
-
-func (g *Graphic) Disable() {
-	// Todo : remove the disabling feature, we loose translation on disabled graphics
-	g.disabled = true
-}
-
-func (g *Graphic) Enable() {
-	g.disabled = false
 }

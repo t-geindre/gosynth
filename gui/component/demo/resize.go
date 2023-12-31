@@ -5,6 +5,7 @@ import (
 	"gosynth/event"
 	"gosynth/gui/component"
 	"gosynth/gui/component/control"
+	"gosynth/gui/component/graphic"
 	"gosynth/gui/component/layout"
 	"image/color"
 	"math"
@@ -24,7 +25,7 @@ func NewResize(minWidth, minHeight int) *Resize {
 		minHeight: minHeight,
 	}
 
-	r.GetGraphic().SetUpdateFunc(func() {
+	r.GetGraphic().GetDispatcher().AddListener(&r, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		image := r.GetGraphic().GetImage()
 		image.Fill(color.Black)
 	})

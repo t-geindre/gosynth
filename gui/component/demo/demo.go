@@ -1,7 +1,9 @@
 package demo
 
 import (
+	"gosynth/event"
 	"gosynth/gui/component"
+	"gosynth/gui/component/graphic"
 	"gosynth/gui/component/layout"
 )
 
@@ -15,7 +17,7 @@ func NewDemo() *Demo {
 	}
 
 	color := randomColor()
-	d.GetGraphic().SetUpdateFunc(func() {
+	d.GetGraphic().GetDispatcher().AddListener(&d, graphic.DrawEvent, func(e event.IEvent) {
 		image := d.GetGraphic().GetImage()
 		image.Fill(color)
 	})
@@ -66,9 +68,4 @@ func NewDemo() *Demo {
 	}
 
 	return d
-}
-
-func (d *Demo) Update() {
-	d.GetGraphic().ScheduleUpdate()
-	d.Component.Update()
 }

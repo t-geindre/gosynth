@@ -4,6 +4,7 @@ import (
 	"gosynth/event"
 	"gosynth/gui/component"
 	"gosynth/gui/component/control"
+	"gosynth/gui/component/graphic"
 	"image/color"
 )
 
@@ -23,7 +24,7 @@ func NewButton() *Clickable {
 		onCol:     colorInverse(c),
 	}
 
-	b.GetGraphic().SetUpdateFunc(func() {
+	b.GetGraphic().GetDispatcher().AddListener(&b, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		img := b.GetGraphic().GetImage()
 		img.Fill(b.color)
 	})

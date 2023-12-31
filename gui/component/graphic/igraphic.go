@@ -1,6 +1,9 @@
 package graphic
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+	"gosynth/event"
+)
 
 type IGraphic interface {
 	GetChildren() []IGraphic
@@ -20,9 +23,8 @@ type IGraphic interface {
 	GetImage() *ebiten.Image
 	GetOptions() *ebiten.DrawImageOptions
 
+	// ScheduleUpdate
+	// Will trigger the DrawUpdateRequiredEvent on next graphic update
 	ScheduleUpdate()
-	SetUpdateFunc(func())
-
-	Disable()
-	Enable()
+	GetDispatcher() *event.Dispatcher
 }
