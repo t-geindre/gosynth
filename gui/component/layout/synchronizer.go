@@ -8,31 +8,31 @@ var Sync *Synchronizer
 
 // Synchronizer Ensure that all layouts are updated once in the correct order
 type Synchronizer struct {
-	Layouts []ILayout
+	layouts []ILayout
 }
 
 func NewSynchronizer() *Synchronizer {
 	return &Synchronizer{
-		Layouts: make([]ILayout, 0),
+		layouts: make([]ILayout, 0),
 	}
 }
 
 func (s *Synchronizer) ScheduleUpdate(layout ILayout) {
 	if !s.Has(layout) {
-		s.Layouts = append(s.Layouts, layout)
+		s.layouts = append(s.layouts, layout)
 	}
 }
 
 func (s *Synchronizer) Update() {
-	if len(s.Layouts) == 0 {
+	if len(s.layouts) == 0 {
 		return
 	}
 
 	// Copy the current updates list as we might trigger new updates during update
-	updates := make([]ILayout, len(s.Layouts))
-	copy(updates, s.Layouts)
+	updates := make([]ILayout, len(s.layouts))
+	copy(updates, s.layouts)
 
-	s.Layouts = make([]ILayout, 0)
+	s.layouts = make([]ILayout, 0)
 
 	// Lowest depth (higher layouts) first
 	slices.SortFunc[[]ILayout, ILayout](updates, func(a, b ILayout) int {
@@ -55,7 +55,7 @@ func (s *Synchronizer) Update() {
 }
 
 func (s *Synchronizer) Has(layout ILayout) bool {
-	for _, l := range s.Layouts {
+	for _, l := range s.layouts {
 		if l == layout {
 			return true
 		}
@@ -64,9 +64,9 @@ func (s *Synchronizer) Has(layout ILayout) bool {
 }
 
 func (s *Synchronizer) Remove(layout ILayout) {
-	for i, l := range s.Layouts {
+	for i, l := range s.layouts {
 		if l == layout {
-			s.Layouts = append(s.Layouts[:i], s.Layouts[i+1:]...)
+			s.layouts = append(s.layouts[:i], s.layouts[i+1:]...)
 			return
 		}
 	}

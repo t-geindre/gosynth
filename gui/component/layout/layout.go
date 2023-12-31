@@ -35,19 +35,19 @@ func NewLayout() *Layout {
 
 	l.ScheduleUpdate()
 
-	l.size.OnChange(func(w, h int) {
+	l.size.setOnChangeFunc(func(w, h int) {
 		l.GetDispatcher().Dispatch(event.NewEvent(ResizeEvent, l))
 		l.ScheduleUpdate()
 	})
 
-	l.wantedSize.OnChange(func(w, h int) {
+	l.wantedSize.setOnChangeFunc(func(w, h int) {
 		p := l.GetParent()
 		if p != nil {
 			p.ScheduleUpdate()
 		}
 	})
 
-	l.position.OnChange(func(x, y int) {
+	l.position.setOnChangeFunc(func(x, y int) {
 		l.GetDispatcher().Dispatch(event.NewEvent(MoveEvent, l))
 	})
 
@@ -175,39 +175,36 @@ func (l *Layout) Update() {
 }
 
 func (l *Layout) placingPass(children []ILayout) (int, int) {
-	xOffset := l.GetPadding().Left
-	yOffset := l.GetPadding().Top
+	xOffset := l.GetPadding().GetLeft()
+	yOffset := l.GetPadding().GetTop()
 
 	width, height := l.GetSize().Get()
 
-	innerWidth := width - l.GetPadding().Left - l.GetPadding().Right
-	innerHeight := height - l.GetPadding().Top - l.GetPadding().Bottom
+	innerWidth := width - l.GetPadding().GetLeft() - l.GetPadding().GetRight()
+	innerHeight := height - l.GetPadding().GetTop() - l.GetPadding().GetBottom()
 
-	// Range backwards to get the last child on top
 	for _, c := range children {
-		// Offset the child by its margins
 		c.GetPosition().Set(
-			xOffset+c.GetMargin().Left,
-			yOffset+c.GetMargin().Top,
+			xOffset+c.GetMargin().GetLeft(),
+			yOffset+c.GetMargin().GetTop(),
 		)
 
-		// Component always fits all the opposite orientation space
 		if l.GetContentOrientation() == Vertical {
 			c.GetSize().Set(
-				innerWidth-c.GetMargin().Left-c.GetMargin().Right,
+				innerWidth-c.GetMargin().GetLeft()-c.GetMargin().GetRight(),
 				c.GetWantedSize().GetHeight(),
 			)
-			yOffset += c.GetSize().h + c.GetMargin().Top + c.GetMargin().Bottom
+			yOffset += c.GetSize().h + c.GetMargin().GetTop() + c.GetMargin().GetBottom()
 		} else {
 			c.GetSize().Set(
 				c.GetWantedSize().GetWidth(),
-				innerHeight-c.GetMargin().Top-c.GetMargin().Bottom,
+				innerHeight-c.GetMargin().GetTop()-c.GetMargin().GetBottom(),
 			)
-			xOffset += c.GetSize().w + c.GetMargin().Left + c.GetMargin().Right
+			xOffset += c.GetSize().w + c.GetMargin().GetLeft() + c.GetMargin().GetRight()
 		}
 	}
 
-	return innerWidth - xOffset + l.GetPadding().Left, innerHeight - yOffset + l.GetPadding().Top
+	return innerWidth - xOffset + l.GetPadding().GetLeft(), innerHeight - yOffset + l.GetPadding().GetTop()
 }
 
 func (l *Layout) fillingPass(children []ILayout, freeX, freeY int) {

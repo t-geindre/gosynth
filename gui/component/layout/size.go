@@ -32,6 +32,10 @@ func (s *Size) SetHeight(h int) {
 	s.Set(s.w, h)
 }
 
+func (s *Size) Get() (int, int) {
+	return s.w, s.h
+}
+
 func (s *Size) GetWidth() int {
 	return s.w
 }
@@ -44,10 +48,14 @@ func (s *Size) Add(w, h int) {
 	s.Set(s.w+w, s.h+h)
 }
 
-func (s *Size) Get() (int, int) {
-	return s.w, s.h
+func (s *Size) AddWidth(w int) {
+	s.Set(s.w+w, s.h)
 }
 
-func (s *Size) OnChange(f func(w, h int)) {
+func (s *Size) AddHeight(h int) {
+	s.Set(s.w, s.h+h)
+}
+
+func (s *Size) setOnChangeFunc(f func(w, h int)) {
 	s.onChange = f
 }

@@ -41,7 +41,7 @@ func NewDemo() *Demo {
 			for i := 0; i < 5; i++ {
 				container := NewContainer()
 				if i > 0 {
-					container.GetLayout().GetMargin().Left = 10
+					container.GetLayout().GetMargin().SetLeft(10)
 				}
 				container.GetLayout().GetWantedSize().SetWidth(100)
 				draggable.Append(container)
@@ -55,7 +55,7 @@ func NewDemo() *Demo {
 					clickable := NewButton()
 					clickable.GetLayout().GetWantedSize().SetHeight(100)
 					if j > 0 {
-						clickable.GetLayout().GetMargin().Top = 10
+						clickable.GetLayout().GetMargin().SetTop(10)
 					}
 					contains.Append(clickable)
 				}
