@@ -4,8 +4,11 @@ type Dispatcher struct {
 	Listeners map[Id][]Listener
 }
 
-func (d *Dispatcher) Init() {
+func NewDispatcher() *Dispatcher {
+	d := &Dispatcher{}
 	d.Listeners = make(map[Id][]Listener)
+
+	return d
 }
 
 func (d *Dispatcher) AddListener(ref any, id Id, call func(e IEvent)) {

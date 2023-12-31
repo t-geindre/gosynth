@@ -18,7 +18,7 @@ func NewClock(tickDuration time.Duration) *Clock {
 }
 
 func (c *Clock) Init(tickDuration time.Duration) {
-	c.Dispatcher.Init()
+	c.Dispatcher = *event.NewDispatcher()
 	c.time = 0
 	c.tickDuration = tickDuration
 }

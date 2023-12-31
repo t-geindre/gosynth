@@ -28,7 +28,7 @@ func NewNode(width, height int, inode INode) *Node {
 	n.INode = inode
 	n.LayoutComputing = true
 	n.SetSize(width, height)
-	n.Dispatcher.Init()
+	n.Dispatcher = *event.NewDispatcher()
 
 	return n
 }

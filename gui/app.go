@@ -4,97 +4,55 @@ import (
 	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"gosynth/event"
-	"gosynth/gui/node"
-	"gosynth/module"
+	"gosynth/gui/component"
+	"gosynth/gui/component/control"
+	"gosynth/gui/component/demo"
+	"gosynth/gui/component/layout"
 	"gosynth/output"
-	clock "gosynth/time"
-	"time"
 )
 
+const WindowWidth = 1600
+const WindowHeight = 1200
+
 type App struct {
-	Rack        *node.Rack
-	MouseTarget node.INode
-	Streamer    *output.Streamer
-	Clock       *clock.Clock
-	AudioVca    *module.VCA // TODO TEST PURPOSE REMOVE ME
+	Streamer *output.Streamer
+	Root     component.IComponent
+	Mouse    *control.Mouse
 }
 
 func NewApp(str *output.Streamer) *App {
 	ebiten.SetWindowTitle("Gosynth")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
-	ebiten.SetWindowSize(800, 600)
+	ebiten.SetWindowSize(WindowWidth, WindowHeight)
 
 	a := &App{}
-	a.Rack = node.NewRack(800, 600)
 	a.Streamer = str
 
-	a.Clock = clock.NewClock(time.Second / time.Duration(ebiten.TPS()))
+	a.Root = demo.NewDemo()
 
-	for _, audioModule := range str.GetRack().GetModules() {
-		if aVca, ok := audioModule.(*module.VCA); ok {
-			vca := node.NewVCA(aVca)
-			a.Rack.Append(vca)
-			a.AudioVca = aVca
-		}
-	}
+	a.Mouse = control.NewMouse(a.Root)
+
 	return a
 }
 
 func (a *App) Draw(screen *ebiten.Image) {
-	a.Rack.Clear()
-	a.Rack.Draw(screen)
+	a.Root.Draw(screen)
+
 	// Draw FPS
-	w, _ := a.Rack.GetSize()
-	y, _ := a.Rack.GetPosition()
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%0.2f", ebiten.ActualFPS()), w-40, y+10)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%0.2f", ebiten.ActualFPS()), 0, 0)
 }
 
 func (a *App) Update() error {
-	a.Clock.Tick()
+	a.Mouse.Update()
+	a.Root.Update()
+	layout.Sync.Update()
 
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		if a.Streamer.IsSilenced() {
-			a.Streamer.Silence() <- false
-		} else {
-			a.Streamer.Silence() <- true
-		}
-	}
-
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		if a.MouseTarget != nil {
-			a.MouseTarget.Dispatch(event.NewEvent(node.LeftMouseUpEvent, a.MouseTarget))
-		}
-
-		if ebiten.IsKeyPressed(ebiten.KeyAlt) {
-			a.MouseTarget = a.Rack
-		} else {
-			a.MouseTarget = a.Rack.GetTargetNodeAt(ebiten.CursorPosition())
-		}
-
-		if a.MouseTarget != nil {
-			a.MouseTarget.Dispatch(event.NewEvent(node.LeftMouseDownEvent, a.MouseTarget))
-		}
-	}
-
-	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) && a.MouseTarget != nil {
-		a.MouseTarget.Dispatch(event.NewEvent(node.LeftMouseUpEvent, a.MouseTarget))
-		a.MouseTarget = nil
-	}
-
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		mod := node.NewVCA(a.AudioVca) // TODO TEST PURPOSE REMOVE ME
-		mod.SetPosition(ebiten.CursorPosition())
-		a.Rack.Append(mod)
-	}
-
-	return a.Rack.Update(a.Clock.GetTime())
+	return nil
 }
 
 func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	s := ebiten.DeviceScaleFactor()
 	w, h := int(float64(outsideWidth)*s), int(float64(outsideHeight)*s)
-	a.Rack.SetSize(w, h)
+	a.Root.GetLayout().GetSize().Set(w, h)
 	return w, h
 }
