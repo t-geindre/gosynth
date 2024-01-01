@@ -1,6 +1,7 @@
 package layout
 
 import (
+	"fmt"
 	"gosynth/event"
 	"math"
 )
@@ -14,7 +15,7 @@ type Layout struct {
 	wantedSize         *Size
 	padding            *Spacing
 	margin             *Spacing
-	fill               int
+	fill               float64
 	absPos             bool
 	contentOrientation Orientation
 }
@@ -120,11 +121,11 @@ func (l *Layout) GetAbsolutePositioning() bool {
 	return l.absPos
 }
 
-func (l *Layout) SetFill(fill int) {
+func (l *Layout) SetFill(fill float64) {
 	l.fill = fill
 }
 
-func (l *Layout) GetFill() int {
+func (l *Layout) GetFill() float64 {
 	return l.fill
 }
 
@@ -150,26 +151,22 @@ func (l *Layout) ScheduleUpdate() {
 }
 
 func (l *Layout) Update() {
-	if len(l.children) == 0 {
-		return
-	}
+	l.GetDispatcher().Dispatch(event.NewEvent(UpdateStartsEvent, l))
 
-	// Filter out the absolute positioned children
-	children := make([]ILayout, 0)
-	for _, c := range l.children {
-		if c.GetAbsolutePositioning() {
-			continue
+	if len(l.children) > 0 {
+		children := make([]ILayout, 0)
+		for _, c := range l.children {
+			if c.GetAbsolutePositioning() {
+				continue
+			}
+			children = append(children, c)
 		}
-		children = append(children, c)
-	}
 
-	// All children are absolute positioned, abort
-	if len(children) == 0 {
-		return
+		if len(children) > 0 {
+			freeX, freeY := l.placingPass(children)
+			l.fillingPass(children, freeX, freeY)
+		}
 	}
-
-	freeX, freeY := l.placingPass(children)
-	l.fillingPass(children, freeX, freeY)
 
 	l.GetDispatcher().Dispatch(event.NewEvent(UpdatedEvent, l))
 }
@@ -209,13 +206,16 @@ func (l *Layout) placingPass(children []ILayout) (int, int) {
 
 func (l *Layout) fillingPass(children []ILayout, freeX, freeY int) {
 	deltaCount := len(children)
-
+	fmt.Println("Children:", deltaCount)
+	fmt.Println("Free: ", freeY)
 	allFreeX, allFreeY := freeX, freeY
 
 	for _, fill := range [...]bool{true, false} {
 		shiftX, shiftY := 0, 0
 
 		if deltaCount == 0 {
+			// Abort second pass, all component already handled
+			fmt.Println(allFreeY, freeY)
 			return
 		}
 
@@ -229,7 +229,8 @@ func (l *Layout) fillingPass(children []ILayout, freeX, freeY int) {
 				}
 				if c.GetFill() > 0 && fill {
 					if allFreeY > 0 {
-						deltaY = int(math.Round(float64(allFreeY) * float64(c.GetFill()) / float64(100)))
+						deltaY = int(math.Round(float64(allFreeY) * c.GetFill() / 100))
+						fmt.Println("Delta: ", deltaY)
 					}
 					deltaCount--
 				}
@@ -241,7 +242,7 @@ func (l *Layout) fillingPass(children []ILayout, freeX, freeY int) {
 				}
 				if c.GetFill() > 0 && fill {
 					if allFreeX > 0 {
-						deltaX = int(math.Round(float64(allFreeX) * float64(c.GetFill()) / float64(100)))
+						deltaX = int(math.Round(float64(allFreeX) * c.GetFill() / 100))
 					}
 					deltaCount--
 				}

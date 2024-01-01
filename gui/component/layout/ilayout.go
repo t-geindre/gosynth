@@ -51,8 +51,8 @@ type ILayout interface {
 	// SetFill
 	// The component will fill its parent according to its contentOrientation
 	// Filling is defined in percentage of the remaining free space
-	SetFill(fill int)
-	GetFill() int
+	SetFill(fill float64)
+	GetFill() float64
 
 	PointCollides(x, y int) bool
 

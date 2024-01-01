@@ -4,6 +4,7 @@ import (
 	"gosynth/event"
 	"gosynth/gui/component"
 	"gosynth/gui/component/control"
+	"gosynth/gui/component/graphic"
 	"image/color"
 )
 
@@ -18,7 +19,7 @@ func NewRack() *Rack {
 		MouseDelta: control.NewMouseDelta(),
 	}
 
-	r.GetGraphic().SetUpdateFunc(func() {
+	r.GetGraphic().GetDispatcher().AddListener(&r, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		image := r.GetGraphic().GetImage()
 		image.Fill(color.RGBA{R: 26, G: 26, B: 26, A: 255})
 	})
@@ -32,6 +33,8 @@ func NewRack() *Rack {
 		r.MouseDelta.Stop()
 		e.StopPropagation()
 	})
+
+	r.GetLayout().SetFill(100)
 
 	return r
 }

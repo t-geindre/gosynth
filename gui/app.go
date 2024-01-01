@@ -1,13 +1,12 @@
 package gui
 
 import (
-	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"gosynth/gui/component"
 	"gosynth/gui/component/control"
-	"gosynth/gui/component/demo"
 	"gosynth/gui/component/layout"
+	"gosynth/gui/component/module"
+	"gosynth/gui/component/widget"
 	"gosynth/output"
 )
 
@@ -28,8 +27,17 @@ func NewApp(str *output.Streamer) *App {
 	a := &App{}
 	a.Streamer = str
 
-	a.Root = demo.NewDemo()
+	a.Root = widget.NewContainer()
+	a.Root.Append(widget.NewMenu())
 
+	mod := module.NewVCA()
+
+	rack := widget.NewRack()
+	rack.Append(mod)
+
+	a.Root.Append(rack)
+	a.Root.Append(widget.NewDebug())
+	//a.Root = demo.NewDemo()
 	a.Mouse = control.NewMouse(a.Root)
 
 	return a
@@ -37,9 +45,6 @@ func NewApp(str *output.Streamer) *App {
 
 func (a *App) Draw(screen *ebiten.Image) {
 	a.Root.Draw(screen)
-
-	// Draw FPS
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%0.2f", ebiten.ActualFPS()), 0, 0)
 }
 
 func (a *App) Update() error {

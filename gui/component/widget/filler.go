@@ -4,14 +4,16 @@ import (
 	"gosynth/gui/component"
 )
 
-type Container struct {
+type Filler struct {
 	*component.Component
 }
 
-func NewContainer() *Container {
-	c := &Container{
+func NewFiller(fill float64) *Filler {
+	f := &Filler{
 		Component: component.NewComponent(),
 	}
 
-	return c
+	f.GetLayout().SetFill(fill)
+
+	return f
 }

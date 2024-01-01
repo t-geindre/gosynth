@@ -1,8 +1,6 @@
 package module
 
-import (
-	"gosynth/gui/component/demo"
-)
+import "gosynth/gui/component/widget"
 
 type VCA struct {
 	*Module
@@ -10,16 +8,9 @@ type VCA struct {
 
 func NewVCA() *VCA {
 	v := &VCA{}
-	v.Module = NewModule(v)
-
-	for i := 0; i < 4; i++ {
-		btn := demo.NewButton()
-		btn.GetLayout().GetSize().Set(50, 50)
-		btn.GetLayout().GetMargin().SetBottom(10)
-		v.Append(btn)
-	}
-
-	v.GetLayout().GetSize().Set(ModuleUWidth*3, ModuleHeight)
-
+	v.Module = NewModule("VCA", 1, v)
+	slider := widget.NewSlider(0, 1, 25)
+	slider.GetLayout().SetFill(100)
+	v.Append(slider)
 	return v
 }
