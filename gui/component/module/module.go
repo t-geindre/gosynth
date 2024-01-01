@@ -10,8 +10,8 @@ import (
 	"gosynth/gui/theme"
 )
 
-const ModuleUWidth = 65
-const ModuleHeight = 500
+const ModuleUWidth float64 = 65
+const ModuleHeight float64 = 500
 
 type Module struct {
 	*component.Component
@@ -31,7 +31,7 @@ func NewModule(title string, widthUnit int, outerType component.IComponent) *Mod
 	l := m.GetLayout()
 	l.GetPadding().SetAll(5)
 	l.SetAbsolutePositioning(true)
-	l.GetSize().Set(widthUnit*ModuleUWidth, ModuleHeight)
+	l.GetSize().Set(float64(widthUnit)*ModuleUWidth, ModuleHeight)
 
 	text := widget.NewText(title, theme.Fonts.Title, theme.Colors.Text)
 	text.GetLayout().GetMargin().SetBottom(5)
@@ -70,6 +70,7 @@ func NewModule(title string, widthUnit int, outerType component.IComponent) *Mod
 
 func (m *Module) Update() {
 	if m.mouseDelta.IsActive() {
-		m.GetLayout().GetPosition().MoveBy(m.mouseDelta.GetDelta())
+		dx, dy := m.mouseDelta.GetDelta()
+		m.GetLayout().GetPosition().MoveBy(float64(dx), float64(dy))
 	}
 }

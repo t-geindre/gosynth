@@ -54,7 +54,7 @@ type ILayout interface {
 	SetFill(fill float64)
 	GetFill() float64
 
-	PointCollides(x, y int) bool
+	PointCollides(x, y float64) bool
 
 	GetDepth() int
 	ScheduleUpdate()

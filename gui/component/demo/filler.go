@@ -8,7 +8,7 @@ type Filler struct {
 	*component.Component
 }
 
-func NewFiller(fill int) *Filler {
+func NewFiller(fill float64) *Filler {
 	f := &Filler{
 		Component: component.NewComponent(),
 	}

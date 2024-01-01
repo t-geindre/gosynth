@@ -1,9 +1,7 @@
 package layout
 
 import (
-	"fmt"
 	"gosynth/event"
-	"math"
 )
 
 type Layout struct {
@@ -36,19 +34,19 @@ func NewLayout() *Layout {
 
 	l.ScheduleUpdate()
 
-	l.size.setOnChangeFunc(func(w, h int) {
+	l.size.setOnChangeFunc(func(w, h float64) {
 		l.GetDispatcher().Dispatch(event.NewEvent(ResizeEvent, l))
 		l.ScheduleUpdate()
 	})
 
-	l.wantedSize.setOnChangeFunc(func(w, h int) {
+	l.wantedSize.setOnChangeFunc(func(w, h float64) {
 		p := l.GetParent()
 		if p != nil {
 			p.ScheduleUpdate()
 		}
 	})
 
-	l.position.setOnChangeFunc(func(x, y int) {
+	l.position.setOnChangeFunc(func(x, y float64) {
 		l.GetDispatcher().Dispatch(event.NewEvent(MoveEvent, l))
 	})
 
@@ -129,7 +127,7 @@ func (l *Layout) GetFill() float64 {
 	return l.fill
 }
 
-func (l *Layout) PointCollides(x, y int) bool {
+func (l *Layout) PointCollides(x, y float64) bool {
 	return l.position.x <= x && x <= l.position.x+l.size.w &&
 		l.position.y <= y && y <= l.position.y+l.size.h
 }
@@ -171,7 +169,7 @@ func (l *Layout) Update() {
 	l.GetDispatcher().Dispatch(event.NewEvent(UpdatedEvent, l))
 }
 
-func (l *Layout) placingPass(children []ILayout) (int, int) {
+func (l *Layout) placingPass(children []ILayout) (float64, float64) {
 	xOffset := l.GetPadding().GetLeft()
 	yOffset := l.GetPadding().GetTop()
 
@@ -204,23 +202,20 @@ func (l *Layout) placingPass(children []ILayout) (int, int) {
 	return innerWidth - xOffset + l.GetPadding().GetLeft(), innerHeight - yOffset + l.GetPadding().GetTop()
 }
 
-func (l *Layout) fillingPass(children []ILayout, freeX, freeY int) {
-	deltaCount := len(children)
-	fmt.Println("Children:", deltaCount)
-	fmt.Println("Free: ", freeY)
+func (l *Layout) fillingPass(children []ILayout, freeX, freeY float64) {
+	deltaCount := float64(len(children))
 	allFreeX, allFreeY := freeX, freeY
 
 	for _, fill := range [...]bool{true, false} {
-		shiftX, shiftY := 0, 0
+		shiftX, shiftY := float64(0), float64(0)
 
 		if deltaCount == 0 {
 			// Abort second pass, all component already handled
-			fmt.Println(allFreeY, freeY)
 			return
 		}
 
 		for _, c := range children {
-			deltaX, deltaY := 0, 0
+			deltaX, deltaY := float64(0), float64(0)
 
 			if l.contentOrientation == Vertical {
 				if c.GetFill() == 0 && !fill {
@@ -229,8 +224,7 @@ func (l *Layout) fillingPass(children []ILayout, freeX, freeY int) {
 				}
 				if c.GetFill() > 0 && fill {
 					if allFreeY > 0 {
-						deltaY = int(math.Round(float64(allFreeY) * c.GetFill() / 100))
-						fmt.Println("Delta: ", deltaY)
+						deltaY = allFreeY * c.GetFill() / 100
 					}
 					deltaCount--
 				}
@@ -242,7 +236,7 @@ func (l *Layout) fillingPass(children []ILayout, freeX, freeY int) {
 				}
 				if c.GetFill() > 0 && fill {
 					if allFreeX > 0 {
-						deltaX = int(math.Round(float64(allFreeX) * c.GetFill() / 100))
+						deltaX = allFreeX * c.GetFill() / 100
 					}
 					deltaCount--
 				}

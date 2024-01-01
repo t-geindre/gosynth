@@ -22,8 +22,8 @@ func NewDemo() *Demo {
 		image.Fill(color)
 	})
 
-	for k := 0; k < 5; k++ {
-		for l := 0; l < 4; l++ {
+	for k := float64(0); k < 5; k++ {
+		for l := float64(0); l < 4; l++ {
 			draggable := NewDraggable(nil)
 			dl := draggable.GetLayout()
 			dl.GetPosition().Set(k*300, l*300)

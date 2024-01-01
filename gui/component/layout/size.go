@@ -1,8 +1,8 @@
 package layout
 
 type Size struct {
-	w, h     int
-	onChange func(w, h int)
+	w, h     float64
+	onChange func(w, h float64)
 }
 
 func NewSize() *Size {
@@ -11,7 +11,7 @@ func NewSize() *Size {
 	return s
 }
 
-func (s *Size) Set(w, h int) {
+func (s *Size) Set(w, h float64) {
 	if w == s.w && h == s.h {
 		return
 	}
@@ -24,38 +24,38 @@ func (s *Size) Set(w, h int) {
 	}
 }
 
-func (s *Size) SetWidth(w int) {
+func (s *Size) SetWidth(w float64) {
 	s.Set(w, s.h)
 }
 
-func (s *Size) SetHeight(h int) {
+func (s *Size) SetHeight(h float64) {
 	s.Set(s.w, h)
 }
 
-func (s *Size) Get() (int, int) {
+func (s *Size) Get() (float64, float64) {
 	return s.w, s.h
 }
 
-func (s *Size) GetWidth() int {
+func (s *Size) GetWidth() float64 {
 	return s.w
 }
 
-func (s *Size) GetHeight() int {
+func (s *Size) GetHeight() float64 {
 	return s.h
 }
 
-func (s *Size) Add(w, h int) {
+func (s *Size) Add(w, h float64) {
 	s.Set(s.w+w, s.h+h)
 }
 
-func (s *Size) AddWidth(w int) {
+func (s *Size) AddWidth(w float64) {
 	s.Set(s.w+w, s.h)
 }
 
-func (s *Size) AddHeight(h int) {
+func (s *Size) AddHeight(h float64) {
 	s.Set(s.w, s.h+h)
 }
 
-func (s *Size) setOnChangeFunc(f func(w, h int)) {
+func (s *Size) setOnChangeFunc(f func(w, h float64)) {
 	s.onChange = f
 }

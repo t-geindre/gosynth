@@ -74,7 +74,8 @@ func NewDraggable(outerType component.IComponent) *Draggable {
 
 func (d *Draggable) Update() {
 	if d.mouseDrag.IsActive() {
-		d.GetLayout().GetPosition().MoveBy(d.mouseDrag.GetDelta())
+		dx, dy := d.mouseDrag.GetDelta()
+		d.GetLayout().GetPosition().MoveBy(float64(dx), float64(dy))
 	}
 
 	d.Component.Update()

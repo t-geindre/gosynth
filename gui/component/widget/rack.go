@@ -45,7 +45,7 @@ func (r *Rack) Update() {
 	if r.MouseDelta.IsActive() {
 		dx, dy := r.MouseDelta.GetDelta()
 		for _, c := range r.GetChildren() {
-			c.GetLayout().GetPosition().MoveBy(dx, dy)
+			c.GetLayout().GetPosition().MoveBy(float64(dx), float64(dy))
 		}
 	}
 

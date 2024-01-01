@@ -73,7 +73,7 @@ func (t *Text) SetText(str string) {
 	t.strw = font.MeasureString(t.font, t.str).Round()
 	t.strh = t.font.Metrics().CapHeight.Round()
 
-	t.GetLayout().GetWantedSize().Set(t.strw, t.strh)
+	t.GetLayout().GetWantedSize().Set(float64(t.strw), float64(t.strh))
 
 	t.GetGraphic().ScheduleUpdate()
 }

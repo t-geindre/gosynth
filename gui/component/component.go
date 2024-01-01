@@ -27,7 +27,7 @@ func NewComponent() *Component {
 
 	c.GetLayout().GetDispatcher().AddListener(&c, layout.ResizeEvent, func(e event.IEvent) {
 		w, h := c.GetLayout().GetSize().Get()
-		c.GetGraphic().SetSize(w, h)
+		c.GetGraphic().SetSize(int(w), int(h))
 	})
 
 	c.GetLayout().GetDispatcher().AddListener(&c, layout.MoveEvent, func(e event.IEvent) {
@@ -103,13 +103,13 @@ func (c *Component) Dispatch(e event.IEvent) {
 
 func (c *Component) GetTargetAt(x, y int) (control.ITarget, error) {
 	var target *Component = nil
-	if c.GetLayout().PointCollides(x, y) {
+	if c.GetLayout().PointCollides(float64(x), float64(y)) {
 		target = c
 
 		cX, cY := c.GetLayout().GetPosition().Get()
 
-		x -= cX
-		y -= cY
+		x -= int(cX)
+		y -= int(cY)
 
 		// Range in reverse order so that the top-most child is checked first
 		for i := len(c.Children) - 1; i >= 0; i-- {

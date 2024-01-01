@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/gui/component"
 	"gosynth/gui/component/control"
+	"gosynth/gui/component/demo"
 	"gosynth/gui/component/layout"
 	"gosynth/gui/component/module"
 	"gosynth/gui/component/widget"
@@ -37,7 +38,7 @@ func NewApp(str *output.Streamer) *App {
 
 	a.Root.Append(rack)
 	a.Root.Append(widget.NewDebug())
-	//a.Root = demo.NewDemo()
+	a.Root = demo.NewDemo()
 	a.Mouse = control.NewMouse(a.Root)
 
 	return a
@@ -57,7 +58,7 @@ func (a *App) Update() error {
 
 func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	s := ebiten.DeviceScaleFactor()
-	w, h := int(float64(outsideWidth)*s), int(float64(outsideHeight)*s)
+	w, h := float64(outsideWidth)*s, float64(outsideHeight)*s
 	a.Root.GetLayout().GetSize().Set(w, h)
-	return w, h
+	return int(w), int(h)
 }

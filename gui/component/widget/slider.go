@@ -1,7 +1,6 @@
 package widget
 
 import (
-	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
 	"gosynth/gui/component"
@@ -35,7 +34,6 @@ func NewSlider(from, to float64, marks int) *Slider {
 		m := NewContainer()
 
 		ml := m.GetLayout()
-		fmt.Println(int(100 / float64(marks)))
 		ml.SetFill(100 / float64(marks))
 
 		if i > 0 {

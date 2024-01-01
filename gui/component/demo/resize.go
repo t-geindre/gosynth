@@ -14,10 +14,10 @@ import (
 type Resize struct {
 	*component.Component
 	mouseDrag           *control.MouseDelta
-	minWidth, minHeight int
+	minWidth, minHeight float64
 }
 
-func NewResize(minWidth, minHeight int) *Resize {
+func NewResize(minWidth, minHeight float64) *Resize {
 	r := &Resize{
 		Component: component.NewComponent(),
 		mouseDrag: control.NewMouseDelta(),
@@ -68,8 +68,8 @@ func (r *Resize) Update() {
 		dx, dy := r.mouseDrag.GetDelta()
 		pw, ph := p.GetLayout().GetSize().Get()
 
-		nw := int(math.Max(float64(r.minWidth), float64(pw+dx)))
-		nh := int(math.Max(float64(r.minHeight), float64(ph+dy)))
+		nw := math.Max(r.minWidth, pw+float64(dx))
+		nh := math.Max(r.minHeight, ph+float64(dy))
 
 		p.GetLayout().GetSize().Set(nw, nh)
 	}
