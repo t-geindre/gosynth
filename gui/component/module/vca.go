@@ -11,6 +11,7 @@ func NewVCA() *VCA {
 	v.Module = NewModule("VCA", 1, v)
 	slider := widget.NewSlider(0, 1, 25)
 	slider.GetLayout().SetFill(100)
+	slider.SetValue(0.5)
 	v.Append(slider)
 	return v
 }

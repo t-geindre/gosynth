@@ -95,6 +95,18 @@ func (l *Layout) GetPosition() *Position {
 	return l.position
 }
 
+func (l *Layout) GetAbsolutePosition() *Position {
+	x, y := l.GetPosition().Get()
+	parent := l.GetParent()
+	for parent != nil {
+		px, py := parent.GetPosition().Get()
+		x += px
+		y += py
+		parent = parent.GetParent()
+	}
+	return &Position{x, y, nil}
+}
+
 func (l *Layout) GetSize() *Size {
 	return l.size
 }

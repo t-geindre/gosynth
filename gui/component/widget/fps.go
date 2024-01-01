@@ -15,7 +15,7 @@ type FPS struct {
 	*component.Component
 }
 
-func NewDebug() *FPS {
+func NewFPS() *FPS {
 	f := &FPS{}
 	f.Component = component.NewComponent()
 
@@ -47,8 +47,9 @@ func (f *FPS) SetParent(p component.IComponent) {
 
 func (f *FPS) position() {
 	if p := f.GetParent(); p != nil {
-		f.GetLayout().GetPosition().SetX(
-			p.GetLayout().GetSize().GetWidth() - f.GetLayout().GetSize().GetWidth(),
+		f.GetLayout().GetPosition().Set(
+			p.GetLayout().GetSize().GetWidth()-f.GetLayout().GetSize().GetWidth(),
+			p.GetLayout().GetSize().GetHeight()-f.GetLayout().GetSize().GetHeight(),
 		)
 	}
 }

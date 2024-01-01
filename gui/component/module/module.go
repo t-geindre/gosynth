@@ -73,4 +73,6 @@ func (m *Module) Update() {
 		dx, dy := m.mouseDelta.GetDelta()
 		m.GetLayout().GetPosition().MoveBy(float64(dx), float64(dy))
 	}
+
+	m.Component.Update()
 }

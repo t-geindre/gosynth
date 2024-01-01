@@ -6,21 +6,25 @@ import (
 	"gosynth/gui/component"
 	"gosynth/gui/component/control"
 	"gosynth/gui/component/graphic"
+	"gosynth/gui/component/layout"
 	"gosynth/gui/theme"
 )
 
 type Slider struct {
 	*component.Component
-	from, to float64
-	marks    int
+	from, to   float64
+	marksCount int
+	marksOn    int
+	value      float64
+	mouseDown  bool
 }
 
 func NewSlider(from, to float64, marks int) *Slider {
 	s := &Slider{
-		Component: component.NewComponent(),
-		from:      from,
-		to:        to,
-		marks:     marks,
+		Component:  component.NewComponent(),
+		from:       from,
+		to:         to,
+		marksCount: marks,
 	}
 
 	s.GetGraphic().GetDispatcher().AddListener(&s, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
@@ -29,35 +33,91 @@ func NewSlider(from, to float64, marks int) *Slider {
 	})
 
 	s.GetLayout().GetPadding().SetAll(5)
+	s.addMarks()
 
-	for i := 0; i < marks; i++ {
+	s.GetDispatcher().AddListener(&s, control.LeftMouseDownEvent, s.onMouseDown)
+	s.GetDispatcher().AddListener(&s, control.LeftMouseUpEvent, s.onMouseUp)
+
+	return s
+}
+
+func (s *Slider) addMarks() {
+	for i := 0; i < s.marksCount; i++ {
 		m := NewContainer()
 
-		ml := m.GetLayout()
-		ml.SetFill(100 / float64(marks))
-
-		if i > 0 {
-			ml.GetMargin().SetTop(5)
-		}
-
 		mg := m.GetGraphic()
-		mg.GetDispatcher().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
-			img := mg.GetImage()
-			img.Fill(theme.Colors.Off)
-		})
+		mg.GetDispatcher().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(index int) func(e event.IEvent) {
+			return func(e event.IEvent) {
+				i := index
+				if s.GetLayout().GetContentOrientation() == layout.Vertical {
+					i = s.marksCount - index - 1
+				}
+				img := mg.GetImage()
+				if i < s.marksOn {
+					img.Fill(theme.Colors.On)
+				} else {
+					img.Fill(theme.Colors.Off)
+				}
+			}
+		}(i))
 
 		s.Append(m)
 	}
 
-	s.GetDispatcher().AddListener(&s, control.LeftMouseDownEvent, func(e event.IEvent) {
-		ebiten.SetCursorShape(ebiten.CursorShapePointer)
-		e.StopPropagation()
+	s.GetLayout().GetDispatcher().AddListener(&s, layout.UpdateStartsEvent, func(e event.IEvent) {
+		for i, m := range s.GetChildren() {
+			if i > 0 {
+				if s.GetLayout().GetContentOrientation() == layout.Horizontal {
+					m.GetLayout().GetMargin().SetLeft(5)
+					continue
+				}
+				m.GetLayout().GetMargin().SetTop(5)
+			}
+		}
 	})
+}
 
-	s.GetDispatcher().AddListener(&s, control.LeftMouseUpEvent, func(e event.IEvent) {
-		ebiten.SetCursorShape(ebiten.CursorShapeDefault)
-		e.StopPropagation()
-	})
+func (s *Slider) updateMarks() {
+	for _, m := range s.GetChildren() {
+		m.GetGraphic().ScheduleUpdate()
+	}
+}
 
-	return s
+func (s *Slider) Update() {
+	if s.mouseDown {
+		mx, my := ebiten.CursorPosition()
+		sx, sy := s.GetLayout().GetAbsolutePosition().Get()
+		if s.GetLayout().GetContentOrientation() == layout.Horizontal {
+			s.SetValue(s.from + (s.to-s.from)*(float64(mx)-sx)/s.GetLayout().GetSize().GetWidth())
+		} else {
+			s.SetValue(s.from + (s.to-s.from)*(sy+s.GetLayout().GetSize().GetHeight()-float64(my))/s.GetLayout().GetSize().GetHeight())
+		}
+	}
+
+	s.Component.Update()
+}
+
+func (s *Slider) onMouseDown(e event.IEvent) {
+	ebiten.SetCursorShape(ebiten.CursorShapePointer)
+	s.mouseDown = true
+	e.StopPropagation()
+}
+
+func (s *Slider) onMouseUp(e event.IEvent) {
+	ebiten.SetCursorShape(ebiten.CursorShapeDefault)
+	s.mouseDown = false
+	e.StopPropagation()
+}
+
+func (s *Slider) SetValue(value float64) {
+	if value < s.from {
+		value = s.from
+	} else if value > s.to {
+		value = s.to
+	}
+
+	s.value = value
+	s.marksOn = int(value / (s.to - s.from) * float64(s.marksCount))
+
+	s.updateMarks()
 }

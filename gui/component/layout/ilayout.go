@@ -25,6 +25,11 @@ type ILayout interface {
 	// Component position will be overridden by the layouting system if the component is not absolute
 	GetPosition() *Position
 
+	// GetAbsolutePosition
+	// Get the component absolute position in its root node
+	// Setting an absolute position has no effect
+	GetAbsolutePosition() *Position
+
 	// GetSize
 	// Component size will be overridden by the layouting system if the component is not absolute
 	GetSize() *Size
