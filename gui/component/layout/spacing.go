@@ -53,3 +53,11 @@ func (s *Spacing) GetLeft() float64 {
 func (s *Spacing) GetRight() float64 {
 	return s.right
 }
+
+func (s *Spacing) GetHorizontal() float64 {
+	return s.left + s.right
+}
+
+func (s *Spacing) GetVertical() float64 {
+	return s.top + s.bottom
+}

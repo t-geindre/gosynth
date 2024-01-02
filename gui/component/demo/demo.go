@@ -22,50 +22,24 @@ func NewDemo() *Demo {
 		image.Fill(color)
 	})
 
-	for k := float64(0); k < 5; k++ {
-		for l := float64(0); l < 4; l++ {
-			draggable := NewDraggable(nil)
-			dl := draggable.GetLayout()
-			dl.GetPosition().Set(k*300, l*300)
-			dl.GetSize().Set(300, 300)
-			dl.GetPadding().SetAll(10)
-			dl.SetContentOrientation(layout.Horizontal)
-			d.Append(draggable)
-
-			resize := NewResize(300, 300)
-			draggable.Append(resize)
-
-			draggable.Append(NewFiller(50))
-
-			containers := make([]*Container, 0)
-			for i := 0; i < 5; i++ {
-				container := NewContainer()
-				if i > 0 {
-					container.GetLayout().GetMargin().SetLeft(10)
-				}
-				container.GetLayout().GetWantedSize().SetWidth(100)
-				draggable.Append(container)
-				containers = append(containers, container)
-			}
-
-			for _, contains := range containers {
-				contains.Append(NewFiller(50))
-				btnCount := 5
-				for j := 0; j < btnCount; j++ {
-					clickable := NewButton()
-					clickable.GetLayout().GetWantedSize().SetHeight(100)
-					if j > 0 {
-						clickable.GetLayout().GetMargin().SetTop(10)
-					}
-					contains.Append(clickable)
-				}
-
-				contains.Append(NewFiller(50))
-			}
-
-			draggable.Append(NewFiller(50))
+	draggable := NewDraggable(nil)
+	draggable.Append(NewFiller(50))
+	draggable.GetLayout().GetSize().Set(300, 300)
+	draggable.GetLayout().GetPadding().SetAll(10)
+	draggable.GetLayout().SetContentOrientation(layout.Horizontal)
+	draggable.Append(NewResize(100, 100))
+	for i := float64(0); i < 5; i++ {
+		btn := NewButton()
+		if i > 0 {
+			btn.GetLayout().GetMargin().SetLeft(10)
 		}
+		btn.GetLayout().GetMargin().SetTop(10)
+		btn.GetLayout().GetMargin().SetBottom(10)
+		btn.GetLayout().GetWantedSize().Set((i+1)*50, 100)
+		draggable.Append(btn)
 	}
+
+	d.Append(draggable)
 
 	return d
 }

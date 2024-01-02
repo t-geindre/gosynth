@@ -162,7 +162,9 @@ func (l *Layout) ScheduleUpdate() {
 
 func (l *Layout) Update() {
 	l.GetDispatcher().Dispatch(event.NewEvent(UpdateStartsEvent, l))
-
+	computeHorizontal(l)
+	l.GetDispatcher().Dispatch(event.NewEvent(UpdatedEvent, l))
+	return
 	if len(l.children) > 0 {
 		children := make([]ILayout, 0)
 		for _, c := range l.children {
