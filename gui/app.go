@@ -4,8 +4,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/gui/component"
 	"gosynth/gui/component/control"
-	"gosynth/gui/component/demo"
 	"gosynth/gui/component/layout"
+	"gosynth/gui/component/module"
+	"gosynth/gui/component/widget"
 	"gosynth/output"
 )
 
@@ -26,18 +27,16 @@ func NewApp(str *output.Streamer) *App {
 	a := &App{}
 	a.Streamer = str
 
-	//a.Root = widget.NewContainer()
-	//a.Root.Append(widget.NewMenu())
-	//
-	//mod := module.NewVCA()
-	//
-	//rack := widget.NewRack()
-	//rack.Append(mod)
-	//
-	//a.Root.Append(rack)
-	//a.Root.Append(widget.NewFPS())
+	a.Root = widget.NewContainer()
+	a.Root.Append(widget.NewMenu())
 
-	a.Root = demo.NewDemo()
+	mod := module.NewVCA()
+
+	rack := widget.NewRack()
+	rack.Append(mod)
+
+	a.Root.Append(rack)
+	a.Root.Append(widget.NewFPS())
 
 	a.Mouse = control.NewMouse(a.Root)
 

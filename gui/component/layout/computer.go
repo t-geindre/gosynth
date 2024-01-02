@@ -1,7 +1,6 @@
 package layout
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -25,10 +24,13 @@ func computeHorizontal(l ILayout) {
 		return
 	}
 
+	// Store orientation for further usage
+	orientVertical := l.GetContentOrientation() == Vertical
+
 	// Compute required size
 	contentWidth := float64(0)
 	for _, c := range children {
-		if l.GetContentOrientation() == Vertical {
+		if orientVertical {
 			contentWidth += c.GetWantedSize().GetHeight() + c.GetMargin().GetVertical()
 		} else {
 			contentWidth += c.GetWantedSize().GetWidth() + c.GetMargin().GetHorizontal()
@@ -39,7 +41,7 @@ func computeHorizontal(l ILayout) {
 	innerWidth := l.GetSize().GetWidth() - l.GetPadding().GetHorizontal()
 	innerHeight := l.GetSize().GetHeight() - l.GetPadding().GetVertical()
 
-	if l.GetContentOrientation() == Vertical {
+	if orientVertical {
 		innerWidth, innerHeight = innerHeight, innerWidth
 	}
 
@@ -61,8 +63,6 @@ func computeHorizontal(l ILayout) {
 
 		contentWidth += freeSpace * totalFill / 100
 		scaleFact = innerWidth / contentWidth
-
-		fmt.Println(scaleFact)
 	}
 
 	// Place children and apply scale
@@ -74,16 +74,27 @@ func computeHorizontal(l ILayout) {
 			fill = c.GetFill() / 100 * freeSpace
 		}
 
-		c.GetPosition().Set(
-			xOffset+c.GetMargin().GetLeft()*scaleFact,
-			yOffset+c.GetMargin().GetTop(),
-		)
+		if orientVertical {
+			c.GetPosition().Set(
+				xOffset+c.GetMargin().GetLeft(),
+				yOffset+c.GetMargin().GetTop()*scaleFact,
+			)
+			c.GetSize().Set(
+				innerHeight-c.GetMargin().GetHorizontal(),
+				c.GetWantedSize().GetHeight()*scaleFact+fill*scaleFact,
+			)
+			yOffset += c.GetSize().GetHeight() + c.GetMargin().GetVertical()*scaleFact
+		} else {
+			c.GetPosition().Set(
+				xOffset+c.GetMargin().GetLeft()*scaleFact,
+				yOffset+c.GetMargin().GetTop(),
+			)
+			c.GetSize().Set(
+				c.GetWantedSize().GetWidth()*scaleFact+fill*scaleFact,
+				innerHeight-c.GetMargin().GetVertical(),
+			)
+			xOffset += c.GetSize().GetWidth() + c.GetMargin().GetHorizontal()*scaleFact
+		}
 
-		c.GetSize().Set(
-			c.GetWantedSize().GetWidth()*scaleFact+fill*scaleFact,
-			innerHeight-c.GetMargin().GetVertical(),
-		)
-
-		xOffset += c.GetSize().GetWidth() + c.GetMargin().GetHorizontal()*scaleFact
 	}
 }
