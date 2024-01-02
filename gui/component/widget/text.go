@@ -8,7 +8,6 @@ import (
 	"gosynth/gui/component"
 	"gosynth/gui/component/graphic"
 	"gosynth/gui/theme"
-	"image/color"
 )
 
 type Text struct {
@@ -16,14 +15,13 @@ type Text struct {
 	str        string
 	strw, strh int
 	font       font.Face
-	color      color.RGBA
+	inverted   bool
 }
 
-func NewText(str string, fontFace font.Face, color color.RGBA) *Text {
+func NewText(str string, fontFace font.Face) *Text {
 	t := &Text{
 		Component: component.NewComponent(),
 		font:      fontFace,
-		color:     color,
 	}
 
 	t.SetText(str)
@@ -33,9 +31,18 @@ func NewText(str string, fontFace font.Face, color color.RGBA) *Text {
 		img := ebiten.NewImage(t.strw, t.strh)
 
 		// Draw a rect behind the str to allow correct blending
-		img.Fill(theme.Colors.Background)
+		bgColor := theme.Colors.Background
+		if t.inverted {
+			bgColor = theme.Colors.BackgroundInverted
+		}
+		img.Fill(bgColor)
 
-		text.Draw(img, t.str, t.font, 0, t.strh, t.color)
+		color := theme.Colors.Text
+		if t.inverted {
+			color = theme.Colors.TextInverted
+		}
+
+		text.Draw(img, t.str, t.font, 0, t.strh, color)
 
 		destImg := t.GetGraphic().GetImage()
 
@@ -75,5 +82,10 @@ func (t *Text) SetText(str string) {
 
 	t.GetLayout().GetWantedSize().Set(float64(t.strw), float64(t.strh))
 
+	t.GetGraphic().ScheduleUpdate()
+}
+
+func (t *Text) SetInverted(inverted bool) {
+	t.inverted = inverted
 	t.GetGraphic().ScheduleUpdate()
 }

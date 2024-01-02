@@ -27,4 +27,6 @@ type IGraphic interface {
 	// Will trigger the DrawUpdateRequiredEvent on next graphic update
 	ScheduleUpdate()
 	GetDispatcher() *event.Dispatcher
+
+	EnableDebugView(enabled bool)
 }

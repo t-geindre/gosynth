@@ -68,10 +68,10 @@ func (s *Slider) addMarks() {
 		for i, m := range s.GetChildren() {
 			if i > 0 {
 				if s.GetLayout().GetContentOrientation() == layout.Horizontal {
-					m.GetLayout().GetMargin().SetLeft(5)
+					m.GetLayout().GetMargin().SetLeft(2)
 					continue
 				}
-				m.GetLayout().GetMargin().SetTop(5)
+				m.GetLayout().GetMargin().SetTop(2)
 			}
 		}
 	})

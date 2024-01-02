@@ -38,6 +38,8 @@ func NewApp(str *output.Streamer) *App {
 	a.Root.Append(rack)
 	a.Root.Append(widget.NewFPS())
 
+	//a.Root = demo.NewDemo()
+
 	a.Mouse = control.NewMouse(a.Root)
 
 	return a

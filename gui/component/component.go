@@ -7,6 +7,7 @@ import (
 	"gosynth/gui/component/control"
 	"gosynth/gui/component/graphic"
 	"gosynth/gui/component/layout"
+	"math"
 )
 
 type Component struct {
@@ -27,12 +28,12 @@ func NewComponent() *Component {
 
 	c.GetLayout().GetDispatcher().AddListener(&c, layout.ResizeEvent, func(e event.IEvent) {
 		w, h := c.GetLayout().GetSize().Get()
-		c.GetGraphic().SetSize(int(w), int(h))
+		c.GetGraphic().SetSize(int(math.Round(w)), int(math.Round(h)))
 	})
 
 	c.GetLayout().GetDispatcher().AddListener(&c, layout.MoveEvent, func(e event.IEvent) {
 		x, y := c.GetLayout().GetPosition().Get()
-		c.GetGraphic().SetTranslation(float64(x), float64(y))
+		c.GetGraphic().SetTranslation(x, y)
 	})
 
 	return c
@@ -51,6 +52,12 @@ func (c *Component) SetParent(parent IComponent) {
 }
 
 func (c *Component) Append(child IComponent) {
+	if cComp, ok := child.(*Component); ok {
+		if cComp == c {
+			panic("cannot append component to itself")
+		}
+	}
+
 	c.Children = append(c.Children, child)
 	c.Graphic.Append(child.GetGraphic())
 	c.Layout.Append(child.GetLayout())

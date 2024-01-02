@@ -18,9 +18,10 @@ func NewMenu() *Menu {
 		Component: component.NewComponent(),
 	}
 
-	m.GetLayout().GetWantedSize().SetHeight(50)
-	m.GetLayout().GetPadding().SetAll(5)
-	m.GetLayout().SetContentOrientation(layout.Horizontal)
+	l := m.GetLayout()
+	l.GetWantedSize().SetHeight(50)
+	l.GetPadding().SetAll(5)
+	l.SetContentOrientation(layout.Horizontal)
 
 	m.GetGraphic().GetDispatcher().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		m.GetGraphic().GetImage().Fill(theme.Colors.Background)
@@ -29,22 +30,15 @@ func NewMenu() *Menu {
 		vector.StrokeLine(img, 0, float32(h), float32(w), float32(h), 1, theme.Colors.BackgroundInverted, false)
 	})
 
-	m.Append(NewText("Synth", theme.Fonts.Title, theme.Colors.Text))
+	m.Append(NewText("Synth", theme.Fonts.Title))
+
 	m.Append(NewFiller(100))
-
-	ctr := NewContainer()
-	ctr.GetLayout().GetWantedSize().SetWidth(300)
-	ctr.GetLayout().SetContentOrientation(layout.Vertical)
-
-	m.Append(ctr)
-
-	//ctr.Append(NewText("Master volume", theme.Fonts.Small, theme.Colors.Text))
 
 	s := NewSlider(0, 1, 20)
 	s.GetLayout().SetContentOrientation(layout.Horizontal)
-	s.GetLayout().GetWantedSize().SetHeight(30)
+	s.GetLayout().GetWantedSize().SetWidth(300)
 	s.SetValue(1)
-	ctr.Append(s)
+	m.Append(s)
 
 	return m
 }

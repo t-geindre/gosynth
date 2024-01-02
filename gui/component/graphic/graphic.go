@@ -3,6 +3,7 @@ package graphic
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
+	"image/color"
 )
 
 type Graphic struct {
@@ -133,4 +134,14 @@ func (g *Graphic) MoveFront(child IGraphic) {
 			return
 		}
 	}
+}
+
+func (g *Graphic) EnableDebugView(enabled bool) {
+	if enabled {
+		g.dispatcher.AddListener(&g, DrawEvent, func(e event.IEvent) {
+			g.image.Fill(color.RGBA{R: 255, G: 0, B: 0, A: 255})
+		})
+		return
+	}
+	g.GetDispatcher().RemoveListener(&g, DrawEvent)
 }

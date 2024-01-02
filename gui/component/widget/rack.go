@@ -10,27 +10,30 @@ import (
 
 type Rack struct {
 	*component.Component
-	MouseDelta *control.MouseDelta
+	mouseDelta *control.MouseDelta
+	scale      float64
 }
 
 func NewRack() *Rack {
 	r := &Rack{
 		Component:  component.NewComponent(),
-		MouseDelta: control.NewMouseDelta(),
+		mouseDelta: control.NewMouseDelta(),
 	}
 
-	r.GetGraphic().GetDispatcher().AddListener(&r, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
-		image := r.GetGraphic().GetImage()
-		image.Fill(color.RGBA{R: 26, G: 26, B: 26, A: 255})
+	r.scale = .1
+	r.GetGraphic().GetOptions().GeoM.Scale(r.scale, r.scale)
+
+	r.GetGraphic().GetDispatcher().AddListener(&r, graphic.DrawEvent, func(e event.IEvent) {
+		r.GetGraphic().GetImage().Fill(color.RGBA{R: 26, G: 26, B: 26, A: 255})
 	})
 
 	r.GetDispatcher().AddListener(&r, control.LeftMouseDownEvent, func(e event.IEvent) {
-		r.MouseDelta.Start()
+		r.mouseDelta.Start()
 		e.StopPropagation()
 	})
 
 	r.GetDispatcher().AddListener(&r, control.LeftMouseUpEvent, func(e event.IEvent) {
-		r.MouseDelta.Stop()
+		r.mouseDelta.Stop()
 		e.StopPropagation()
 	})
 
@@ -40,10 +43,8 @@ func NewRack() *Rack {
 }
 
 func (r *Rack) Update() {
-	r.GetGraphic().ScheduleUpdate()
-
-	if r.MouseDelta.IsActive() {
-		dx, dy := r.MouseDelta.GetDelta()
+	if r.mouseDelta.IsActive() {
+		dx, dy := r.mouseDelta.GetDelta()
 		for _, c := range r.GetChildren() {
 			c.GetLayout().GetPosition().MoveBy(float64(dx), float64(dy))
 		}
