@@ -77,8 +77,9 @@ func NewText(str string, fontFace font.Face) *Text {
 func (t *Text) SetText(str string) {
 	t.str = str
 
-	t.strw = font.MeasureString(t.font, t.str).Round()
-	t.strh = t.font.Metrics().CapHeight.Round()
+	bound, _ := font.BoundString(t.font, t.str)
+	t.strw = (bound.Max.X - bound.Min.X).Round()
+	t.strh = (bound.Max.Y - bound.Min.Y).Round()
 
 	t.GetLayout().GetWantedSize().Set(float64(t.strw), float64(t.strh))
 

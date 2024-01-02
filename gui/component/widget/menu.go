@@ -34,7 +34,7 @@ func NewMenu() *Menu {
 
 	m.Append(NewFiller(100))
 
-	s := NewSlider(0, 1, 20)
+	s := NewSlider(0, 1, 25)
 	s.GetLayout().SetContentOrientation(layout.Horizontal)
 	s.GetLayout().GetWantedSize().SetWidth(300)
 	s.SetValue(1)

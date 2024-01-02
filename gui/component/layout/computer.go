@@ -95,6 +95,5 @@ func computeHorizontal(l ILayout) {
 			)
 			xOffset += c.GetSize().GetWidth() + c.GetMargin().GetHorizontal()*scaleFact
 		}
-
 	}
 }

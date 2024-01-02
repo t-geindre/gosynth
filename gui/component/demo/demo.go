@@ -35,7 +35,7 @@ func NewDemo() *Demo {
 		draggable.GetLayout().GetPosition().SetX(i * 310)
 		draggable.GetLayout().GetSize().Set(300, 300)
 		draggable.GetLayout().GetPadding().SetAll(10)
-		draggable.Append(NewResize(100, 100))
+		draggable.Append(NewResize(30, 30))
 
 		if i > 0 {
 			draggable.GetLayout().SetContentOrientation(layout.Horizontal)
