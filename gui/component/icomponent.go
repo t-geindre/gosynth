@@ -2,7 +2,6 @@ package component
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"gosynth/event"
 	"gosynth/gui/component/control"
 	"gosynth/gui/component/graphic"
 	"gosynth/gui/component/layout"
@@ -23,5 +22,4 @@ type IComponent interface {
 
 	GetGraphic() graphic.IGraphic
 	GetLayout() layout.ILayout
-	GetDispatcher() *event.Dispatcher
 }

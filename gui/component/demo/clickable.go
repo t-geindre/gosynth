@@ -29,13 +29,13 @@ func NewButton() *Clickable {
 		img.Fill(b.color)
 	})
 
-	b.GetDispatcher().AddListener(&b, control.LeftMouseDownEvent, func(e event.IEvent) {
+	b.	AddListener(&b, control.LeftMouseDownEvent, func(e event.IEvent) {
 		b.color = b.onCol
 		b.GetGraphic().ScheduleUpdate()
 		e.StopPropagation()
 	})
 
-	b.GetDispatcher().AddListener(&b, control.LeftMouseUpEvent, func(e event.IEvent) {
+	b.	AddListener(&b, control.LeftMouseUpEvent, func(e event.IEvent) {
 		b.color = b.offColor
 		b.GetGraphic().ScheduleUpdate()
 		e.StopPropagation()

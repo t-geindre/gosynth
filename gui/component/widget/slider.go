@@ -35,8 +35,8 @@ func NewSlider(from, to float64, marks int) *Slider {
 	s.GetLayout().GetPadding().SetAll(5)
 	s.addMarks()
 
-	s.GetDispatcher().AddListener(&s, control.LeftMouseDownEvent, s.onMouseDown)
-	s.GetDispatcher().AddListener(&s, control.LeftMouseUpEvent, s.onMouseUp)
+	s.	AddListener(&s, control.LeftMouseDownEvent, s.onMouseDown)
+	s.	AddListener(&s, control.LeftMouseUpEvent, s.onMouseUp)
 
 	return s
 }

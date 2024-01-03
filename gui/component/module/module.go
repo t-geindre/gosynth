@@ -43,19 +43,19 @@ func NewModule(title string, widthUnit int, outerType component.IComponent) *Mod
 		vector.StrokeRect(image, 0, 0, float32(image.Bounds().Dx()), float32(image.Bounds().Dy()), 2, theme.Colors.Off, false)
 	})
 
-	m.GetDispatcher().AddListener(&m, control.LeftMouseDownEvent, func(e event.IEvent) {
+	m.AddListener(&m, control.LeftMouseDownEvent, func(e event.IEvent) {
 		m.mouseDelta.Start()
 		m.GetGraphic().GetOptions().ColorScale.ScaleAlpha(0.95)
 		e.StopPropagation()
 	})
 
-	m.GetDispatcher().AddListener(&m, control.LeftMouseUpEvent, func(e event.IEvent) {
+	m.AddListener(&m, control.LeftMouseUpEvent, func(e event.IEvent) {
 		m.mouseDelta.Stop()
 		m.GetGraphic().GetOptions().ColorScale.Reset()
 		e.StopPropagation()
 	})
 
-	m.GetDispatcher().AddListener(&m, control.FocusEvent, func(e event.IEvent) {
+	m.AddListener(&m, control.FocusEvent, func(e event.IEvent) {
 		if p := m.GetParent(); p != nil {
 			if m.outerType != nil {
 				p.MoveFront(m.outerType)

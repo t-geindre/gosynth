@@ -27,12 +27,12 @@ func NewRack() *Rack {
 		r.GetGraphic().GetImage().Fill(color.RGBA{R: 26, G: 26, B: 26, A: 255})
 	})
 
-	r.GetDispatcher().AddListener(&r, control.LeftMouseDownEvent, func(e event.IEvent) {
+	r.	AddListener(&r, control.LeftMouseDownEvent, func(e event.IEvent) {
 		r.mouseDelta.Start()
 		e.StopPropagation()
 	})
 
-	r.GetDispatcher().AddListener(&r, control.LeftMouseUpEvent, func(e event.IEvent) {
+	r.	AddListener(&r, control.LeftMouseUpEvent, func(e event.IEvent) {
 		r.mouseDelta.Stop()
 		e.StopPropagation()
 	})

@@ -30,13 +30,13 @@ func NewResize(minWidth, minHeight float64) *Resize {
 		image.Fill(color.Black)
 	})
 
-	r.GetDispatcher().AddListener(&r, control.LeftMouseDownEvent, func(e event.IEvent) {
+	r.	AddListener(&r, control.LeftMouseDownEvent, func(e event.IEvent) {
 		r.mouseDrag.Start()
 		ebiten.SetCursorShape(ebiten.CursorShapeMove)
 		e.StopPropagation()
 	})
 
-	r.GetDispatcher().AddListener(&r, control.LeftMouseUpEvent, func(e event.IEvent) {
+	r.	AddListener(&r, control.LeftMouseUpEvent, func(e event.IEvent) {
 		r.mouseDrag.Stop()
 		ebiten.SetCursorShape(ebiten.CursorShapeDefault)
 

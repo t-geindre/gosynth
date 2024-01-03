@@ -11,11 +11,11 @@ import (
 )
 
 type Component struct {
-	Layout     *layout.Layout
-	Graphic    *graphic.Graphic
-	Dispatcher *event.Dispatcher
-	Children   []IComponent
-	Parent     IComponent
+	*event.Dispatcher
+	Layout   *layout.Layout
+	Graphic  *graphic.Graphic
+	Children []IComponent
+	Parent   IComponent
 }
 
 func NewComponent() *Component {
@@ -94,10 +94,6 @@ func (c *Component) Update() {
 	for _, child := range c.Children {
 		child.Update()
 	}
-}
-
-func (c *Component) GetDispatcher() *event.Dispatcher {
-	return c.Dispatcher
 }
 
 func (c *Component) Dispatch(e event.IEvent) {

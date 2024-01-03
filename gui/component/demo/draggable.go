@@ -41,29 +41,29 @@ func NewDraggable(outerType component.IComponent) *Draggable {
 		}
 	})
 
-	d.GetDispatcher().AddListener(&d, control.LeftMouseDownEvent, func(e event.IEvent) {
+	d.	AddListener(&d, control.LeftMouseDownEvent, func(e event.IEvent) {
 		d.mouseDrag.Start()
 		d.GetGraphic().GetOptions().ColorScale.ScaleAlpha(0.95)
 		e.StopPropagation()
 	})
 
-	d.GetDispatcher().AddListener(&d, control.LeftMouseUpEvent, func(e event.IEvent) {
+	d.	AddListener(&d, control.LeftMouseUpEvent, func(e event.IEvent) {
 		d.mouseDrag.Stop()
 		d.GetGraphic().GetOptions().ColorScale.Reset()
 		e.StopPropagation()
 	})
 
-	d.GetDispatcher().AddListener(&d, control.MouseEnterEvent, func(e event.IEvent) {
+	d.	AddListener(&d, control.MouseEnterEvent, func(e event.IEvent) {
 		d.mouseOver = true
 		d.GetGraphic().ScheduleUpdate()
 	})
 
-	d.GetDispatcher().AddListener(&d, control.MouseLeaveEvent, func(e event.IEvent) {
+	d.	AddListener(&d, control.MouseLeaveEvent, func(e event.IEvent) {
 		d.mouseOver = false
 		d.GetGraphic().ScheduleUpdate()
 	})
 
-	d.GetDispatcher().AddListener(&d, control.FocusEvent, func(e event.IEvent) {
+	d.	AddListener(&d, control.FocusEvent, func(e event.IEvent) {
 		if p := d.GetParent(); p != nil {
 			p.MoveFront(d.outerType)
 		}
