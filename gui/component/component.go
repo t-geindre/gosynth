@@ -26,12 +26,12 @@ func NewComponent() *Component {
 		Children:   make([]IComponent, 0),
 	}
 
-	c.GetLayout().GetDispatcher().AddListener(&c, layout.ResizeEvent, func(e event.IEvent) {
+	c.GetLayout().AddListener(&c, layout.ResizeEvent, func(e event.IEvent) {
 		w, h := c.GetLayout().GetSize().Get()
 		c.GetGraphic().SetSize(int(math.Round(w)), int(math.Round(h)))
 	})
 
-	c.GetLayout().GetDispatcher().AddListener(&c, layout.MoveEvent, func(e event.IEvent) {
+	c.GetLayout().AddListener(&c, layout.MoveEvent, func(e event.IEvent) {
 		x, y := c.GetLayout().GetPosition().Get()
 		c.GetGraphic().SetTranslation(x, y)
 	})

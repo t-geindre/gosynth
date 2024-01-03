@@ -5,9 +5,9 @@ import (
 )
 
 type Layout struct {
+	*event.Dispatcher
 	parent             ILayout
 	children           []ILayout
-	dispatcher         *event.Dispatcher
 	position           *Position
 	size               *Size
 	wantedSize         *Size
@@ -21,7 +21,7 @@ type Layout struct {
 func NewLayout() *Layout {
 	l := &Layout{
 		children:           make([]ILayout, 0),
-		dispatcher:         event.NewDispatcher(),
+		Dispatcher:         event.NewDispatcher(),
 		position:           &Position{},
 		size:               NewSize(),
 		wantedSize:         NewSize(),
@@ -35,7 +35,7 @@ func NewLayout() *Layout {
 	l.ScheduleUpdate()
 
 	l.size.setOnChangeFunc(func(w, h float64) {
-		l.GetDispatcher().Dispatch(event.NewEvent(ResizeEvent, l))
+		l.Dispatch(event.NewEvent(ResizeEvent, l))
 		l.ScheduleUpdate()
 	})
 
@@ -47,7 +47,7 @@ func NewLayout() *Layout {
 	})
 
 	l.position.setOnChangeFunc(func(x, y float64) {
-		l.GetDispatcher().Dispatch(event.NewEvent(MoveEvent, l))
+		l.Dispatch(event.NewEvent(MoveEvent, l))
 	})
 
 	return l
@@ -77,10 +77,6 @@ func (l *Layout) Remove(child ILayout) {
 		}
 	}
 	child.SetParent(nil)
-}
-
-func (l *Layout) GetDispatcher() event.IDispatcher {
-	return l.dispatcher
 }
 
 func (l *Layout) GetMargin() *Spacing {
@@ -161,7 +157,7 @@ func (l *Layout) ScheduleUpdate() {
 }
 
 func (l *Layout) Update() {
-	l.GetDispatcher().Dispatch(event.NewEvent(UpdateStartsEvent, l))
+	l.Dispatch(event.NewEvent(UpdateStartsEvent, l))
 	computeHorizontal(l)
-	l.GetDispatcher().Dispatch(event.NewEvent(UpdatedEvent, l))
+	l.Dispatch(event.NewEvent(UpdatedEvent, l))
 }

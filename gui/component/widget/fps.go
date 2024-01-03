@@ -33,10 +33,10 @@ func NewFPS() *FPS {
 
 func (f *FPS) SetParent(p component.IComponent) {
 	if op := f.GetParent(); op != nil {
-		op.GetLayout().GetDispatcher().RemoveListener(&f, layout.UpdatedEvent)
+		op.GetLayout().RemoveListener(&f, layout.UpdatedEvent)
 	}
 
-	p.GetLayout().GetDispatcher().AddListener(&f, layout.UpdatedEvent, func(e event.IEvent) {
+	p.GetLayout().AddListener(&f, layout.UpdatedEvent, func(e event.IEvent) {
 		f.position()
 	})
 

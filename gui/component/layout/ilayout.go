@@ -10,13 +10,13 @@ const (
 )
 
 type ILayout interface {
+	event.IDispatcher
+
 	GetChildren() []ILayout
 	GetParent() ILayout
 	SetParent(parent ILayout)
 	Append(child ILayout)
 	Remove(child ILayout)
-
-	GetDispatcher() event.IDispatcher
 
 	GetMargin() *Spacing
 	GetPadding() *Spacing

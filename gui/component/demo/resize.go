@@ -55,7 +55,7 @@ func (r *Resize) SetParent(parent component.IComponent) {
 	// Todo we should make sure listener is removed on the previous parent
 
 	if parent != nil {
-		parent.GetLayout().GetDispatcher().AddListener(&r, layout.UpdatedEvent, func(e event.IEvent) {
+		parent.GetLayout().AddListener(&r, layout.UpdatedEvent, func(e event.IEvent) {
 			r.UpdatePosition()
 		})
 	}

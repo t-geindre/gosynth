@@ -65,7 +65,7 @@ func (s *Slider) addMarks() {
 		s.Append(m)
 	}
 
-	s.GetLayout().GetDispatcher().AddListener(&s, layout.UpdateStartsEvent, func(e event.IEvent) {
+	s.GetLayout().AddListener(&s, layout.UpdateStartsEvent, func(e event.IEvent) {
 		for i, m := range s.GetChildren() {
 			if i > 0 {
 				if s.GetLayout().GetContentOrientation() == layout.Horizontal {
