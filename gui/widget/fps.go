@@ -6,8 +6,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/graphic"
-	"gosynth/gui/component/layout"
+	"gosynth/gui/graphic"
+	"gosynth/gui/layout"
 	"image/color"
 )
 

@@ -4,7 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/graphic"
+	"gosynth/gui/graphic"
 	"gosynth/gui/theme"
 )
 

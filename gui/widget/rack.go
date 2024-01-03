@@ -3,21 +3,21 @@ package widget
 import (
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/control"
-	"gosynth/gui/component/graphic"
+	control2 "gosynth/gui/control"
+	"gosynth/gui/graphic"
 	"image/color"
 )
 
 type Rack struct {
 	*component.Component
-	mouseDelta *control.MouseDelta
+	mouseDelta *control2.MouseDelta
 	scale      float64
 }
 
 func NewRack() *Rack {
 	r := &Rack{
 		Component:  component.NewComponent(),
-		mouseDelta: control.NewMouseDelta(),
+		mouseDelta: control2.NewMouseDelta(),
 	}
 
 	r.scale = .1
@@ -27,12 +27,12 @@ func NewRack() *Rack {
 		r.GetGraphic().GetImage().Fill(color.RGBA{R: 26, G: 26, B: 26, A: 255})
 	})
 
-	r.	AddListener(&r, control.LeftMouseDownEvent, func(e event.IEvent) {
+	r.AddListener(&r, control2.LeftMouseDownEvent, func(e event.IEvent) {
 		r.mouseDelta.Start()
 		e.StopPropagation()
 	})
 
-	r.	AddListener(&r, control.LeftMouseUpEvent, func(e event.IEvent) {
+	r.AddListener(&r, control2.LeftMouseUpEvent, func(e event.IEvent) {
 		r.mouseDelta.Stop()
 		e.StopPropagation()
 	})

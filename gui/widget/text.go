@@ -6,7 +6,7 @@ import (
 	"golang.org/x/image/font"
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/graphic"
+	"gosynth/gui/graphic"
 	"gosynth/gui/theme"
 )
 

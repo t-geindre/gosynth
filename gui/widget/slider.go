@@ -4,9 +4,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/control"
-	"gosynth/gui/component/graphic"
-	"gosynth/gui/component/layout"
+	"gosynth/gui/control"
+	"gosynth/gui/graphic"
+	layout2 "gosynth/gui/layout"
 	"gosynth/gui/theme"
 )
 
@@ -35,8 +35,8 @@ func NewSlider(from, to float64, marks int) *Slider {
 	s.GetLayout().GetPadding().SetAll(5)
 	s.addMarks()
 
-	s.	AddListener(&s, control.LeftMouseDownEvent, s.onMouseDown)
-	s.	AddListener(&s, control.LeftMouseUpEvent, s.onMouseUp)
+	s.AddListener(&s, control.LeftMouseDownEvent, s.onMouseDown)
+	s.AddListener(&s, control.LeftMouseUpEvent, s.onMouseUp)
 
 	return s
 }
@@ -50,7 +50,7 @@ func (s *Slider) addMarks() {
 		mg.AddListener(&m, graphic.DrawUpdateRequiredEvent, func(index int) func(e event.IEvent) {
 			return func(e event.IEvent) {
 				i := index
-				if s.GetLayout().GetContentOrientation() == layout.Vertical {
+				if s.GetLayout().GetContentOrientation() == layout2.Vertical {
 					i = s.marksCount - index - 1
 				}
 				img := mg.GetImage()
@@ -65,10 +65,10 @@ func (s *Slider) addMarks() {
 		s.Append(m)
 	}
 
-	s.GetLayout().AddListener(&s, layout.UpdateStartsEvent, func(e event.IEvent) {
+	s.GetLayout().AddListener(&s, layout2.UpdateStartsEvent, func(e event.IEvent) {
 		for i, m := range s.GetChildren() {
 			if i > 0 {
-				if s.GetLayout().GetContentOrientation() == layout.Horizontal {
+				if s.GetLayout().GetContentOrientation() == layout2.Horizontal {
 					m.GetLayout().GetMargin().SetLeft(2)
 					continue
 				}
@@ -88,7 +88,7 @@ func (s *Slider) Update() {
 	if s.mouseDown {
 		mx, my := ebiten.CursorPosition()
 		sx, sy := s.GetLayout().GetAbsolutePosition().Get()
-		if s.GetLayout().GetContentOrientation() == layout.Horizontal {
+		if s.GetLayout().GetContentOrientation() == layout2.Horizontal {
 			s.SetValue(s.from + (s.to-s.from)*(float64(mx)-sx)/s.GetLayout().GetSize().GetWidth())
 		} else {
 			s.SetValue(s.from + (s.to-s.from)*(sy+s.GetLayout().GetSize().GetHeight()-float64(my))/s.GetLayout().GetSize().GetHeight())

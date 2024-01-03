@@ -4,34 +4,34 @@ import (
 	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
-	"gosynth/gui/component/control"
-	"gosynth/gui/component/graphic"
-	"gosynth/gui/component/layout"
+	"gosynth/gui/control"
+	graphic2 "gosynth/gui/graphic"
+	layout2 "gosynth/gui/layout"
 	"math"
 )
 
 type Component struct {
 	*event.Dispatcher
-	Layout   *layout.Layout
-	Graphic  *graphic.Graphic
+	Layout   *layout2.Layout
+	Graphic  *graphic2.Graphic
 	Children []IComponent
 	Parent   IComponent
 }
 
 func NewComponent() *Component {
 	c := &Component{
-		Layout:     layout.NewLayout(),
-		Graphic:    graphic.NewGraphic(),
+		Layout:     layout2.NewLayout(),
+		Graphic:    graphic2.NewGraphic(),
 		Dispatcher: event.NewDispatcher(),
 		Children:   make([]IComponent, 0),
 	}
 
-	c.GetLayout().AddListener(&c, layout.ResizeEvent, func(e event.IEvent) {
+	c.GetLayout().AddListener(&c, layout2.ResizeEvent, func(e event.IEvent) {
 		w, h := c.GetLayout().GetSize().Get()
 		c.GetGraphic().SetSize(int(math.Round(w)), int(math.Round(h)))
 	})
 
-	c.GetLayout().AddListener(&c, layout.MoveEvent, func(e event.IEvent) {
+	c.GetLayout().AddListener(&c, layout2.MoveEvent, func(e event.IEvent) {
 		x, y := c.GetLayout().GetPosition().Get()
 		c.GetGraphic().SetTranslation(x, y)
 	})
@@ -78,11 +78,11 @@ func (c *Component) Remove(child IComponent) {
 	child.SetParent(nil)
 }
 
-func (c *Component) GetLayout() layout.ILayout {
+func (c *Component) GetLayout() layout2.ILayout {
 	return c.Layout
 }
 
-func (c *Component) GetGraphic() graphic.IGraphic {
+func (c *Component) GetGraphic() graphic2.IGraphic {
 	return c.Graphic
 }
 

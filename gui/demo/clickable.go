@@ -3,8 +3,8 @@ package demo
 import (
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/control"
-	"gosynth/gui/component/graphic"
+	"gosynth/gui/control"
+	"gosynth/gui/graphic"
 	"image/color"
 )
 
@@ -29,13 +29,13 @@ func NewButton() *Clickable {
 		img.Fill(b.color)
 	})
 
-	b.	AddListener(&b, control.LeftMouseDownEvent, func(e event.IEvent) {
+	b.AddListener(&b, control.LeftMouseDownEvent, func(e event.IEvent) {
 		b.color = b.onCol
 		b.GetGraphic().ScheduleUpdate()
 		e.StopPropagation()
 	})
 
-	b.	AddListener(&b, control.LeftMouseUpEvent, func(e event.IEvent) {
+	b.AddListener(&b, control.LeftMouseUpEvent, func(e event.IEvent) {
 		b.color = b.offColor
 		b.GetGraphic().ScheduleUpdate()
 		e.StopPropagation()

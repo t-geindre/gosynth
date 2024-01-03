@@ -4,8 +4,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/graphic"
-	"gosynth/gui/component/layout"
+	"gosynth/gui/graphic"
+	"gosynth/gui/layout"
 	"gosynth/gui/theme"
 )
 

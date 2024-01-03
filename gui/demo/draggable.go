@@ -4,14 +4,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/control"
-	"gosynth/gui/component/graphic"
+	control2 "gosynth/gui/control"
+	"gosynth/gui/graphic"
 	"image/color"
 )
 
 type Draggable struct {
 	*component.Component
-	mouseDrag *control.MouseDelta
+	mouseDrag *control2.MouseDelta
 	outerType component.IComponent
 	mouseOver bool
 }
@@ -20,7 +20,7 @@ func NewDraggable(outerType component.IComponent) *Draggable {
 	d := &Draggable{
 		Component: component.NewComponent(),
 		outerType: outerType,
-		mouseDrag: control.NewMouseDelta(),
+		mouseDrag: control2.NewMouseDelta(),
 	}
 
 	if outerType == nil {
@@ -41,29 +41,29 @@ func NewDraggable(outerType component.IComponent) *Draggable {
 		}
 	})
 
-	d.	AddListener(&d, control.LeftMouseDownEvent, func(e event.IEvent) {
+	d.AddListener(&d, control2.LeftMouseDownEvent, func(e event.IEvent) {
 		d.mouseDrag.Start()
 		d.GetGraphic().GetOptions().ColorScale.ScaleAlpha(0.95)
 		e.StopPropagation()
 	})
 
-	d.	AddListener(&d, control.LeftMouseUpEvent, func(e event.IEvent) {
+	d.AddListener(&d, control2.LeftMouseUpEvent, func(e event.IEvent) {
 		d.mouseDrag.Stop()
 		d.GetGraphic().GetOptions().ColorScale.Reset()
 		e.StopPropagation()
 	})
 
-	d.	AddListener(&d, control.MouseEnterEvent, func(e event.IEvent) {
+	d.AddListener(&d, control2.MouseEnterEvent, func(e event.IEvent) {
 		d.mouseOver = true
 		d.GetGraphic().ScheduleUpdate()
 	})
 
-	d.	AddListener(&d, control.MouseLeaveEvent, func(e event.IEvent) {
+	d.AddListener(&d, control2.MouseLeaveEvent, func(e event.IEvent) {
 		d.mouseOver = false
 		d.GetGraphic().ScheduleUpdate()
 	})
 
-	d.	AddListener(&d, control.FocusEvent, func(e event.IEvent) {
+	d.AddListener(&d, control2.FocusEvent, func(e event.IEvent) {
 		if p := d.GetParent(); p != nil {
 			p.MoveFront(d.outerType)
 		}

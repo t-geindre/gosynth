@@ -2,9 +2,9 @@ package component
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"gosynth/gui/component/control"
-	"gosynth/gui/component/graphic"
-	"gosynth/gui/component/layout"
+	"gosynth/gui/control"
+	"gosynth/gui/graphic"
+	"gosynth/gui/layout"
 )
 
 type IComponent interface {

@@ -4,10 +4,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/control"
-	"gosynth/gui/component/graphic"
-	"gosynth/gui/component/widget"
+	control2 "gosynth/gui/control"
+	"gosynth/gui/graphic"
 	"gosynth/gui/theme"
+	"gosynth/gui/widget"
 )
 
 const ModuleUWidth float64 = 65
@@ -15,7 +15,7 @@ const ModuleHeight float64 = 500
 
 type Module struct {
 	*component.Component
-	mouseDelta *control.MouseDelta
+	mouseDelta *control2.MouseDelta
 	outerType  component.IComponent
 	title      string
 }
@@ -24,7 +24,7 @@ func NewModule(title string, widthUnit int, outerType component.IComponent) *Mod
 	m := &Module{
 		Component:  component.NewComponent(),
 		outerType:  outerType,
-		mouseDelta: control.NewMouseDelta(),
+		mouseDelta: control2.NewMouseDelta(),
 		title:      title,
 	}
 
@@ -43,19 +43,19 @@ func NewModule(title string, widthUnit int, outerType component.IComponent) *Mod
 		vector.StrokeRect(image, 0, 0, float32(image.Bounds().Dx()), float32(image.Bounds().Dy()), 2, theme.Colors.Off, false)
 	})
 
-	m.AddListener(&m, control.LeftMouseDownEvent, func(e event.IEvent) {
+	m.AddListener(&m, control2.LeftMouseDownEvent, func(e event.IEvent) {
 		m.mouseDelta.Start()
 		m.GetGraphic().GetOptions().ColorScale.ScaleAlpha(0.95)
 		e.StopPropagation()
 	})
 
-	m.AddListener(&m, control.LeftMouseUpEvent, func(e event.IEvent) {
+	m.AddListener(&m, control2.LeftMouseUpEvent, func(e event.IEvent) {
 		m.mouseDelta.Stop()
 		m.GetGraphic().GetOptions().ColorScale.Reset()
 		e.StopPropagation()
 	})
 
-	m.AddListener(&m, control.FocusEvent, func(e event.IEvent) {
+	m.AddListener(&m, control2.FocusEvent, func(e event.IEvent) {
 		if p := m.GetParent(); p != nil {
 			if m.outerType != nil {
 				p.MoveFront(m.outerType)

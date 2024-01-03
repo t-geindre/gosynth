@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"gosynth/event"
 	"gosynth/gui/component"
-	"gosynth/gui/component/graphic"
-	"gosynth/gui/component/layout"
-	"gosynth/gui/component/widget"
+	"gosynth/gui/graphic"
+	"gosynth/gui/layout"
 	"gosynth/gui/theme"
+	"gosynth/gui/widget"
 )
 
 type Demo struct {
