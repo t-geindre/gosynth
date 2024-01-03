@@ -43,7 +43,7 @@ func NewSlider(from, to float64, marks int) *Slider {
 
 func (s *Slider) addMarks() {
 	for i := 0; i < s.marksCount; i++ {
-		m := NewContainer()
+		m := component.NewContainer()
 		m.GetLayout().SetFill(100/float64(s.marksCount) - 1)
 
 		mg := m.GetGraphic()

@@ -30,9 +30,9 @@ func NewMenu() *Menu {
 		vector.StrokeLine(img, 0, float32(h), float32(w), float32(h), 1, theme.Colors.BackgroundInverted, false)
 	})
 
-	m.Append(NewText("Synth", theme.Fonts.Title))
+	m.Append(NewText("Gosynth", TextSizeTitle))
 
-	m.Append(NewFiller(100))
+	m.Append(component.NewFiller(100))
 
 	s := NewSlider(0, 1, 25)
 	s.GetLayout().SetContentOrientation(layout.Horizontal)

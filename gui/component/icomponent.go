@@ -2,6 +2,7 @@ package component
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"gosynth/event"
 	"gosynth/gui/control"
 	"gosynth/gui/graphic"
 	"gosynth/gui/layout"
@@ -9,6 +10,7 @@ import (
 
 type IComponent interface {
 	control.ITarget
+	event.IDispatcher
 
 	GetChildren() []IComponent
 	GetParent() IComponent

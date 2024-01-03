@@ -12,7 +12,7 @@ var fontLemonMilkMedium []byte
 
 type fontList struct {
 	Title  font.Face
-	Big    font.Face
+	Large  font.Face
 	Medium font.Face
 	Small  font.Face
 }
@@ -22,7 +22,7 @@ var Fonts fontList
 func init() {
 	Fonts = fontList{
 		Title:  getFontFace(fontLemonMilkMedium, 18),
-		Big:    getFontFace(fontLemonMilkMedium, 14),
+		Large:  getFontFace(fontLemonMilkMedium, 14),
 		Medium: getFontFace(fontLemonMilkMedium, 12),
 		Small:  getFontFace(fontLemonMilkMedium, 10),
 	}

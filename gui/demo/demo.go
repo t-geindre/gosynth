@@ -7,16 +7,15 @@ import (
 	"gosynth/gui/graphic"
 	"gosynth/gui/layout"
 	"gosynth/gui/theme"
-	"gosynth/gui/widget"
 )
 
 type Demo struct {
-	*component.Component
+	*component.Root
 }
 
 func NewDemo() *Demo {
 	d := &Demo{
-		Component: component.NewComponent(),
+		Root: component.NewRoot(),
 	}
 
 	color := randomColor()
@@ -25,11 +24,14 @@ func NewDemo() *Demo {
 		image.Fill(color)
 	})
 
-	for i := float64(0); i < 2; i++ {
-		draggable := NewDraggable(nil)
+	textColor := randomColor()
+	bgTextColor := colorInverse(textColor)
 
-		f := NewFiller(50)
-		f.Append(widget.NewText("50%", theme.Fonts.Title))
+	for i := float64(0); i < 2; i++ {
+		draggable := NewWindow(nil)
+
+		f := component.NewFiller(40)
+		f.Append(component.NewText("50%", theme.Fonts.Title, textColor, bgTextColor))
 		draggable.Append(f)
 
 		draggable.GetLayout().GetPosition().SetX(i * 310)
@@ -47,6 +49,8 @@ func NewDemo() *Demo {
 			if i > 0 {
 				if j > 0 {
 					btn.GetLayout().GetMargin().SetLeft(10)
+				} else {
+					btn.GetLayout().SetFill(10)
 				}
 				btn.GetLayout().GetMargin().SetTop(10)
 				btn.GetLayout().GetMargin().SetBottom(10)
@@ -58,12 +62,12 @@ func NewDemo() *Demo {
 				btn.GetLayout().GetMargin().SetRight(10)
 			}
 			btn.GetLayout().GetWantedSize().Set((j+1)*50, (j+1)*50)
-			btn.Append(widget.NewText(fmt.Sprintf("%d", int((j+1)*50)), theme.Fonts.Title))
+			btn.Append(component.NewText(fmt.Sprintf("%d", int((j+1)*50)), theme.Fonts.Title, textColor, bgTextColor))
 			draggable.Append(btn)
 		}
 
-		fe := NewFiller(50)
-		fe.Append(widget.NewText("50%", theme.Fonts.Title))
+		fe := component.NewFiller(50)
+		fe.Append(component.NewText("50%", theme.Fonts.Title, textColor, bgTextColor))
 		draggable.Append(fe)
 
 		d.Append(draggable)

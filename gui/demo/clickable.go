@@ -10,9 +10,9 @@ import (
 
 type Clickable struct {
 	*component.Component
-	color    *color.RGBA
-	onCol    *color.RGBA
-	offColor *color.RGBA
+	color    color.RGBA
+	onCol    color.RGBA
+	offColor color.RGBA
 }
 
 func NewButton() *Clickable {

@@ -91,6 +91,8 @@ func (c *Component) Draw(dest *ebiten.Image) {
 }
 
 func (c *Component) Update() {
+	c.Dispatch(event.NewEvent(UpdateEvent, c))
+
 	for _, child := range c.Children {
 		child.Update()
 	}

@@ -3,11 +3,8 @@ package gui
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/gui/component"
-	"gosynth/gui/control"
-	"gosynth/gui/demo"
-	"gosynth/gui/layout"
 	"gosynth/gui/module"
-	widget2 "gosynth/gui/widget"
+	"gosynth/gui/widget"
 	"gosynth/output"
 )
 
@@ -17,7 +14,6 @@ const WindowHeight = 1200
 type App struct {
 	Streamer *output.Streamer
 	Root     component.IComponent
-	Mouse    *control.Mouse
 }
 
 func NewApp(str *output.Streamer) *App {
@@ -28,20 +24,16 @@ func NewApp(str *output.Streamer) *App {
 	a := &App{}
 	a.Streamer = str
 
-	a.Root = widget2.NewContainer()
-	a.Root.Append(widget2.NewMenu())
+	a.Root = component.NewRoot()
+	a.Root.Append(widget.NewMenu())
 
-	mod := module.NewVCA()
-
-	rack := widget2.NewRack()
-	rack.Append(mod)
+	rack := widget.NewRack()
+	rack.Append(module.NewVCA())
+	rack.Append(module.NewVCA())
 
 	a.Root.Append(rack)
-	a.Root.Append(widget2.NewFPS())
-
-	a.Root = demo.NewDemo()
-
-	a.Mouse = control.NewMouse(a.Root)
+	//a.Root = demo.NewDemo()
+	a.Root.Append(component.NewFPS())
 
 	return a
 }
@@ -51,9 +43,7 @@ func (a *App) Draw(screen *ebiten.Image) {
 }
 
 func (a *App) Update() error {
-	a.Mouse.Update()
 	a.Root.Update()
-	layout.Sync.Update()
 
 	return nil
 }

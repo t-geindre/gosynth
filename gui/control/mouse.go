@@ -39,7 +39,6 @@ func (m *Mouse) Update() {
 		m.leftDownTarget = mouseTarget
 		if m.leftDownTarget != nil {
 			m.leftDownTarget.Dispatch(event.NewEvent(LeftMouseDownEvent, m.leftDownTarget))
-			m.leftDownTarget.Dispatch(event.NewEvent(FocusEvent, m.leftDownTarget))
 		}
 	}
 

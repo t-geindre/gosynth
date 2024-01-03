@@ -1,16 +1,12 @@
-package demo
-
-import (
-	"gosynth/gui/component"
-)
+package component
 
 type Filler struct {
-	*component.Component
+	*Component
 }
 
 func NewFiller(fill float64) *Filler {
 	f := &Filler{
-		Component: component.NewComponent(),
+		Component: NewComponent(),
 	}
 
 	f.GetLayout().SetFill(fill)

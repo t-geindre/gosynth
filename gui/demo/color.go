@@ -5,8 +5,8 @@ import (
 	"math/rand"
 )
 
-func randomColor() *color.RGBA {
-	c := &color.RGBA{
+func randomColor() color.RGBA {
+	c := color.RGBA{
 		R: uint8(rand.Intn(255)),
 		G: uint8(rand.Intn(255)),
 		B: uint8(rand.Intn(255)),
@@ -16,8 +16,8 @@ func randomColor() *color.RGBA {
 	return c
 }
 
-func colorInverse(c *color.RGBA) *color.RGBA {
-	return &color.RGBA{
+func colorInverse(c color.RGBA) color.RGBA {
+	return color.RGBA{
 		R: 255 - c.R,
 		G: 255 - c.G,
 		B: 255 - c.B,

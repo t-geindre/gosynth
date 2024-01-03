@@ -1,23 +1,22 @@
-package widget
+package component
 
 import (
 	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"gosynth/event"
-	"gosynth/gui/component"
 	"gosynth/gui/graphic"
 	"gosynth/gui/layout"
 	"image/color"
 )
 
 type FPS struct {
-	*component.Component
+	*Component
 }
 
 func NewFPS() *FPS {
 	f := &FPS{}
-	f.Component = component.NewComponent()
+	f.Component = NewComponent()
 
 	f.GetGraphic().AddListener(&f, graphic.DrawEvent, func(e event.IEvent) {
 		img := f.GetGraphic().GetImage()
@@ -31,7 +30,7 @@ func NewFPS() *FPS {
 	return f
 }
 
-func (f *FPS) SetParent(p component.IComponent) {
+func (f *FPS) SetParent(p IComponent) {
 	if op := f.GetParent(); op != nil {
 		op.GetLayout().RemoveListener(&f, layout.UpdatedEvent)
 	}

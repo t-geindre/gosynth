@@ -1,8 +1,8 @@
 package module
 
 import (
-	"gosynth/gui/theme"
-	widget2 "gosynth/gui/widget"
+	"gosynth/gui/component"
+	"gosynth/gui/widget"
 )
 
 type VCA struct {
@@ -13,49 +13,47 @@ func NewVCA() *VCA {
 	v := &VCA{}
 	v.Module = NewModule("VCA", 1, v)
 
-	slider := widget2.NewSlider(0, 1, 25)
+	slider := widget.NewSlider(0, 1, 25)
 	slider.GetLayout().SetFill(100)
 	slider.GetLayout().GetMargin().SetBottom(5)
 	slider.SetValue(0.5)
 	v.Append(slider)
 
-	vLine := widget2.NewLine(false, float32(2))
+	vLine := widget.NewLine(false, float32(2))
 	vLine.GetLayout().GetWantedSize().SetHeight(10)
 	vLine.GetLayout().GetMargin().SetBottom(2)
 	v.Append(vLine)
 
-	cvInPlug := widget2.NewPlug()
+	cvInPlug := widget.NewPlug()
 	cvInPlug.GetLayout().GetMargin().SetBottom(5)
 	v.Append(cvInPlug)
-	v.Append(widget2.NewText("CV", theme.Fonts.Small))
+	v.Append(widget.NewText("CV", widget.TextSizeSmall))
 
-	hLine := widget2.NewLine(true, float32(2))
+	hLine := widget.NewLine(true, float32(2))
 	hLine.GetLayout().GetWantedSize().SetHeight(10)
 	hLine.GetLayout().GetMargin().Set(5, 5, 0, 0)
 	v.Append(hLine)
 
-	v.Append(widget2.NewText("IN", theme.Fonts.Small))
+	v.Append(widget.NewText("IN", widget.TextSizeSmall))
 
-	inPlug := widget2.NewPlug()
+	inPlug := widget.NewPlug()
 	inPlug.GetLayout().GetMargin().SetTop(2)
 	v.Append(inPlug)
 
-	vLineOut := widget2.NewLine(false, float32(2))
+	vLineOut := widget.NewLine(false, float32(2))
 	vLineOut.GetLayout().GetWantedSize().SetHeight(10)
 	vLineOut.GetLayout().GetMargin().SetBottom(2)
 	v.Append(vLineOut)
 
-	outContainer := widget2.NewContainer()
-	outContainer.SetInverted(true)
+	outContainer := component.NewContainer()
 	outContainer.GetLayout().GetWantedSize().SetHeight(55)
 	outContainer.GetLayout().GetPadding().Set(5, 5, 5, 5)
 	v.Append(outContainer)
 
-	outLabel := widget2.NewText("OUT", theme.Fonts.Small)
-	outLabel.SetInverted(true)
+	outLabel := widget.NewText("OUT", widget.TextSizeSmall)
 	outContainer.Append(outLabel)
 
-	outPlug := widget2.NewPlug()
+	outPlug := widget.NewPlug()
 	outPlug.SetInverted(true)
 	outPlug.GetLayout().GetMargin().SetTop(2)
 	outContainer.Append(outPlug)

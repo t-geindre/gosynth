@@ -1,10 +1,9 @@
 package demo
 
 import (
-	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
 	"gosynth/gui/component"
-	control2 "gosynth/gui/control"
+	"gosynth/gui/control"
 	"gosynth/gui/graphic"
 	"gosynth/gui/layout"
 	"image/color"
@@ -13,14 +12,14 @@ import (
 
 type Resize struct {
 	*component.Component
-	mouseDrag           *control2.MouseDelta
+	mouseDrag           *control.MouseDelta
 	minWidth, minHeight float64
 }
 
 func NewResize(minWidth, minHeight float64) *Resize {
 	r := &Resize{
 		Component: component.NewComponent(),
-		mouseDrag: control2.NewMouseDelta(),
+		mouseDrag: control.NewMouseDelta(),
 		minWidth:  minWidth,
 		minHeight: minHeight,
 	}
@@ -30,16 +29,13 @@ func NewResize(minWidth, minHeight float64) *Resize {
 		image.Fill(color.Black)
 	})
 
-	r.AddListener(&r, control2.LeftMouseDownEvent, func(e event.IEvent) {
+	r.AddListener(&r, control.LeftMouseDownEvent, func(e event.IEvent) {
 		r.mouseDrag.Start()
-		ebiten.SetCursorShape(ebiten.CursorShapeMove)
 		e.StopPropagation()
 	})
 
-	r.AddListener(&r, control2.LeftMouseUpEvent, func(e event.IEvent) {
+	r.AddListener(&r, control.LeftMouseUpEvent, func(e event.IEvent) {
 		r.mouseDrag.Stop()
-		ebiten.SetCursorShape(ebiten.CursorShapeDefault)
-
 		e.StopPropagation()
 	})
 
