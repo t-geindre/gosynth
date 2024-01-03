@@ -6,6 +6,8 @@ import (
 )
 
 type IGraphic interface {
+	event.IDispatcher
+
 	GetChildren() []IGraphic
 	GetParent() IGraphic
 	SetParent(parent IGraphic)
@@ -26,7 +28,4 @@ type IGraphic interface {
 	// ScheduleUpdate
 	// Will trigger the DrawUpdateRequiredEvent on next graphic update
 	ScheduleUpdate()
-	GetDispatcher() *event.Dispatcher
-
-	EnableDebugView(enabled bool)
 }

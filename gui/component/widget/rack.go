@@ -23,7 +23,7 @@ func NewRack() *Rack {
 	r.scale = .1
 	r.GetGraphic().GetOptions().GeoM.Scale(r.scale, r.scale)
 
-	r.GetGraphic().GetDispatcher().AddListener(&r, graphic.DrawEvent, func(e event.IEvent) {
+	r.GetGraphic().AddListener(&r, graphic.DrawEvent, func(e event.IEvent) {
 		r.GetGraphic().GetImage().Fill(color.RGBA{R: 26, G: 26, B: 26, A: 255})
 	})
 

@@ -3,10 +3,10 @@ package graphic
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
-	"image/color"
 )
 
 type Graphic struct {
+	*event.Dispatcher
 	parent          IGraphic
 	children        []IGraphic
 	options         *ebiten.DrawImageOptions
@@ -14,7 +14,6 @@ type Graphic struct {
 	width, height   int
 	updateScheduled bool
 	imageDirty      bool
-	dispatcher      *event.Dispatcher
 }
 
 func NewGraphic() *Graphic {
@@ -22,16 +21,12 @@ func NewGraphic() *Graphic {
 		children:   make([]IGraphic, 0),
 		options:    &ebiten.DrawImageOptions{},
 		imageDirty: true,
-		dispatcher: event.NewDispatcher(),
+		Dispatcher: event.NewDispatcher(),
 	}
 
 	g.ScheduleUpdate()
 
 	return g
-}
-
-func (g *Graphic) GetDispatcher() *event.Dispatcher {
-	return g.dispatcher
 }
 
 func (g *Graphic) GetChildren() []IGraphic {
@@ -80,11 +75,11 @@ func (g *Graphic) Draw(dest *ebiten.Image) {
 	}
 
 	if g.updateScheduled {
-		g.dispatcher.Dispatch(event.NewEvent(DrawUpdateRequiredEvent, g))
+		g.Dispatch(event.NewEvent(DrawUpdateRequiredEvent, g))
 		g.updateScheduled = false
 	}
 
-	g.dispatcher.Dispatch(event.NewEvent(DrawEvent, g))
+	g.Dispatch(event.NewEvent(DrawEvent, g))
 
 	for _, child := range g.children {
 		child.Draw(g.image)
@@ -134,14 +129,4 @@ func (g *Graphic) MoveFront(child IGraphic) {
 			return
 		}
 	}
-}
-
-func (g *Graphic) EnableDebugView(enabled bool) {
-	if enabled {
-		g.dispatcher.AddListener(&g, DrawEvent, func(e event.IEvent) {
-			g.image.Fill(color.RGBA{R: 255, G: 0, B: 0, A: 255})
-		})
-		return
-	}
-	g.GetDispatcher().RemoveListener(&g, DrawEvent)
 }

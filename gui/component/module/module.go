@@ -37,7 +37,7 @@ func NewModule(title string, widthUnit int, outerType component.IComponent) *Mod
 	text.GetLayout().GetMargin().SetBottom(10)
 	m.Append(text)
 
-	m.GetGraphic().GetDispatcher().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
+	m.GetGraphic().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		image := m.GetGraphic().GetImage()
 		image.Fill(theme.Colors.Background)
 		vector.StrokeRect(image, 0, 0, float32(image.Bounds().Dx()), float32(image.Bounds().Dy()), 2, theme.Colors.Off, false)

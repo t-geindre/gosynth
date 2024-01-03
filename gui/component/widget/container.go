@@ -17,7 +17,7 @@ func NewContainer() *Container {
 		Component: component.NewComponent(),
 	}
 
-	c.GetGraphic().GetDispatcher().AddListener(&c, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
+	c.GetGraphic().AddListener(&c, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		img := c.GetGraphic().GetImage()
 		img.Clear()
 

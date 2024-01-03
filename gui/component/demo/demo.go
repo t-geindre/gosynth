@@ -20,7 +20,7 @@ func NewDemo() *Demo {
 	}
 
 	color := randomColor()
-	d.GetGraphic().GetDispatcher().AddListener(&d, graphic.DrawEvent, func(e event.IEvent) {
+	d.GetGraphic().AddListener(&d, graphic.DrawEvent, func(e event.IEvent) {
 		image := d.GetGraphic().GetImage()
 		image.Fill(color)
 	})

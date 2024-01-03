@@ -23,7 +23,7 @@ func NewMenu() *Menu {
 	l.GetPadding().SetAll(5)
 	l.SetContentOrientation(layout.Horizontal)
 
-	m.GetGraphic().GetDispatcher().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
+	m.GetGraphic().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		m.GetGraphic().GetImage().Fill(theme.Colors.Background)
 		w, h := m.GetLayout().GetSize().Get()
 		img := m.GetGraphic().GetImage()

@@ -19,7 +19,7 @@ func NewFPS() *FPS {
 	f := &FPS{}
 	f.Component = component.NewComponent()
 
-	f.GetGraphic().GetDispatcher().AddListener(&f, graphic.DrawEvent, func(e event.IEvent) {
+	f.GetGraphic().AddListener(&f, graphic.DrawEvent, func(e event.IEvent) {
 		img := f.GetGraphic().GetImage()
 		img.Fill(color.Black)
 		ebitenutil.DebugPrintAt(img, fmt.Sprintf("FPS %0.2f", ebiten.ActualFPS()), 2, 2)

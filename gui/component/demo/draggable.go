@@ -32,7 +32,7 @@ func NewDraggable(outerType component.IComponent) *Draggable {
 
 	c := randomColor()
 	bCol := colorInverse(c)
-	d.GetGraphic().GetDispatcher().AddListener(&d, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
+	d.GetGraphic().AddListener(&d, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		image := d.GetGraphic().GetImage()
 		image.Fill(c)
 		vector.StrokeRect(image, 0, 0, float32(image.Bounds().Dx()), float32(image.Bounds().Dy()), 2, color.Black, false)

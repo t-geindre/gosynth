@@ -27,7 +27,7 @@ func NewSlider(from, to float64, marks int) *Slider {
 		marksCount: marks,
 	}
 
-	s.GetGraphic().GetDispatcher().AddListener(&s, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
+	s.GetGraphic().AddListener(&s, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		img := s.GetGraphic().GetImage()
 		img.Fill(theme.Colors.BackgroundInverted)
 	})
@@ -47,7 +47,7 @@ func (s *Slider) addMarks() {
 		m.GetLayout().SetFill(100/float64(s.marksCount) - 1)
 
 		mg := m.GetGraphic()
-		mg.GetDispatcher().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(index int) func(e event.IEvent) {
+		mg.AddListener(&m, graphic.DrawUpdateRequiredEvent, func(index int) func(e event.IEvent) {
 			return func(e event.IEvent) {
 				i := index
 				if s.GetLayout().GetContentOrientation() == layout.Vertical {

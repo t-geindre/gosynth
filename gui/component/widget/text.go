@@ -26,7 +26,7 @@ func NewText(str string, fontFace font.Face) *Text {
 
 	t.SetText(str)
 
-	t.GetGraphic().GetDispatcher().AddListener(&t, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
+	t.GetGraphic().AddListener(&t, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		// Write on a new image to allow scale down if required
 		img := ebiten.NewImage(t.strw, t.strh)
 

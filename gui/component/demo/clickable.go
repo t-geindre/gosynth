@@ -24,7 +24,7 @@ func NewButton() *Clickable {
 		onCol:     colorInverse(c),
 	}
 
-	b.GetGraphic().GetDispatcher().AddListener(&b, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
+	b.GetGraphic().AddListener(&b, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		img := b.GetGraphic().GetImage()
 		img.Fill(b.color)
 	})

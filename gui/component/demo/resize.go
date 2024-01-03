@@ -25,7 +25,7 @@ func NewResize(minWidth, minHeight float64) *Resize {
 		minHeight: minHeight,
 	}
 
-	r.GetGraphic().GetDispatcher().AddListener(&r, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
+	r.GetGraphic().AddListener(&r, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		image := r.GetGraphic().GetImage()
 		image.Fill(color.Black)
 	})

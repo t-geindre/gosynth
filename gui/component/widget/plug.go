@@ -24,7 +24,7 @@ func NewPlug() *Plug {
 		float64(theme.Images.Plug.Bounds().Dy()),
 	)
 
-	p.GetGraphic().GetDispatcher().AddListener(&p, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
+	p.GetGraphic().AddListener(&p, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		w, h := p.GetLayout().GetSize().Get()
 		x := (w - float64(theme.Images.Plug.Bounds().Dx())) / 2
 		y := (h - float64(theme.Images.Plug.Bounds().Dy())) / 2
