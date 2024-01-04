@@ -29,10 +29,10 @@ func NewApp(str *output.Streamer) *App {
 
 	rack := widget.NewRack()
 	a.Root.Append(rack)
-	rack.Append(module.NewVCA())
-	//rack.Append(module.NewVCA())
 
-	//a.Root = demo.NewDemo()
+	rack.Append(module.NewVCA())
+	rack.Append(module.NewVCA())
+
 	a.Root.Append(component.NewFPS())
 
 	return a
