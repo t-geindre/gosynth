@@ -31,11 +31,11 @@ func NewModule(title string, widthUnit int, outerType component.IComponent) *Mod
 
 	l := m.GetLayout()
 	l.SetAbsolutePositioning(true)
-	l.GetPadding().SetAll(10)
-	l.GetSize().Set(float64(widthUnit)*ModuleUWidth, ModuleHeight)
+	l.SetPadding(10, 10, 10, 10)
+	l.SetSize(float64(widthUnit)*ModuleUWidth, ModuleHeight)
 
 	text := widget.NewText(title, widget.TextSizeTitle)
-	text.GetLayout().GetMargin().SetBottom(10)
+	text.GetLayout().SetMargin(0, 10, 0, 0)
 	m.Append(text)
 
 	m.GetGraphic().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {

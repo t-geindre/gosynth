@@ -22,11 +22,10 @@ type Layout struct {
 
 func NewLayout() *Layout {
 	l := &Layout{
-		children:   make([]ILayout, 0),
-		Dispatcher: event.NewDispatcher(),
+		children:    make([]ILayout, 0),
+		Dispatcher:  event.NewDispatcher(),
+		orientation: Vertical,
 	}
-
-	l.ScheduleUpdate()
 
 	return l
 }

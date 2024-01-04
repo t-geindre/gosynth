@@ -19,13 +19,13 @@ func NewPlug() *Plug {
 	}
 
 	l := p.GetLayout()
-	l.GetWantedSize().Set(
+	l.SetWantedSize(
 		float64(theme.Images.Plug.Bounds().Dx()),
 		float64(theme.Images.Plug.Bounds().Dy()),
 	)
 
 	p.GetGraphic().AddListener(&p, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
-		w, h := p.GetLayout().GetSize().Get()
+		w, h := p.GetLayout().GetSize()
 		x := (w - float64(theme.Images.Plug.Bounds().Dx())) / 2
 		y := (h - float64(theme.Images.Plug.Bounds().Dy())) / 2
 

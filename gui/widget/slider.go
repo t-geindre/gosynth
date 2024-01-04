@@ -6,7 +6,7 @@ import (
 	"gosynth/gui/component"
 	"gosynth/gui/control"
 	"gosynth/gui/graphic"
-	layout2 "gosynth/gui/layout"
+	"gosynth/gui/layout"
 	"gosynth/gui/theme"
 )
 
@@ -32,7 +32,7 @@ func NewSlider(from, to float64, marks int) *Slider {
 		img.Fill(theme.Colors.BackgroundInverted)
 	})
 
-	s.GetLayout().GetPadding().SetAll(5)
+	s.GetLayout().SetPadding(5, 5, 5, 5)
 	s.addMarks()
 
 	s.AddListener(&s, control.LeftMouseDownEvent, s.onMouseDown)
@@ -50,7 +50,7 @@ func (s *Slider) addMarks() {
 		mg.AddListener(&m, graphic.DrawUpdateRequiredEvent, func(index int) func(e event.IEvent) {
 			return func(e event.IEvent) {
 				i := index
-				if s.GetLayout().GetContentOrientation() == layout2.Vertical {
+				if s.GetLayout().GetContentOrientation() == layout.Vertical {
 					i = s.marksCount - index - 1
 				}
 				img := mg.GetImage()
@@ -65,14 +65,14 @@ func (s *Slider) addMarks() {
 		s.Append(m)
 	}
 
-	s.GetLayout().AddListener(&s, layout2.UpdateStartsEvent, func(e event.IEvent) {
+	s.GetLayout().AddListener(&s, layout.UpdateStartsEvent, func(e event.IEvent) {
 		for i, m := range s.GetChildren() {
 			if i > 0 {
-				if s.GetLayout().GetContentOrientation() == layout2.Horizontal {
-					m.GetLayout().GetMargin().SetLeft(2)
+				if s.GetLayout().GetContentOrientation() == layout.Horizontal {
+					m.GetLayout().SetMargin(0, 0, 2, 0)
 					continue
 				}
-				m.GetLayout().GetMargin().SetTop(2)
+				m.GetLayout().SetMargin(2, 0, 0, 0)
 			}
 		}
 	})
@@ -87,11 +87,12 @@ func (s *Slider) updateMarks() {
 func (s *Slider) Update() {
 	if s.mouseDown {
 		mx, my := ebiten.CursorPosition()
-		sx, sy := s.GetLayout().GetAbsolutePosition().Get()
-		if s.GetLayout().GetContentOrientation() == layout2.Horizontal {
-			s.SetValue(s.from + (s.to-s.from)*(float64(mx)-sx)/s.GetLayout().GetSize().GetWidth())
+		sx, sy := s.GetLayout().GetAbsolutePosition()
+		w, h := s.GetLayout().GetSize()
+		if s.GetLayout().GetContentOrientation() == layout.Horizontal {
+			s.SetValue(s.from + (s.to-s.from)*(float64(mx)-sx)/w)
 		} else {
-			s.SetValue(s.from + (s.to-s.from)*(sy+s.GetLayout().GetSize().GetHeight()-float64(my))/s.GetLayout().GetSize().GetHeight())
+			s.SetValue(s.from + (s.to-s.from)*(sy+h-float64(my))/h)
 		}
 	}
 

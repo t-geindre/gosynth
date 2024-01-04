@@ -15,12 +15,11 @@ func NewLine(horizontal bool, width float32) *component.Component {
 		img := l.GetGraphic().GetImage()
 		img.Clear()
 
+		w, h := l.GetLayout().GetSize()
 		if horizontal {
-			y := float32(l.GetLayout().GetSize().GetHeight()) / 2
-			vector.StrokeLine(img, 0, y, float32(l.GetLayout().GetSize().GetWidth()), y, width, theme.Colors.BackgroundInverted, false)
+			vector.StrokeLine(img, 0, float32(h/2), float32(h/2), float32(w), width, theme.Colors.BackgroundInverted, false)
 		} else {
-			x := float32(l.GetLayout().GetSize().GetWidth()) / 2
-			vector.StrokeLine(img, x, 0, x, float32(l.GetLayout().GetSize().GetHeight()), width, theme.Colors.BackgroundInverted, false)
+			vector.StrokeLine(img, float32(w/2), 0, float32(w/2), float32(h), width, theme.Colors.BackgroundInverted, false)
 		}
 	})
 
