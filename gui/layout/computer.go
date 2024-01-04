@@ -30,8 +30,8 @@ func computeHorizontal(l ILayout) {
 	// Compute required size
 	contentWidth := float64(0)
 	for _, c := range children {
-		cww, cwh := c.GetWantedSize().Get()
-		cmt, cmb, cml, cmr := c.GetMargin().Get()
+		cww, cwh := c.GetWantedSize()
+		cmt, cmb, cml, cmr := c.GetMargin()
 
 		if orientVertical {
 			contentWidth += cwh + cmt + cmb
@@ -41,8 +41,8 @@ func computeHorizontal(l ILayout) {
 	}
 
 	// Calculate scaling factor and free space
-	lw, lh := l.GetSize().Get()
-	lpt, lpb, lpl, lpr := l.GetPadding().Get()
+	lw, lh := l.GetSize()
+	lpt, lpb, lpl, lpr := l.GetPadding()
 
 	innerWidth := lw - lpl - lpr
 	innerHeight := lh - lpt - lpb
@@ -75,11 +75,8 @@ func computeHorizontal(l ILayout) {
 	xOffset := lpl
 	yOffset := lpt
 	for _, c := range children {
-		cww, cwh := c.GetWantedSize().Get()
-		cmt, cmb, cml, cmr := c.GetMargin().Get()
-
-		_, _ = cww, cwh
-		_, _ = cmr, cmb
+		cww, cwh := c.GetWantedSize()
+		cmt, cmb, cml, cmr := c.GetMargin()
 
 		fill := float64(0)
 		if c.GetFill() > 0 && freeSpace > 0 {
@@ -87,15 +84,15 @@ func computeHorizontal(l ILayout) {
 		}
 
 		if orientVertical {
-			c.GetPosition().Set(xOffset+cml, yOffset+cmt*scaleFact)
+			c.SetPosition(xOffset+cml, yOffset+cmt*scaleFact)
 			ch := (cwh + fill) * scaleFact
-			c.GetSize().Set(innerHeight-cml-cmr, ch)
+			c.SetSize(innerHeight-cml-cmr, ch)
 			yOffset += ch + (cmt+cmb)*scaleFact
 		} else {
-			c.GetPosition().Set(xOffset+cml*scaleFact, yOffset+cmt)
+			c.SetPosition(xOffset+cml*scaleFact, yOffset+cmt)
 			cw := (cww + fill) * scaleFact
-			c.GetSize().Set(cw, innerHeight-cmt-cmb)
-			xOffset += cw + c.GetMargin().GetHorizontal()*scaleFact
+			c.SetSize(cw, innerHeight-cmt-cmb)
+			xOffset += cw + (cml+cmr)*scaleFact
 		}
 	}
 }

@@ -6,49 +6,25 @@ import (
 
 type Layout struct {
 	*event.Dispatcher
-	parent             ILayout
-	children           []ILayout
-	position           *Position
-	size               *Size
-	wantedSize         *Size
-	padding            *Spacing
-	margin             *Spacing
-	fill               float64
-	absPos             bool
-	contentOrientation Orientation
+
+	parent   ILayout
+	children []ILayout
+
+	x, y           float64
+	w, h           float64
+	ww, wh         float64
+	pt, pb, pl, pr float64
+	mt, mb, ml, mr float64
+	fill           float64
+	absPos         bool
+	orientation    Orientation
 }
 
 func NewLayout() *Layout {
 	l := &Layout{
-		children:           make([]ILayout, 0),
-		Dispatcher:         event.NewDispatcher(),
-		position:           &Position{},
-		size:               NewSize(),
-		wantedSize:         NewSize(),
-		padding:            &Spacing{},
-		margin:             &Spacing{},
-		contentOrientation: Vertical,
-		absPos:             false,
-		fill:               0,
+		children:   make([]ILayout, 0),
+		Dispatcher: event.NewDispatcher(),
 	}
-
-	l.ScheduleUpdate()
-
-	l.size.setOnChangeFunc(func(w, h float64) {
-		l.Dispatch(event.NewEvent(ResizeEvent, l))
-		l.ScheduleUpdate()
-	})
-
-	l.wantedSize.setOnChangeFunc(func(w, h float64) {
-		p := l.GetParent()
-		if p != nil {
-			p.ScheduleUpdate()
-		}
-	})
-
-	l.position.setOnChangeFunc(func(x, y float64) {
-		l.Dispatch(event.NewEvent(MoveEvent, l))
-	})
 
 	return l
 }
@@ -79,44 +55,75 @@ func (l *Layout) Remove(child ILayout) {
 	child.SetParent(nil)
 }
 
-func (l *Layout) GetMargin() *Spacing {
-	return l.margin
+func (l *Layout) GetMargin() (float64, float64, float64, float64) {
+	return l.mt, l.mb, l.ml, l.mr
 }
 
-func (l *Layout) GetPadding() *Spacing {
-	return l.padding
+func (l *Layout) SetMargin(top, bottom, left, right float64) {
+	l.mt, l.mb, l.ml, l.mr = top, bottom, left, right
 }
 
-func (l *Layout) GetPosition() *Position {
-	return l.position
+func (l *Layout) GetPadding() (float64, float64, float64, float64) {
+	return l.pt, l.pb, l.pl, l.pr
 }
 
-func (l *Layout) GetAbsolutePosition() *Position {
-	x, y := l.GetPosition().Get()
+func (l *Layout) SetPadding(top, bottom, left, right float64) {
+	l.pt, l.pb, l.pl, l.pr = top, bottom, left, right
+}
+
+func (l *Layout) GetPosition() (float64, float64) {
+	return l.x, l.y
+}
+
+func (l *Layout) SetPosition(x, y float64) {
+	if l.x != x || l.y != y {
+		l.x, l.y = x, y
+		l.Dispatch(event.NewEvent(MoveEvent, l))
+	}
+}
+
+func (l *Layout) GetAbsolutePosition() (float64, float64) {
+	x, y := l.GetPosition()
 	parent := l.GetParent()
 	for parent != nil {
-		px, py := parent.GetPosition().Get()
+		px, py := parent.GetPosition()
 		x += px
 		y += py
 		parent = parent.GetParent()
 	}
-	return &Position{x, y, nil}
+	return x, y
 }
 
-func (l *Layout) GetSize() *Size {
-	return l.size
+func (l *Layout) GetSize() (float64, float64) {
+	return l.w, l.h
 }
 
-func (l *Layout) GetWantedSize() *Size {
-	return l.wantedSize
+func (l *Layout) SetSize(w, h float64) {
+	if l.w != w || l.h != h {
+		l.w, l.h = w, h
+		l.Dispatch(event.NewEvent(ResizeEvent, l))
+	}
+}
+
+func (l *Layout) GetWantedSize() (float64, float64) {
+	return l.ww, l.wh
+}
+
+func (l *Layout) SetWantedSize(w, h float64) {
+	if l.ww != w || l.wh != h {
+		if p := l.GetParent(); p != nil {
+			p.ScheduleUpdate()
+		}
+		l.ww, l.wh = w, h
+	}
 }
 
 func (l *Layout) SetContentOrientation(orientation Orientation) {
-	l.contentOrientation = orientation
+	l.orientation = orientation
 }
 
 func (l *Layout) GetContentOrientation() Orientation {
-	return l.contentOrientation
+	return l.orientation
 }
 
 func (l *Layout) SetAbsolutePositioning(absolute bool) {
@@ -136,8 +143,8 @@ func (l *Layout) GetFill() float64 {
 }
 
 func (l *Layout) PointCollides(x, y float64) bool {
-	return l.position.x <= x && x <= l.position.x+l.size.w &&
-		l.position.y <= y && y <= l.position.y+l.size.h
+	return l.x <= x && x <= l.x+l.w &&
+		l.y <= y && y <= l.y+l.h
 }
 
 func (l *Layout) GetDepth() int {

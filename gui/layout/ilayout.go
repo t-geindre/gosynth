@@ -18,26 +18,31 @@ type ILayout interface {
 	Append(child ILayout)
 	Remove(child ILayout)
 
-	GetMargin() *Spacing
-	GetPadding() *Spacing
+	GetMargin() (float64, float64, float64, float64)
+	SetMargin(float64, float64, float64, float64)
+	GetPadding() (float64, float64, float64, float64)
+	SetPadding(float64, float64, float64, float64)
 
 	// GetPosition
 	// Component position will be overridden by the layouting system if the component is not absolute
-	GetPosition() *Position
+	GetPosition() (float64, float64)
+	SetPosition(float64, float64)
 
 	// GetAbsolutePosition
 	// Get the component absolute position in its root node
 	// Setting an absolute position has no effect
-	GetAbsolutePosition() *Position
+	GetAbsolutePosition() (float64, float64)
 
 	// GetSize
-	// Component size will be overridden by the layouting system if the component is not absolute
-	GetSize() *Size
+	// Component size will be overridden by the layouting system if the component is not absolute (or Root)
+	GetSize() (float64, float64)
+	SetSize(float64, float64)
 
 	// GetWantedSize
 	// the layouting system will try to set the component size to the wanted size
 	// but if there is no filler to fill the remaining space, the wanted size will be overridden
-	GetWantedSize() *Size
+	GetWantedSize() (float64, float64)
+	SetWantedSize(float64, float64)
 
 	// SetContentOrientation
 	// the content orientation is the orientation of the children
