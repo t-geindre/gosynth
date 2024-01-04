@@ -81,6 +81,7 @@ func (g *Graphic) Draw(dest *ebiten.Image) {
 
 	g.Dispatch(event.NewEvent(DrawEvent, g))
 
+	// Todo images should all be drawn to a single image, merge matrices
 	for _, child := range g.children {
 		child.Draw(g.image)
 	}

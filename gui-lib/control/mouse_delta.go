@@ -29,12 +29,12 @@ func (m *MouseDelta) GetDelta() (int, int) {
 func (m *MouseDelta) Start() {
 	m.Active = true
 	m.LastX, m.LastY = ebiten.CursorPosition()
-	ebiten.SetCursorShape(ebiten.CursorShapeMove)
+	Cursor.Push(ebiten.CursorShapeMove)
 }
 
 func (m *MouseDelta) Stop() {
 	m.Active = false
-	ebiten.SetCursorShape(ebiten.CursorShapeDefault)
+	Cursor.Pop()
 }
 
 func (m *MouseDelta) IsActive() bool {

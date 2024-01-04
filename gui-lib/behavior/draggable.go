@@ -2,39 +2,40 @@ package behavior
 
 import (
 	"gosynth/event"
-	component2 "gosynth/gui-lib/component"
-	control2 "gosynth/gui-lib/control"
+	"gosynth/gui-lib/component"
+	"gosynth/gui-lib/control"
 )
 
 type Draggable struct {
-	drag *control2.MouseDelta
-	node component2.IComponent
+	drag *control.MouseDelta
+	node component.IComponent
 }
 
-func NewDraggable(node component2.IComponent) *Draggable {
+func NewDraggable(node component.IComponent) *Draggable {
 	d := &Draggable{
-		drag: control2.NewMouseDelta(),
+		drag: control.NewMouseDelta(),
 		node: node,
 	}
 
-	node.AddListener(&d, control2.LeftMouseDownEvent, func(e event.IEvent) {
+	node.AddListener(&d, control.LeftMouseDownEvent, func(e event.IEvent) {
 		d.drag.Start()
 		e.StopPropagation()
 		node.Dispatch(event.NewEvent(DragStartEvent, node))
 	})
 
-	node.AddListener(&d, control2.LeftMouseUpEvent, func(e event.IEvent) {
+	node.AddListener(&d, control.LeftMouseUpEvent, func(e event.IEvent) {
 		d.drag.Stop()
 		e.StopPropagation()
 		node.Dispatch(event.NewEvent(DragStopEvent, node))
 	})
 
-	node.AddListener(&d, component2.UpdateEvent, func(e event.IEvent) {
+	node.AddListener(&d, component.UpdateEvent, func(e event.IEvent) {
 		if d.drag.IsActive() {
 			dx, dy := d.drag.GetDelta()
-			node.Dispatch(NewDragEvent(node, dx, dy))
+			dEv := NewDragEvent(node, dx, dy)
+			node.Dispatch(dEv)
 
-			if !e.IsPropagationStopped() {
+			if !dEv.IsPropagationStopped() {
 				px, py := d.node.GetLayout().GetPosition()
 				d.node.GetLayout().SetPosition(float64(dx)+px, float64(dy)+py)
 			}
@@ -45,9 +46,9 @@ func NewDraggable(node component2.IComponent) *Draggable {
 }
 
 func (d *Draggable) Remove() {
-	d.node.RemoveListener(&d, control2.LeftMouseDownEvent)
-	d.node.RemoveListener(&d, control2.LeftMouseUpEvent)
-	d.node.RemoveListener(&d, component2.UpdateEvent)
+	d.node.RemoveListener(&d, control.LeftMouseDownEvent)
+	d.node.RemoveListener(&d, control.LeftMouseUpEvent)
+	d.node.RemoveListener(&d, component.UpdateEvent)
 }
 
 type DragEventDetails struct {

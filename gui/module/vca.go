@@ -8,9 +8,10 @@ type VCA struct {
 	*Module
 }
 
-func NewVCA() *VCA {
-	v := &VCA{}
-	v.Module = NewModule("VCA", 1, v)
+func NewVCA() *Module {
+	v := &VCA{
+		Module: NewModule("VCA", 1),
+	}
 
 	slider := widget.NewSlider(0, 1, 25)
 	slider.GetLayout().SetFill(80)
@@ -41,5 +42,5 @@ func NewVCA() *VCA {
 	outPlug := widget.NewPlug()
 	v.Append(outPlug)
 
-	return v
+	return v.Module
 }

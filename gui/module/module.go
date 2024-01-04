@@ -15,14 +15,12 @@ const ModuleHeight float64 = 500
 
 type Module struct {
 	*component.Component
-	outerType component.IComponent
-	title     string
+	title string
 }
 
-func NewModule(title string, widthUnit int, outerType component.IComponent) *Module {
+func NewModule(title string, widthUnit int) *Module {
 	m := &Module{
 		Component: component.NewComponent(),
-		outerType: outerType,
 		title:     title,
 	}
 

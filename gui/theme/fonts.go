@@ -5,10 +5,8 @@ import (
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 	"golang.org/x/image/font/sfnt"
+	"os"
 )
-
-//go:embed LEMONMILK-Medium.otf
-var fontLemonMilkMedium []byte
 
 type fontList struct {
 	Title  font.Face
@@ -20,11 +18,17 @@ type fontList struct {
 var Fonts fontList
 
 func init() {
+	fontSrc, err := os.ReadFile("assets/fonts/LEMONMILK-Medium.otf")
+
+	if err != nil {
+		panic(err)
+	}
+
 	Fonts = fontList{
-		Title:  getFontFace(fontLemonMilkMedium, 18),
-		Large:  getFontFace(fontLemonMilkMedium, 14),
-		Medium: getFontFace(fontLemonMilkMedium, 12),
-		Small:  getFontFace(fontLemonMilkMedium, 10),
+		Title:  getFontFace(fontSrc, 18),
+		Large:  getFontFace(fontSrc, 14),
+		Medium: getFontFace(fontSrc, 12),
+		Small:  getFontFace(fontSrc, 10),
 	}
 }
 

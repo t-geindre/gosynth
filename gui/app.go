@@ -2,7 +2,7 @@ package gui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	component2 "gosynth/gui-lib/component"
+	"gosynth/gui-lib/component"
 	"gosynth/gui/module"
 	"gosynth/gui/widget"
 	"gosynth/output"
@@ -13,7 +13,7 @@ const WindowHeight = 1200
 
 type App struct {
 	Streamer *output.Streamer
-	Root     component2.IComponent
+	Root     component.IComponent
 }
 
 func NewApp(str *output.Streamer) *App {
@@ -24,15 +24,17 @@ func NewApp(str *output.Streamer) *App {
 	a := &App{}
 	a.Streamer = str
 
-	a.Root = component2.NewRoot()
+	a.Root = component.NewRoot()
+
 	a.Root.Append(widget.NewMenu())
 
 	rack := widget.NewRack()
 	a.Root.Append(rack)
 
 	rack.Append(module.NewVCA())
+	rack.Append(module.NewDelay())
 
-	a.Root.Append(component2.NewFPS())
+	a.Root.Append(component.NewFPS())
 
 	return a
 }

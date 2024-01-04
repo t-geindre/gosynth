@@ -54,6 +54,10 @@ func NewText(str string, fontFace font.Face, color, bgColor color.RGBA) *Text {
 		op.GeoM.Scale(scale, scale)
 		op.GeoM.Translate(float64(x), float64(y))
 
+		if scale != 1 {
+			op.Filter = ebiten.FilterLinear
+		}
+
 		destImg.DrawImage(img, op)
 	})
 

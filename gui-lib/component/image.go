@@ -8,7 +8,8 @@ import (
 
 type Image struct {
 	*Component
-	img *ebiten.Image
+	img   *ebiten.Image
+	theta float64
 }
 
 func NewImage(img *ebiten.Image) *Image {
@@ -20,6 +21,17 @@ func NewImage(img *ebiten.Image) *Image {
 		// Todo this behavior could be moved to the graphic component,
 		// allowing to factorize the code with the text component
 		destImg := i.GetGraphic().GetImage()
+		destImg.Clear()
+
+		op := &ebiten.DrawImageOptions{}
+
+		if i.theta != 0 {
+			b := i.img.Bounds()
+			op.GeoM.Translate(-float64(b.Dx())/2, -float64(b.Dy())/2)
+			op.GeoM.Rotate(i.theta)
+			op.GeoM.Translate(float64(b.Dx())/2, float64(b.Dy())/2)
+		}
+		op.Filter = ebiten.FilterLinear
 
 		// Compute scaling factor
 		scale := float64(1)
@@ -38,7 +50,6 @@ func NewImage(img *ebiten.Image) *Image {
 		x := (destImg.Bounds().Dx() - int(float64(i.img.Bounds().Dx())*scale)) / 2
 		y := (destImg.Bounds().Dy() - int(float64(i.img.Bounds().Dy())*scale)) / 2
 
-		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Scale(scale, scale)
 		op.GeoM.Translate(float64(x), float64(y))
 
@@ -57,5 +68,10 @@ func (i *Image) SetImage(img *ebiten.Image) {
 		float64(img.Bounds().Dx()),
 		float64(img.Bounds().Dy()),
 	)
+	i.GetGraphic().ScheduleUpdate()
+}
+
+func (i *Image) Rotate(theta float64) {
+	i.theta += theta
 	i.GetGraphic().ScheduleUpdate()
 }
