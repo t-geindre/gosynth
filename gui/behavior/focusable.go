@@ -15,11 +15,8 @@ func NewFocusable(node component.IComponent) *Focusable {
 		node: node,
 	}
 
-	node.AddListener(&f, control.LeftMouseDownEvent, func(e event.IEvent) {
-		fEvent := event.NewEvent(FocusEvent, node)
-		node.Dispatch(fEvent)
-
-		if p := node.GetParent(); p != nil && !fEvent.IsPropagationStopped() {
+	node.AddListener(&f, control.FocusEvent, func(e event.IEvent) {
+		if p := node.GetParent(); p != nil {
 			p.MoveFront(node)
 		}
 	})
@@ -28,5 +25,5 @@ func NewFocusable(node component.IComponent) *Focusable {
 }
 
 func (f *Focusable) Remove() {
-	f.node.RemoveListener(&f, control.LeftMouseDownEvent)
+	f.node.RemoveListener(&f, control.FocusEvent)
 }

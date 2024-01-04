@@ -45,22 +45,6 @@ func NewDemo() *Demo {
 
 		for j := float64(0); j < 5; j++ {
 			btn := NewButton()
-
-			if i > 0 {
-				if j > 0 {
-					btn.GetLayout().GetMargin().SetLeft(10)
-				} else {
-					btn.GetLayout().SetFill(10)
-				}
-				btn.GetLayout().GetMargin().SetTop(10)
-				btn.GetLayout().GetMargin().SetBottom(10)
-			} else {
-				if j > 0 {
-					btn.GetLayout().GetMargin().SetTop(10)
-				}
-				btn.GetLayout().GetMargin().SetLeft(10)
-				btn.GetLayout().GetMargin().SetRight(10)
-			}
 			btn.GetLayout().GetWantedSize().Set((j+1)*50, (j+1)*50)
 			btn.Append(component.NewText(fmt.Sprintf("%d", int((j+1)*50)), theme.Fonts.Title, textColor, bgTextColor))
 			draggable.Append(btn)
