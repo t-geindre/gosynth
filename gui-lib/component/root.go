@@ -1,8 +1,8 @@
 package component
 
 import (
-	"gosynth/gui/control"
-	"gosynth/gui/layout"
+	"gosynth/gui-lib/control"
+	"gosynth/gui-lib/layout"
 )
 
 type Root struct {

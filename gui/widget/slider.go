@@ -3,15 +3,15 @@ package widget
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
-	"gosynth/gui/component"
-	"gosynth/gui/control"
-	"gosynth/gui/graphic"
-	"gosynth/gui/layout"
+	component2 "gosynth/gui-lib/component"
+	"gosynth/gui-lib/control"
+	"gosynth/gui-lib/graphic"
+	layout2 "gosynth/gui-lib/layout"
 	"gosynth/gui/theme"
 )
 
 type Slider struct {
-	*component.Component
+	*component2.Component
 	from, to   float64
 	marksCount int
 	marksOn    int
@@ -21,7 +21,7 @@ type Slider struct {
 
 func NewSlider(from, to float64, marks int) *Slider {
 	s := &Slider{
-		Component:  component.NewComponent(),
+		Component:  component2.NewComponent(),
 		from:       from,
 		to:         to,
 		marksCount: marks,
@@ -43,14 +43,14 @@ func NewSlider(from, to float64, marks int) *Slider {
 
 func (s *Slider) addMarks() {
 	for i := 0; i < s.marksCount; i++ {
-		m := component.NewContainer()
+		m := component2.NewContainer()
 		m.GetLayout().SetFill(100/float64(s.marksCount) - 1)
 
 		mg := m.GetGraphic()
 		mg.AddListener(&m, graphic.DrawUpdateRequiredEvent, func(index int) func(e event.IEvent) {
 			return func(e event.IEvent) {
 				i := index
-				if s.GetLayout().GetContentOrientation() == layout.Vertical {
+				if s.GetLayout().GetContentOrientation() == layout2.Vertical {
 					i = s.marksCount - index - 1
 				}
 				img := mg.GetImage()
@@ -65,10 +65,10 @@ func (s *Slider) addMarks() {
 		s.Append(m)
 	}
 
-	s.GetLayout().AddListener(&s, layout.UpdateStartsEvent, func(e event.IEvent) {
+	s.GetLayout().AddListener(&s, layout2.UpdateStartsEvent, func(e event.IEvent) {
 		for i, m := range s.GetChildren() {
 			if i > 0 {
-				if s.GetLayout().GetContentOrientation() == layout.Horizontal {
+				if s.GetLayout().GetContentOrientation() == layout2.Horizontal {
 					m.GetLayout().SetMargin(0, 0, 2, 0)
 					continue
 				}
@@ -89,7 +89,7 @@ func (s *Slider) Update() {
 		mx, my := ebiten.CursorPosition()
 		sx, sy := s.GetLayout().GetAbsolutePosition()
 		w, h := s.GetLayout().GetSize()
-		if s.GetLayout().GetContentOrientation() == layout.Horizontal {
+		if s.GetLayout().GetContentOrientation() == layout2.Horizontal {
 			s.SetValue(s.from + (s.to-s.from)*(float64(mx)-sx)/w)
 		} else {
 			s.SetValue(s.from + (s.to-s.from)*(sy+h-float64(my))/h)

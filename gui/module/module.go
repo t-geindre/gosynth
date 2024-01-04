@@ -3,9 +3,9 @@ package module
 import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
-	"gosynth/gui/behavior"
-	"gosynth/gui/component"
-	"gosynth/gui/graphic"
+	"gosynth/gui-lib/behavior"
+	"gosynth/gui-lib/component"
+	"gosynth/gui-lib/graphic"
 	"gosynth/gui/theme"
 	"gosynth/gui/widget"
 )
@@ -34,8 +34,7 @@ func NewModule(title string, widthUnit int, outerType component.IComponent) *Mod
 	l.SetPadding(10, 10, 10, 10)
 	l.SetSize(float64(widthUnit)*ModuleUWidth, ModuleHeight)
 
-	text := widget.NewText(title, widget.TextSizeTitle)
-	text.GetLayout().SetMargin(0, 10, 0, 0)
+	text := widget.NewTitle(title, widget.TitlePositionTop)
 	m.Append(text)
 
 	m.GetGraphic().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {

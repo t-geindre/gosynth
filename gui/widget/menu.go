@@ -3,9 +3,9 @@ package widget
 import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
-	"gosynth/gui/component"
-	"gosynth/gui/graphic"
-	"gosynth/gui/layout"
+	"gosynth/gui-lib/component"
+	"gosynth/gui-lib/graphic"
+	"gosynth/gui-lib/layout"
 	"gosynth/gui/theme"
 )
 
@@ -30,7 +30,7 @@ func NewMenu() *Menu {
 		vector.StrokeLine(img, 0, float32(h), float32(w), float32(h), 1, theme.Colors.BackgroundInverted, false)
 	})
 
-	m.Append(NewText("Gosynth", TextSizeTitle))
+	m.Append(NewTitle("Gosynth", TitlePositionCenter))
 
 	m.Append(component.NewFiller(100))
 

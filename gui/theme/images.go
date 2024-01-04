@@ -10,12 +10,14 @@ var Images imageList
 type imageList struct {
 	Plug         *ebiten.Image
 	PlugInverted *ebiten.Image
+	Logo         *ebiten.Image
 }
 
 func init() {
 	Images = imageList{
 		Plug:         loadImage("assets/images/plug.png"),
 		PlugInverted: loadImage("assets/images/plug-inverted.png"),
+		Logo:         loadImage("assets/images/piano_gopher.png"),
 	}
 }
 

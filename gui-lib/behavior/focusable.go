@@ -2,8 +2,8 @@ package behavior
 
 import (
 	"gosynth/event"
-	"gosynth/gui/component"
-	"gosynth/gui/control"
+	"gosynth/gui-lib/component"
+	"gosynth/gui-lib/control"
 )
 
 type Focusable struct {

@@ -2,24 +2,24 @@ package demo
 
 import (
 	"gosynth/event"
-	"gosynth/gui/component"
-	"gosynth/gui/control"
-	"gosynth/gui/graphic"
-	"gosynth/gui/layout"
+	component2 "gosynth/gui-lib/component"
+	control2 "gosynth/gui-lib/control"
+	"gosynth/gui-lib/graphic"
+	"gosynth/gui-lib/layout"
 	"image/color"
 	"math"
 )
 
 type Resize struct {
-	*component.Component
-	mouseDrag           *control.MouseDelta
+	*component2.Component
+	mouseDrag           *control2.MouseDelta
 	minWidth, minHeight float64
 }
 
 func NewResize(minWidth, minHeight float64) *Resize {
 	r := &Resize{
-		Component: component.NewComponent(),
-		mouseDrag: control.NewMouseDelta(),
+		Component: component2.NewComponent(),
+		mouseDrag: control2.NewMouseDelta(),
 		minWidth:  minWidth,
 		minHeight: minHeight,
 	}
@@ -29,12 +29,12 @@ func NewResize(minWidth, minHeight float64) *Resize {
 		image.Fill(color.Black)
 	})
 
-	r.AddListener(&r, control.LeftMouseDownEvent, func(e event.IEvent) {
+	r.AddListener(&r, control2.LeftMouseDownEvent, func(e event.IEvent) {
 		r.mouseDrag.Start()
 		e.StopPropagation()
 	})
 
-	r.AddListener(&r, control.LeftMouseUpEvent, func(e event.IEvent) {
+	r.AddListener(&r, control2.LeftMouseUpEvent, func(e event.IEvent) {
 		r.mouseDrag.Stop()
 		e.StopPropagation()
 	})
@@ -45,7 +45,7 @@ func NewResize(minWidth, minHeight float64) *Resize {
 	return r
 }
 
-func (r *Resize) SetParent(parent component.IComponent) {
+func (r *Resize) SetParent(parent component2.IComponent) {
 	r.Component.SetParent(parent)
 
 	// Todo we should make sure listener is removed on the previous parent

@@ -2,9 +2,9 @@ package demo
 
 import (
 	"gosynth/event"
-	"gosynth/gui/component"
-	"gosynth/gui/control"
-	"gosynth/gui/graphic"
+	"gosynth/gui-lib/component"
+	"gosynth/gui-lib/control"
+	"gosynth/gui-lib/graphic"
 	"image/color"
 )
 

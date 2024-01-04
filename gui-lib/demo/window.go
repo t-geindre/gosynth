@@ -3,26 +3,26 @@ package demo
 import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"gosynth/event"
-	"gosynth/gui/behavior"
-	"gosynth/gui/component"
-	"gosynth/gui/control"
-	"gosynth/gui/graphic"
+	behavior2 "gosynth/gui-lib/behavior"
+	component2 "gosynth/gui-lib/component"
+	"gosynth/gui-lib/control"
+	"gosynth/gui-lib/graphic"
 )
 
 type Window struct {
-	*component.Component
+	*component2.Component
 	mouseOver bool
 }
 
-func NewWindow(outerType component.IComponent) *Window {
+func NewWindow(outerType component2.IComponent) *Window {
 	w := &Window{
-		Component: component.NewComponent(),
+		Component: component2.NewComponent(),
 	}
 
 	w.GetLayout().SetAbsolutePositioning(true)
 
-	behavior.NewDraggable(w)
-	behavior.NewFocusable(w)
+	behavior2.NewDraggable(w)
+	behavior2.NewFocusable(w)
 
 	c := randomColor()
 	bCol := colorInverse(c)

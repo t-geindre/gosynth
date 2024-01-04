@@ -5,7 +5,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"golang.org/x/image/font"
 	"gosynth/event"
-	"gosynth/gui/graphic"
+	"gosynth/gui-lib/graphic"
 	"image/color"
 )
 

@@ -1,6 +1,8 @@
 package behavior
 
-import "gosynth/gui/component"
+import (
+	"gosynth/gui-lib/component"
+)
 
 type StickDirection uint8
 

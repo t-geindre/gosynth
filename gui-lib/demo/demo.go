@@ -3,9 +3,9 @@ package demo
 import (
 	"fmt"
 	"gosynth/event"
-	"gosynth/gui/component"
-	"gosynth/gui/graphic"
-	"gosynth/gui/layout"
+	"gosynth/gui-lib/component"
+	"gosynth/gui-lib/graphic"
+	"gosynth/gui-lib/layout"
 	"gosynth/gui/theme"
 )
 
