@@ -30,16 +30,22 @@ func computeHorizontal(l ILayout) {
 	// Compute required size
 	contentWidth := float64(0)
 	for _, c := range children {
+		cww, cwh := c.GetWantedSize().Get()
+		cmt, cmb, cml, cmr := c.GetMargin().Get()
+
 		if orientVertical {
-			contentWidth += c.GetWantedSize().GetHeight() + c.GetMargin().GetVertical()
+			contentWidth += cwh + cmt + cmb
 		} else {
-			contentWidth += c.GetWantedSize().GetWidth() + c.GetMargin().GetHorizontal()
+			contentWidth += cww + cml + cmr
 		}
 	}
 
 	// Calculate scaling factor and free space
-	innerWidth := l.GetSize().GetWidth() - l.GetPadding().GetHorizontal()
-	innerHeight := l.GetSize().GetHeight() - l.GetPadding().GetVertical()
+	lw, lh := l.GetSize().Get()
+	lpt, lpb, lpl, lpr := l.GetPadding().Get()
+
+	innerWidth := lw - lpl - lpr
+	innerHeight := lh - lpt - lpb
 
 	if orientVertical {
 		innerWidth, innerHeight = innerHeight, innerWidth
@@ -66,34 +72,30 @@ func computeHorizontal(l ILayout) {
 	}
 
 	// Place children and apply scale
-	xOffset := l.GetPadding().GetLeft()
-	yOffset := l.GetPadding().GetTop()
+	xOffset := lpl
+	yOffset := lpt
 	for _, c := range children {
+		cww, cwh := c.GetWantedSize().Get()
+		cmt, cmb, cml, cmr := c.GetMargin().Get()
+
+		_, _ = cww, cwh
+		_, _ = cmr, cmb
+
 		fill := float64(0)
 		if c.GetFill() > 0 && freeSpace > 0 {
 			fill = c.GetFill() / 100 * freeSpace
 		}
 
 		if orientVertical {
-			c.GetPosition().Set(
-				xOffset+c.GetMargin().GetLeft(),
-				yOffset+c.GetMargin().GetTop()*scaleFact,
-			)
-			c.GetSize().Set(
-				innerHeight-c.GetMargin().GetHorizontal(),
-				c.GetWantedSize().GetHeight()*scaleFact+fill*scaleFact,
-			)
-			yOffset += c.GetSize().GetHeight() + c.GetMargin().GetVertical()*scaleFact
+			c.GetPosition().Set(xOffset+cml, yOffset+cmt*scaleFact)
+			ch := (cwh + fill) * scaleFact
+			c.GetSize().Set(innerHeight-cml-cmr, ch)
+			yOffset += ch + (cmt+cmb)*scaleFact
 		} else {
-			c.GetPosition().Set(
-				xOffset+c.GetMargin().GetLeft()*scaleFact,
-				yOffset+c.GetMargin().GetTop(),
-			)
-			c.GetSize().Set(
-				c.GetWantedSize().GetWidth()*scaleFact+fill*scaleFact,
-				innerHeight-c.GetMargin().GetVertical(),
-			)
-			xOffset += c.GetSize().GetWidth() + c.GetMargin().GetHorizontal()*scaleFact
+			c.GetPosition().Set(xOffset+cml*scaleFact, yOffset+cmt)
+			cw := (cww + fill) * scaleFact
+			c.GetSize().Set(cw, innerHeight-cmt-cmb)
+			xOffset += cw + c.GetMargin().GetHorizontal()*scaleFact
 		}
 	}
 }

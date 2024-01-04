@@ -45,6 +45,7 @@ func NewDemo() *Demo {
 
 		for j := float64(0); j < 5; j++ {
 			btn := NewButton()
+			btn.GetLayout().GetMargin().SetAll(20)
 			btn.GetLayout().GetWantedSize().Set((j+1)*50, (j+1)*50)
 			btn.Append(component.NewText(fmt.Sprintf("%d", int((j+1)*50)), theme.Fonts.Title, textColor, bgTextColor))
 			draggable.Append(btn)
