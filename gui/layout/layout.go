@@ -26,6 +26,8 @@ func NewLayout() *Layout {
 		Dispatcher: event.NewDispatcher(),
 	}
 
+	l.ScheduleUpdate()
+
 	return l
 }
 
@@ -102,6 +104,7 @@ func (l *Layout) SetSize(w, h float64) {
 	if l.w != w || l.h != h {
 		l.w, l.h = w, h
 		l.Dispatch(event.NewEvent(ResizeEvent, l))
+		l.ScheduleUpdate()
 	}
 }
 

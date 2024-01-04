@@ -39,7 +39,7 @@ func NewResize(minWidth, minHeight float64) *Resize {
 		e.StopPropagation()
 	})
 
-	r.GetLayout().GetSize().Set(10, 10)
+	r.GetLayout().SetSize(10, 10)
 	r.GetLayout().SetAbsolutePositioning(true)
 
 	return r
@@ -62,12 +62,12 @@ func (r *Resize) SetParent(parent component.IComponent) {
 func (r *Resize) Update() {
 	if p := r.GetParent(); r.mouseDrag.IsActive() && p != nil {
 		dx, dy := r.mouseDrag.GetDelta()
-		pw, ph := p.GetLayout().GetSize().Get()
+		pw, ph := p.GetLayout().GetSize()
 
 		nw := math.Max(r.minWidth, pw+float64(dx))
 		nh := math.Max(r.minHeight, ph+float64(dy))
 
-		p.GetLayout().GetSize().Set(nw, nh)
+		p.GetLayout().SetSize(nw, nh)
 	}
 
 	r.Component.Update()
@@ -78,8 +78,8 @@ func (r *Resize) UpdatePosition() {
 		return
 	}
 
-	w, h := r.GetLayout().GetSize().Get()
-	pw, ph := r.GetParent().GetLayout().GetSize().Get()
+	w, h := r.GetLayout().GetSize()
+	pw, ph := r.GetParent().GetLayout().GetSize()
 
-	r.GetLayout().GetPosition().Set(pw-w, ph-h)
+	r.GetLayout().SetPosition(pw-w, ph-h)
 }

@@ -25,7 +25,7 @@ func NewFPS() *FPS {
 	})
 
 	f.GetLayout().SetAbsolutePositioning(true)
-	f.GetLayout().GetSize().Set(60, 20)
+	f.GetLayout().SetSize(60, 20)
 
 	return f
 }
@@ -46,9 +46,8 @@ func (f *FPS) SetParent(p IComponent) {
 
 func (f *FPS) position() {
 	if p := f.GetParent(); p != nil {
-		f.GetLayout().GetPosition().Set(
-			p.GetLayout().GetSize().GetWidth()-f.GetLayout().GetSize().GetWidth(),
-			p.GetLayout().GetSize().GetHeight()-f.GetLayout().GetSize().GetHeight(),
-		)
+		pw, ph := p.GetLayout().GetSize()
+		fw, fh := f.GetLayout().GetSize()
+		f.GetLayout().SetPosition(pw-fw, ph-fh)
 	}
 }

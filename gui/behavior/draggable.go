@@ -35,8 +35,8 @@ func NewDraggable(node component.IComponent) *Draggable {
 			node.Dispatch(NewDragEvent(node, dx, dy))
 
 			if !e.IsPropagationStopped() {
-				px, py := d.node.GetLayout().GetPosition().Get()
-				d.node.GetLayout().GetPosition().Set(float64(dx)+px, float64(dy)+py)
+				px, py := d.node.GetLayout().GetPosition()
+				d.node.GetLayout().SetPosition(float64(dx)+px, float64(dy)+py)
 			}
 		}
 	})

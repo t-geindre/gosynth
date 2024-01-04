@@ -31,6 +31,7 @@ func NewText(str string, fontFace font.Face, color, bgColor color.RGBA) *Text {
 		text.Draw(img, t.str, t.font, 0, t.h, color)
 
 		destImg := t.GetGraphic().GetImage()
+		destImg.Clear()
 
 		// Compute scaling factor
 		scale := float64(1)
@@ -63,6 +64,6 @@ func (t *Text) SetText(str string) {
 	t.str = str
 	t.w = font.MeasureString(t.font, t.str).Round()
 	t.h = t.font.Metrics().CapHeight.Round()
-	t.GetLayout().GetWantedSize().Set(float64(t.w), float64(t.h))
+	t.GetLayout().SetWantedSize(float64(t.w), float64(t.h))
 	t.GetGraphic().ScheduleUpdate()
 }

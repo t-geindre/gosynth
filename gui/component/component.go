@@ -27,12 +27,12 @@ func NewComponent() *Component {
 	}
 
 	c.GetLayout().AddListener(&c, layout2.ResizeEvent, func(e event.IEvent) {
-		w, h := c.GetLayout().GetSize().Get()
+		w, h := c.GetLayout().GetSize()
 		c.GetGraphic().SetSize(int(math.Round(w)), int(math.Round(h)))
 	})
 
 	c.GetLayout().AddListener(&c, layout2.MoveEvent, func(e event.IEvent) {
-		x, y := c.GetLayout().GetPosition().Get()
+		x, y := c.GetLayout().GetPosition()
 		c.GetGraphic().SetTranslation(x, y)
 	})
 
@@ -111,7 +111,7 @@ func (c *Component) GetTargetAt(x, y int) (control.ITarget, error) {
 	if c.GetLayout().PointCollides(float64(x), float64(y)) {
 		target = c
 
-		cX, cY := c.GetLayout().GetPosition().Get()
+		cX, cY := c.GetLayout().GetPosition()
 
 		x -= int(cX)
 		y -= int(cY)

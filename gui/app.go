@@ -3,8 +3,7 @@ package gui
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/gui/component"
-	"gosynth/gui/module"
-	"gosynth/gui/widget"
+	"gosynth/gui/demo"
 	"gosynth/output"
 )
 
@@ -25,14 +24,14 @@ func NewApp(str *output.Streamer) *App {
 	a.Streamer = str
 
 	a.Root = component.NewRoot()
-	a.Root.Append(widget.NewMenu())
-
-	rack := widget.NewRack()
-	rack.Append(module.NewVCA())
-	rack.Append(module.NewVCA())
-
-	a.Root.Append(rack)
-	//a.Root = demo.NewDemo()
+	//a.Root.Append(widget.NewMenu())
+	//
+	//rack := widget.NewRack()
+	//rack.Append(module.NewVCA())
+	//rack.Append(module.NewVCA())
+	//
+	//a.Root.Append(rack)
+	a.Root = demo.NewDemo()
 	a.Root.Append(component.NewFPS())
 
 	return a
@@ -51,6 +50,6 @@ func (a *App) Update() error {
 func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	s := ebiten.DeviceScaleFactor()
 	w, h := float64(outsideWidth)*s, float64(outsideHeight)*s
-	a.Root.GetLayout().GetSize().Set(w, h)
+	a.Root.GetLayout().SetSize(w, h)
 	return int(w), int(h)
 }
