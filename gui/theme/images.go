@@ -18,7 +18,7 @@ func init() {
 	Images = imageList{
 		Plug:         loadImage("assets/images/plug.png"),
 		PlugInverted: loadImage("assets/images/plug-inverted.png"),
-		Logo:         loadImage("assets/images/piano_gopher.png"),
+		Logo:         loadImage("assets/images/512px-Go_Logo_Blue.svg.png"),
 		Knob:         loadImage("assets/images/knob.png"),
 	}
 }

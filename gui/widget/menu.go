@@ -20,7 +20,7 @@ func NewMenu() *Menu {
 
 	l := m.GetLayout()
 	l.SetWantedSize(0, 50)
-	l.SetPadding(5, 5, 5, 5)
+	l.SetPadding(10, 10, 10, 10)
 	l.SetContentOrientation(layout.Horizontal)
 
 	m.GetGraphic().AddListener(&m, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
@@ -30,13 +30,17 @@ func NewMenu() *Menu {
 		vector.StrokeLine(img, 0, float32(h), float32(w), float32(h), 1, theme.Colors.BackgroundInverted, false)
 	})
 
-	m.Append(NewTitle("Gosynth", TitlePositionCenter))
+	logo := component.NewImage(theme.Images.Logo)
+	logo.GetLayout().SetWantedSize(50, 0)
+	logo.GetLayout().SetMargin(0, 0, 0, 3)
+	m.Append(logo)
+	m.Append(NewTitle("Synth", TitlePositionCenter))
 
 	m.Append(component.NewFiller(100))
 
 	s := NewSlider(0, 1, 25)
 	s.GetLayout().SetContentOrientation(layout.Horizontal)
-	s.GetLayout().SetWantedSize(300, 0)
+	s.GetLayout().SetWantedSize(200, 0)
 	s.SetValue(1)
 	m.Append(s)
 
