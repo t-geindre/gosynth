@@ -7,12 +7,16 @@ import "gosynth/event"
 // in most cases, it means that the size of the graphic has changed
 var DrawUpdateRequiredEvent event.Id
 
-// DrawEvent
-// Triggered when the graphic is drawn
-// I s also triggered after a DrawUpdateRequiredEvent is triggered
-var DrawEvent event.Id
+// DrawStartEvent
+// Triggered when the graphic children are about to be drawn
+var DrawStartEvent event.Id
+
+// DrawEndEvent
+// Triggered when the graphic children have been drawn
+var DrawEndEvent event.Id
 
 func init() {
 	DrawUpdateRequiredEvent = event.Register()
-	DrawEvent = event.Register()
+	DrawStartEvent = event.Register()
+	DrawEndEvent = event.Register()
 }

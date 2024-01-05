@@ -101,7 +101,7 @@ func (c *Component) Update() {
 func (c *Component) Dispatch(e event.IEvent) {
 	c.Dispatcher.Dispatch(e)
 
-	if !e.IsPropagationStopped() && c.Parent != nil {
+	if !e.IsPropagationStopped() && c.Parent != nil && e.GetId() != UpdateEvent {
 		c.Parent.Dispatch(e)
 	}
 }

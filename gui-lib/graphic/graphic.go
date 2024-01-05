@@ -79,12 +79,14 @@ func (g *Graphic) Draw(dest *ebiten.Image) {
 		g.updateScheduled = false
 	}
 
-	g.Dispatch(event.NewEvent(DrawEvent, g))
+	g.Dispatch(event.NewEvent(DrawStartEvent, g))
 
 	// Todo images should all be drawn to a single image, merge matrices
 	for _, child := range g.children {
 		child.Draw(g.image)
 	}
+
+	g.Dispatch(event.NewEvent(DrawEndEvent, g))
 
 	dest.DrawImage(g.image, g.options)
 }

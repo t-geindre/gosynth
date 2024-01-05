@@ -27,6 +27,13 @@ func NewModule(title string, widthUnit int) *Module {
 	behavior.NewDraggable(m)
 	behavior.NewFocusable(m)
 
+	m.AddListener(&m, behavior.DragEvent, func(e event.IEvent) {
+		dEv := e.(*behavior.DragEventDetails)
+		px, py := m.GetLayout().GetPosition()
+		m.GetLayout().SetPosition(float64(dEv.DeltaX)+px, float64(dEv.DeltaY)+py)
+		e.StopPropagation()
+	})
+
 	l := m.GetLayout()
 	l.SetAbsolutePositioning(true)
 	l.SetPadding(10, 10, 10, 10)

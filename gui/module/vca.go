@@ -1,6 +1,7 @@
 package module
 
 import (
+	"gosynth/gui/connection"
 	"gosynth/gui/widget"
 )
 
@@ -22,7 +23,7 @@ func NewVCA() *Module {
 	vLine.GetLayout().SetFill(5)
 	v.Append(vLine)
 
-	cvInPlug := widget.NewPlug()
+	cvInPlug := connection.NewPlug(connection.PlugDirectionIn)
 	v.Append(cvInPlug)
 	v.Append(widget.NewLabel("CV", widget.LabelPositionBottom))
 
@@ -31,7 +32,7 @@ func NewVCA() *Module {
 	v.Append(hLine)
 
 	v.Append(widget.NewLabel("IN", widget.LabelPositionTop))
-	inPlug := widget.NewPlug()
+	inPlug := connection.NewPlug(connection.PlugDirectionIn)
 	v.Append(inPlug)
 
 	vLineOut := widget.NewLine(false, float32(2))
@@ -39,7 +40,7 @@ func NewVCA() *Module {
 	v.Append(vLineOut)
 
 	v.Append(widget.NewLabel("OUT", widget.LabelPositionTop))
-	outPlug := widget.NewPlug()
+	outPlug := connection.NewPlug(connection.PlugDirectionOut)
 	v.Append(outPlug)
 
 	return v.Module
