@@ -1,4 +1,4 @@
-package widget
+package module
 
 import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -6,16 +6,20 @@ import (
 	"gosynth/gui-lib/component"
 	"gosynth/gui-lib/graphic"
 	"gosynth/gui-lib/layout"
+	"gosynth/gui/connection"
 	"gosynth/gui/theme"
+	"gosynth/gui/widget"
 )
 
 type Menu struct {
 	*component.Component
+	rack *connection.Rack
 }
 
-func NewMenu() *Menu {
+func NewMenu(rack *connection.Rack) *Menu {
 	m := &Menu{
 		Component: component.NewComponent(),
+		rack:      rack,
 	}
 
 	l := m.GetLayout()
@@ -34,15 +38,23 @@ func NewMenu() *Menu {
 	logo.GetLayout().SetWantedSize(50, 0)
 	logo.GetLayout().SetMargin(0, 0, 0, 3)
 	m.Append(logo)
-	m.Append(NewTitle("Synth", TitlePositionCenter))
+	m.Append(widget.NewTitle("Synth", widget.TitlePositionCenter))
 
 	m.Append(component.NewFiller(100))
 
-	s := NewSlider(0, 1, 25)
-	s.GetLayout().SetContentOrientation(layout.Horizontal)
-	s.GetLayout().SetWantedSize(200, 0)
-	s.SetValue(1)
-	m.Append(s)
+	btn := widget.NewButton("Add")
+	btn.GetLayout().SetWantedSize(50, 50)
+	m.Append(btn)
+
+	menu := widget.NewDropdown()
+	for _, op := range Registry.GetNames() {
+		menu.AddOption(op, func(op string) func() {
+			return func() {
+				rack.Append(Registry.Get(op))
+			}
+		}(op))
+	}
+	m.GetRoot().Append(menu)
 
 	return m
 }

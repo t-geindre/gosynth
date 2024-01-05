@@ -5,7 +5,6 @@ import (
 	"gosynth/gui-lib/component"
 	"gosynth/gui/connection"
 	"gosynth/gui/module"
-	"gosynth/gui/widget"
 	"gosynth/output"
 )
 
@@ -27,19 +26,11 @@ func NewApp(str *output.Streamer) *App {
 
 	a.Root = component.NewRoot()
 
-	a.Root.Append(widget.NewMenu())
-
 	rack := connection.NewRack()
-	a.Root.Append(rack)
+	menu := module.NewMenu(rack)
 
-	rack.Append(module.NewVCA())
-	rack.Append(module.NewDelay())
-	rack.Append(module.NewVCA())
-	rack.Append(module.NewDelay())
-	rack.Append(module.NewVCA())
-	rack.Append(module.NewDelay())
-	rack.Append(module.NewVCA())
-	rack.Append(module.NewDelay())
+	a.Root.Append(menu)
+	a.Root.Append(rack)
 
 	a.Root.Append(component.NewFPS())
 

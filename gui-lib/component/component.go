@@ -141,3 +141,11 @@ func (c *Component) MoveFront(child IComponent) {
 	}
 	c.GetGraphic().MoveFront(child.GetGraphic())
 }
+
+func (c *Component) GetRoot() IComponent {
+	if c.Parent == nil {
+		return c
+	}
+
+	return c.Parent.GetRoot()
+}

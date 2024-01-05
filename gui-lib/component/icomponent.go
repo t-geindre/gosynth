@@ -14,6 +14,7 @@ type IComponent interface {
 
 	GetChildren() []IComponent
 	GetParent() IComponent
+	GetRoot() IComponent
 	SetParent(parent IComponent)
 	Append(child IComponent)
 	Remove(child IComponent)

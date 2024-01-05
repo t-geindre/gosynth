@@ -20,60 +20,6 @@ func main() {
 	rck := module.NewRack(clk, SampleRate)
 	str := output.NewStreamer(clk, rck)
 
-	oscA := &module.Oscillator{}
-	rck.AddModule(oscA)
-	oscA.SetShape(module.OscillatorShapeTriangle)
-	oscA.SetOctaveShift(1)
-
-	oscB := &module.Oscillator{}
-	rck.AddModule(oscB)
-	oscB.SetAmplitude(.1)
-	oscB.SetShape(module.OscillatorShapeSquare)
-	oscB.SetOctaveShift(-2)
-
-	vca := &module.VCA{}
-	rck.AddModule(vca)
-
-	demoVca := &module.VCA{}
-	rck.AddModule(demoVca)
-
-	sqr := &module.Sequencer{}
-	rck.AddModule(sqr)
-	AddTetrisSequence(sqr, time.Millisecond*50, time.Millisecond*100)
-	//sqr.SetLoop(true)
-
-	adsr := &module.Adsr{}
-	rck.AddModule(adsr)
-
-	delay := &module.Delay{}
-	rck.AddModule(delay)
-	delay.SetDelay(time.Millisecond * 200)
-	delay.SetFeedback(.15)
-
-	adsrVca := &module.VCA{}
-	rck.AddModule(adsrVca)
-
-	sqr.Connect(module.PortOutFreq, oscA, module.PortInFreq)
-	sqr.Connect(module.PortOutFreq, oscB, module.PortInFreq)
-	sqr.Connect(module.PortOutGate, adsr, module.PortInGate)
-
-	oscA.Connect(module.PortOut, adsrVca, module.PortIn)
-	oscB.Connect(module.PortOut, adsrVca, module.PortIn)
-
-	adsr.Connect(module.PortCvOut, adsrVca, module.PortCvIn)
-
-	adsrVca.Connect(module.PortOut, delay, module.PortIn)
-
-	delay.Connect(module.PortOut, vca, module.PortIn)
-
-	oscA.Connect(module.PortOut, demoVca, module.PortIn)
-	demoVca.Connect(module.PortOut, vca, module.PortIn)
-	demoVca.Write(module.PortCvIn, -1)
-
-	vca.Connect(module.PortOut, rck, module.PortInL)
-	vca.Connect(module.PortOut, rck, module.PortInR)
-	vca.Write(module.PortCvIn, 0)
-
 	err := speaker.Init(SampleRate, SampleRate.N(time.Millisecond*10))
 	if err != nil {
 		panic(err)
