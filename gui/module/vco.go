@@ -10,15 +10,32 @@ type VCO struct {
 	*Module
 }
 
-func NewVCO(vco *audio.Oscillator) *Module {
+func NewVCO(vco *audio.VCO) *Module {
 	v := &VCO{
-		Module: NewModule("VCO", 2),
+		Module: NewModule("VCO", 1),
 	}
 
-	v.Append(widget.NewLabel("OUT", widget.LabelPositionTop))
-	outPlug := connection.NewPlug(connection.PlugDirectionOut)
-	outPlug.Bind(vco, audio.PortOut)
-	v.Append(outPlug)
+	v.Append(widget.NewLabel("FRQ", widget.LabelPositionTop))
+	v.Append(widget.NewKnob(vco, audio.PortInVOct))
+
+	v.Append(widget.NewLabel("V/OCT", widget.LabelPositionTop))
+	v.Append(connection.NewPlug(connection.PlugDirectionIn, vco, audio.PortInVOct))
+
+	l := widget.NewLine(true, float32(2))
+	l.GetLayout().SetFill(25)
+	v.Append(l)
+
+	v.Append(widget.NewLabel("SIN", widget.LabelPositionTop))
+	v.Append(connection.NewPlug(connection.PlugDirectionOut, vco, audio.PortOutSin))
+
+	v.Append(widget.NewLabel("TRI", widget.LabelPositionTop))
+	v.Append(connection.NewPlug(connection.PlugDirectionOut, vco, audio.PortOutTriangle))
+
+	v.Append(widget.NewLabel("SAW", widget.LabelPositionTop))
+	v.Append(connection.NewPlug(connection.PlugDirectionOut, vco, audio.PortOutSaw))
+
+	v.Append(widget.NewLabel("SQR", widget.LabelPositionTop))
+	v.Append(connection.NewPlug(connection.PlugDirectionOut, vco, audio.PortOutSquare))
 
 	return v.Module
 }

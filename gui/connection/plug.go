@@ -24,11 +24,13 @@ type Plug struct {
 	isOn        bool
 }
 
-func NewPlug(direction PlugDirection) *Plug {
+func NewPlug(direction PlugDirection, module audio.IModule, port audio.Port) *Plug {
 	p := &Plug{
 		Image:     component.NewImage(theme.Images.Plug),
 		direction: direction,
 	}
+
+	p.Bind(module, port)
 
 	p.AddListener(&p, control.LeftMouseDownEvent, func(e event.IEvent) {
 		p.Dispatch(event.NewEvent(ConnectionStartEvent, p))

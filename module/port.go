@@ -10,6 +10,7 @@ const (
 	PortInGate
 	PortInL
 	PortInR
+	PortInVOct
 
 	PortInGain
 	PortInFreq
@@ -18,6 +19,10 @@ const (
 
 	PortOut
 	PortCvOut
+	PortOutSin
+	PortOutSquare
+	PortOutSaw
+	PortOutTriangle
 
 	PortOutFreq
 	PortOutGate

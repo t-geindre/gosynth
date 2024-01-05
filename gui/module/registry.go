@@ -35,11 +35,9 @@ func init() {
 	})
 
 	Registry.Register("VCO", func(rack *connection.Rack) {
-		audioVCO := &audio.Oscillator{}
+		audioVCO := &audio.VCO{}
 		rack.GetAudioRack().AddModule(audioVCO)
 		rack.Append(NewVCO(audioVCO))
-		audioVCO.SetFreq(440)
-		audioVCO.SetShape(audio.OscillatorShapeSine)
 	})
 
 	Registry.Register("VCA", func(rack *connection.Rack) {

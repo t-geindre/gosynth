@@ -24,9 +24,7 @@ func NewVCA(vca *audio.VCA) *Module {
 	vLine.GetLayout().SetFill(5)
 	v.Append(vLine)
 
-	cvInPlug := connection.NewPlug(connection.PlugDirectionIn)
-	cvInPlug.Bind(vca, audio.PortCvIn)
-	v.Append(cvInPlug)
+	v.Append(connection.NewPlug(connection.PlugDirectionIn, vca, audio.PortCvIn))
 	v.Append(widget.NewLabel("CV", widget.LabelPositionBottom))
 
 	hLine := widget.NewLine(true, float32(2))
@@ -34,18 +32,14 @@ func NewVCA(vca *audio.VCA) *Module {
 	v.Append(hLine)
 
 	v.Append(widget.NewLabel("IN", widget.LabelPositionTop))
-	inPlug := connection.NewPlug(connection.PlugDirectionIn)
-	inPlug.Bind(vca, audio.PortIn)
-	v.Append(inPlug)
+	v.Append(connection.NewPlug(connection.PlugDirectionIn, vca, audio.PortIn))
 
 	vLineOut := widget.NewLine(false, float32(2))
 	vLineOut.GetLayout().SetFill(5)
 	v.Append(vLineOut)
 
 	v.Append(widget.NewLabel("OUT", widget.LabelPositionTop))
-	outPlug := connection.NewPlug(connection.PlugDirectionOut)
-	outPlug.Bind(vca, audio.PortOut)
-	v.Append(outPlug)
+	v.Append(connection.NewPlug(connection.PlugDirectionOut, vca, audio.PortOut))
 
 	return v.Module
 }

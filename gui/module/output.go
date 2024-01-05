@@ -12,18 +12,14 @@ type Output struct {
 
 func NewOutput(rack *audio.Rack) *Module {
 	v := &Output{
-		Module: NewModule("Output", 2),
+		Module: NewModule("OUT", 1),
 	}
 
-	v.Append(widget.NewLabel("L/Mono", widget.LabelPositionTop))
-	inLPlug := connection.NewPlug(connection.PlugDirectionIn)
-	inLPlug.Bind(rack, audio.PortInL)
-	v.Append(inLPlug)
+	v.Append(widget.NewLabel("L/M", widget.LabelPositionTop))
+	v.Append(connection.NewPlug(connection.PlugDirectionIn, rack, audio.PortInL))
 
 	v.Append(widget.NewLabel("R", widget.LabelPositionTop))
-	inRPlug := connection.NewPlug(connection.PlugDirectionIn)
-	inRPlug.Bind(rack, audio.PortInR)
-	v.Append(inRPlug)
+	v.Append(connection.NewPlug(connection.PlugDirectionIn, rack, audio.PortInR))
 
 	return v.Module
 }

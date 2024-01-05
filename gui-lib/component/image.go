@@ -4,12 +4,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"gosynth/event"
 	"gosynth/gui-lib/graphic"
+	"math"
 )
 
 type Image struct {
 	*Component
-	img   *ebiten.Image
-	theta float64
+	img     *ebiten.Image
+	theta   float64
+	degrees float64
 }
 
 func NewImage(img *ebiten.Image) *Image {
@@ -71,7 +73,16 @@ func (i *Image) SetImage(img *ebiten.Image) {
 	i.GetGraphic().ScheduleUpdate()
 }
 
-func (i *Image) Rotate(theta float64) {
-	i.theta += theta
+func (i *Image) Rotate(degrees float64) {
+	i.degrees += degrees
+	i.theta += degrees * math.Pi / 180
 	i.GetGraphic().ScheduleUpdate()
+}
+
+func (i *Image) GetRotation() float64 {
+	return i.degrees
+}
+
+func (i *Image) SetRotation(degrees float64) {
+	i.Rotate(degrees - i.degrees)
 }

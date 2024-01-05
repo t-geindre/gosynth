@@ -5,6 +5,7 @@ import (
 	"gosynth/gui-lib/layout"
 	"gosynth/gui/connection"
 	"gosynth/gui/widget"
+	"gosynth/module"
 )
 
 type Delay struct {
@@ -29,12 +30,12 @@ func NewDelay() *Module {
 	cb.GetLayout().SetFill(25)
 
 	cb.Append(widget.NewLabel("IN", widget.LabelPositionTop))
-	cb.Append(connection.NewPlug(connection.PlugDirectionIn))
+	cb.Append(connection.NewPlug(connection.PlugDirectionIn, nil, module.PortCvOut))
 	line := widget.NewLine(false, float32(2))
 	line.GetLayout().SetFill(100)
 	cb.Append(line)
 	cb.Append(widget.NewLabel("OUT", widget.LabelPositionTop))
-	cb.Append(connection.NewPlug(connection.PlugDirectionOut))
+	cb.Append(connection.NewPlug(connection.PlugDirectionOut, nil, module.PortCvOut))
 	d.Append(cb)
 
 	return d.Module
@@ -52,7 +53,7 @@ func (d *Delay) appendControlLine(label string, fill float64) {
 	c.Append(pcc)
 
 	pcc.Append(widget.NewLabel("CV", widget.LabelPositionTop))
-	pcc.Append(connection.NewPlug(connection.PlugDirectionIn))
+	pcc.Append(connection.NewPlug(connection.PlugDirectionIn, nil, module.PortCvOut))
 
 	hr := widget.NewLine(true, float32(2))
 	hr.GetLayout().SetFill(20)
@@ -63,5 +64,5 @@ func (d *Delay) appendControlLine(label string, fill float64) {
 	c.Append(kcc)
 
 	kcc.Append(widget.NewLabel(label, widget.LabelPositionTop))
-	kcc.Append(widget.NewKnob())
+	kcc.Append(widget.NewKnob(nil, module.PortCvOut))
 }

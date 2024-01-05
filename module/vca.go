@@ -22,7 +22,8 @@ func (g *VCA) Init(rate beep.SampleRate) {
 func (g *VCA) Write(port Port, value float64) {
 	switch port {
 	case PortCvIn:
-		g.Gain = (value + 1) / 2 // Normalize to 0-1
+		// Normalize 0-10V to 0-1
+		g.Gain = value / 10
 	case PortIn:
 		g.Sample += value
 	}

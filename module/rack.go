@@ -51,9 +51,9 @@ func (r *Rack) Dispose() {
 func (r *Rack) Write(port Port, value float64) {
 	switch port {
 	case PortInL:
-		r.SampleL += value
+		r.SampleL += (value - 5) / 5
 	case PortInR:
-		r.SampleR += value
+		r.SampleR += (value - 5) / 5
 	}
 }
 
