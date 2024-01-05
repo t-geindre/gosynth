@@ -27,7 +27,7 @@ func main() {
 
 	speaker.Play(str)
 
-	app := gui.NewApp(str)
+	app := gui.NewApp(rck)
 	if err := ebiten.RunGame(app); err != nil {
 		log.Fatal(err)
 	}

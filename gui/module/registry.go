@@ -1,19 +1,24 @@
 package module
 
+import (
+	"gosynth/gui/connection"
+	audio "gosynth/module"
+)
+
 type registry struct {
-	modules map[string]func() *Module
+	modules map[string]func(rack *connection.Rack)
 }
 
 var Registry = &registry{
-	modules: make(map[string]func() *Module),
+	modules: make(map[string]func(rack *connection.Rack)),
 }
 
-func (r *registry) Register(name string, constructor func() *Module) {
+func (r *registry) Register(name string, constructor func(rack *connection.Rack)) {
 	r.modules[name] = constructor
 }
 
-func (r *registry) Get(name string) *Module {
-	return r.modules[name]()
+func (r *registry) Get(name string) func(rack *connection.Rack) {
+	return r.modules[name]
 }
 
 func (r *registry) GetNames() []string {
@@ -25,19 +30,25 @@ func (r *registry) GetNames() []string {
 }
 
 func init() {
-	Registry.Register("Output", func() *Module {
-		return NewOutput()
+	Registry.Register("Output", func(rack *connection.Rack) {
+		rack.Append(NewOutput(rack.GetAudioRack()))
 	})
 
-	Registry.Register("VCO", func() *Module {
-		return NewVCO()
+	Registry.Register("VCO", func(rack *connection.Rack) {
+		audioVCO := &audio.Oscillator{}
+		rack.GetAudioRack().AddModule(audioVCO)
+		rack.Append(NewVCO(audioVCO))
+		audioVCO.SetFreq(440)
+		audioVCO.SetShape(audio.OscillatorShapeSine)
 	})
 
-	Registry.Register("VCA", func() *Module {
-		return NewVCA()
+	Registry.Register("VCA", func(rack *connection.Rack) {
+		audioVca := &audio.VCA{}
+		rack.Append(NewVCA(audioVca))
+		rack.GetAudioRack().AddModule(audioVca)
 	})
 
-	Registry.Register("Delay", func() *Module {
-		return NewDelay()
+	Registry.Register("Delay", func(rack *connection.Rack) {
+		rack.Append(NewDelay())
 	})
 }

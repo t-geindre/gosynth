@@ -42,6 +42,15 @@ func (m *Module) Connect(srcPort Port, destModule IModule, destPort Port) {
 	})
 }
 
+func (m *Module) Disconnect(srcPort Port, destModule IModule, destPort Port) {
+	for i, con := range m.Connections {
+		if con.SrcPort == srcPort && con.DestModule == destModule && con.DestPort == destPort {
+			m.Connections = append(m.Connections[:i], m.Connections[i+1:]...)
+			return
+		}
+	}
+}
+
 func (m *Module) ConnectionWrite(srcPort Port, value float64) {
 	if _, ok := m.WrittenOutputs[srcPort]; !ok {
 		m.WrittenOutputs[srcPort] = make(chan float64, chanPortBuffering)

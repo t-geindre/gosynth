@@ -25,6 +25,7 @@ type Oscillator struct {
 
 func (o *Oscillator) Init(rate beep.SampleRate) {
 	o.Module.Init(rate, o)
+
 	o.Amp = 1
 }
 

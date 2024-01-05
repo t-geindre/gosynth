@@ -5,19 +5,21 @@ import (
 	"gosynth/gui-lib/behavior"
 	"gosynth/gui-lib/component"
 	"gosynth/gui-lib/graphic"
+	audio "gosynth/module"
 	"image/color"
 )
 
 type Rack struct {
 	*component.Component
-	scale        float64
 	cables       []*Cable
 	currentCable *Cable
+	audioRack    *audio.Rack
 }
 
-func NewRack() *Rack {
+func NewRack(audioRack *audio.Rack) *Rack {
 	r := &Rack{
 		Component: component.NewComponent(),
+		audioRack: audioRack,
 	}
 
 	behavior.NewDraggable(r)
@@ -82,6 +84,8 @@ func (r *Rack) onConnectionStart(e event.IEvent) {
 		return
 	}
 
+	r.deleteConnection(c)
+
 	if c.GetSrc() == p {
 		c.SetSrc(c.GetDst())
 	}
@@ -93,7 +97,12 @@ func (r *Rack) onConnectionStart(e event.IEvent) {
 func (r *Rack) onConnectionStop(e event.IEvent) {
 	if r.currentCable != nil && r.currentCable.GetDst() == nil {
 		r.removeCable(r.currentCable)
+		r.currentCable = nil
+		return
 	}
+
+	r.createConnection(r.currentCable)
+
 	r.currentCable = nil
 }
 
@@ -112,6 +121,28 @@ func (r *Rack) onConnectionLeave(e event.IEvent) {
 	}
 }
 
+func (r *Rack) createConnection(cable *Cable) {
+	srcMod, srcPort := cable.GetSrc().GetBinding()
+	dstMod, dstPort := cable.GetDst().GetBinding()
+
+	if cable.GetSrc().GetDirection() == PlugDirectionIn {
+		dstMod, dstPort, srcMod, srcPort = srcMod, srcPort, dstMod, dstPort
+	}
+
+	r.audioRack.CreateModuleConnection(srcMod, srcPort, dstMod, dstPort)
+}
+
+func (r *Rack) deleteConnection(cable *Cable) {
+	srcMod, srcPort := cable.GetSrc().GetBinding()
+	dstMod, dstPort := cable.GetDst().GetBinding()
+
+	if cable.GetSrc().GetDirection() == PlugDirectionIn {
+		dstMod, dstPort, srcMod, srcPort = srcMod, srcPort, dstMod, dstPort
+	}
+
+	r.audioRack.DeleteModuleConnection(srcMod, srcPort, dstMod, dstPort)
+}
+
 func (r *Rack) GetPlugCable(p *Plug) *Cable {
 	for _, c := range r.cables {
 		if c.GetSrc() == p || c.GetDst() == p {
@@ -124,4 +155,8 @@ func (r *Rack) GetPlugCable(p *Plug) *Cable {
 
 func (r *Rack) IsPlugFree(p *Plug) bool {
 	return r.GetPlugCable(p) == nil
+}
+
+func (r *Rack) GetAudioRack() *audio.Rack {
+	return r.audioRack
 }

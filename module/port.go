@@ -2,8 +2,9 @@ package module
 
 type Port uint8
 
-// Inputs
 const (
+	// INPUTS
+
 	PortCvIn Port = iota
 	PortIn
 	PortInGate
@@ -12,11 +13,10 @@ const (
 
 	PortInGain
 	PortInFreq
-)
 
-// Outputs
-const (
-	PortOut Port = iota
+	// OUTPUTS
+
+	PortOut
 	PortCvOut
 
 	PortOutFreq

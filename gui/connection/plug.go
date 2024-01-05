@@ -5,6 +5,7 @@ import (
 	"gosynth/gui-lib/component"
 	"gosynth/gui-lib/control"
 	"gosynth/gui/theme"
+	audio "gosynth/module"
 )
 
 type PlugDirection uint8
@@ -16,14 +17,17 @@ const (
 
 type Plug struct {
 	*component.Image
-	inverted  bool
-	direciton PlugDirection
+	inverted    bool
+	direction   PlugDirection
+	audioModule audio.IModule
+	port        audio.Port
+	isOn        bool
 }
 
 func NewPlug(direction PlugDirection) *Plug {
 	p := &Plug{
 		Image:     component.NewImage(theme.Images.Plug),
-		direciton: direction,
+		direction: direction,
 	}
 
 	p.AddListener(&p, control.LeftMouseDownEvent, func(e event.IEvent) {
@@ -46,9 +50,34 @@ func NewPlug(direction PlugDirection) *Plug {
 		e.StopPropagation()
 	})
 
+	p.AddListener(&p, component.UpdateEvent, func(e event.IEvent) {
+		on := false
+		if p.audioModule != nil {
+			if p.direction == PlugDirectionIn {
+				on = p.audioModule.ReceiveInput(p.port) != nil
+			} else {
+				on = p.audioModule.ReceiveOutput(p.port) != nil
+			}
+		}
+
+		if p.isOn != on {
+			p.isOn = on
+			p.GetGraphic().ScheduleUpdate()
+		}
+	})
+
 	return p
 }
 
 func (p *Plug) GetDirection() PlugDirection {
-	return p.direciton
+	return p.direction
+}
+
+func (p *Plug) Bind(module audio.IModule, port audio.Port) {
+	p.audioModule = module
+	p.port = port
+}
+
+func (p *Plug) GetBinding() (audio.IModule, audio.Port) {
+	return p.audioModule, p.port
 }

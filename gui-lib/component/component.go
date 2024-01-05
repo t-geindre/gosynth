@@ -91,7 +91,7 @@ func (c *Component) Draw(dest *ebiten.Image) {
 }
 
 func (c *Component) Update() {
-	c.Dispatch(event.NewEvent(UpdateEvent, c))
+	c.Dispatcher.Dispatch(event.NewEvent(UpdateEvent, c))
 
 	for _, child := range c.Children {
 		child.Update()
@@ -101,7 +101,7 @@ func (c *Component) Update() {
 func (c *Component) Dispatch(e event.IEvent) {
 	c.Dispatcher.Dispatch(e)
 
-	if !e.IsPropagationStopped() && c.Parent != nil && e.GetId() != UpdateEvent {
+	if !e.IsPropagationStopped() && c.Parent != nil {
 		c.Parent.Dispatch(e)
 	}
 }

@@ -5,28 +5,26 @@ import (
 	"gosynth/gui-lib/component"
 	"gosynth/gui/connection"
 	"gosynth/gui/module"
-	"gosynth/output"
+	audio "gosynth/module"
 )
 
 const WindowWidth = 1600
 const WindowHeight = 1200
 
 type App struct {
-	Streamer *output.Streamer
-	Root     component.IComponent
+	Root component.IComponent
 }
 
-func NewApp(str *output.Streamer) *App {
+func NewApp(audioRack *audio.Rack) *App {
 	ebiten.SetWindowTitle("Gosynth")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowSize(WindowWidth, WindowHeight)
 
 	a := &App{}
-	a.Streamer = str
 
 	a.Root = component.NewRoot()
 
-	rack := connection.NewRack()
+	rack := connection.NewRack(audioRack)
 	menu := module.NewMenu(rack)
 
 	a.Root.Append(menu)
