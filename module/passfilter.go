@@ -42,6 +42,8 @@ func (h *PassFilter) Write(port Port, value float64) {
 	case PortIn:
 		h.Sample += value
 	}
+
+	h.Module.Write(port, value)
 }
 
 func (h *PassFilter) Update(t time.Duration) {

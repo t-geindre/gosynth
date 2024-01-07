@@ -7,46 +7,52 @@ import (
 
 type Delay struct {
 	Module
-	Sample     float64
-	Buffer     []float64
-	Delay      time.Duration
-	Feedback   float64
-	SampleRate beep.SampleRate
-	Cursor     int
+	sample     float64
+	buffer     []float64
+	delay      time.Duration
+	feedback   float64
+	sampleRate beep.SampleRate
+	cursor     int
 }
 
 func (d *Delay) Init(SampleRate beep.SampleRate) {
 	d.Module.Init(SampleRate, d)
-	d.SampleRate = SampleRate
-
-	d.Buffer = make([]float64, 0)
+	d.sampleRate = SampleRate
+	d.SetDelay(0)
 }
 
 func (d *Delay) SetDelay(delay time.Duration) {
-	d.Delay = delay
-	d.Buffer = make([]float64, d.SampleRate.N(delay))
-	d.Cursor = 0
+	d.delay = delay
+	d.cursor = 0
+	d.buffer = make([]float64, d.sampleRate.N(delay))
 }
 
 func (d *Delay) SetFeedback(feedback float64) {
-	d.Feedback = feedback
+	d.feedback = feedback
 }
 
 func (d *Delay) Write(port Port, value float64) {
 	switch port {
 	case PortIn:
-		d.Sample += value
+		d.sample += value
+	case PortDelayIn:
+		delay := time.Duration((value + 1) / 2 * 1000 * float64(time.Millisecond))
+		d.SetDelay(delay)
+	case PortFeedbackIn:
+		d.SetFeedback((value + 1) / 2)
 	}
+
+	d.Module.Write(port, value)
 }
 
 func (d *Delay) Update(time time.Duration) {
 	d.Module.Update(time)
-	if d.Delay != 0 {
-		d.Sample += d.Buffer[d.Cursor] * d.Feedback
-		d.Buffer[d.Cursor] = d.Sample
-		d.Cursor = (d.Cursor + 1) % len(d.Buffer)
+	if d.delay != 0 {
+		d.sample += d.buffer[d.cursor] * d.feedback
+		d.buffer[d.cursor] = d.sample
+		d.cursor = (d.cursor + 1) % len(d.buffer)
 	}
 
-	d.ConnectionWrite(PortOut, d.Sample)
-	d.Sample = 0
+	d.ConnectionWrite(PortOut, d.sample)
+	d.sample = 0
 }

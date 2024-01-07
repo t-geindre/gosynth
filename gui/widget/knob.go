@@ -19,7 +19,7 @@ type Knob struct {
 func NewKnob(module audio.IModule, port audio.Port) *Knob {
 	k := &Knob{
 		Image:       component.NewImage(theme.Images.Knob),
-		remoteValue: connection.NewValue(0, 10, -90, 90, module, port),
+		remoteValue: connection.NewValue(-90, 90, module, port),
 	}
 
 	behavior.NewDraggable(k)

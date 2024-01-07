@@ -14,8 +14,14 @@ type Linear struct {
 	Finished bool
 }
 
-func NewLinear() *Linear {
-	return &Linear{}
+func NewLinear(value float64) *Linear {
+	return &Linear{
+		From:     value,
+		Target:   value,
+		Duration: time.Duration(0),
+		Start:    time.Duration(0),
+		Finished: true,
+	}
 }
 
 func (l *Linear) GoTo(target float64, duration, time time.Duration) {

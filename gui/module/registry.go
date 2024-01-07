@@ -42,11 +42,13 @@ func init() {
 
 	Registry.Register("VCA", func(rack *connection.Rack) {
 		audioVca := &audio.VCA{}
-		rack.Append(NewVCA(audioVca))
 		rack.GetAudioRack().AddModule(audioVca)
+		rack.Append(NewVCA(audioVca))
 	})
 
-	Registry.Register("Delay", func(rack *connection.Rack) {
-		rack.Append(NewDelay())
+	Registry.Register("delay", func(rack *connection.Rack) {
+		audioDelay := &audio.Delay{}
+		rack.GetAudioRack().AddModule(audioDelay)
+		rack.Append(NewDelay(audioDelay))
 	})
 }

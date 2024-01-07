@@ -7,24 +7,26 @@ import (
 	"gosynth/gui-lib/control"
 	"gosynth/gui-lib/graphic"
 	"gosynth/gui-lib/layout"
+	"gosynth/gui/connection"
 	"gosynth/gui/theme"
+	audio "gosynth/module"
 )
 
 type Slider struct {
 	*component.Component
-	from, to   float64
-	marksCount int
-	marksOn    int
-	value      float64
-	mouseDown  bool
+	from, to    float64
+	marksCount  int
+	marksOn     int
+	value       float64
+	mouseDown   bool
+	remoteValue *connection.Value
 }
 
-func NewSlider(from, to float64, marks int) *Slider {
+func NewSlider(marks int, module audio.IModule, port audio.Port) *Slider {
 	s := &Slider{
-		Component:  component.NewComponent(),
-		from:       from,
-		to:         to,
-		marksCount: marks,
+		Component:   component.NewComponent(),
+		marksCount:  marks,
+		remoteValue: connection.NewValue(0, 10, module, port),
 	}
 
 	s.GetGraphic().AddListener(&s, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
@@ -37,6 +39,7 @@ func NewSlider(from, to float64, marks int) *Slider {
 
 	s.AddListener(&s, control.LeftMouseDownEvent, s.onMouseDown)
 	s.AddListener(&s, control.LeftMouseUpEvent, s.onMouseUp)
+	s.AddListener(&s, component.UpdateEvent, s.onUpdate)
 
 	return s
 }
@@ -84,19 +87,23 @@ func (s *Slider) updateMarks() {
 	}
 }
 
-func (s *Slider) Update() {
+func (s *Slider) onUpdate(_ event.IEvent) {
+	v := s.remoteValue.ReceiveAudioValue()
+
+	if v != nil {
+		s.SetValue(*v)
+	}
+
 	if s.mouseDown {
 		mx, my := ebiten.CursorPosition()
 		sx, sy := s.GetLayout().GetAbsolutePosition()
 		w, h := s.GetLayout().GetSize()
 		if s.GetLayout().GetContentOrientation() == layout.Horizontal {
-			s.SetValue(s.from + (s.to-s.from)*(float64(mx)-sx)/w)
+			s.SetValue(0 + (10-0)*(float64(mx)-sx)/w)
 		} else {
-			s.SetValue(s.from + (s.to-s.from)*(sy+h-float64(my))/h)
+			s.SetValue(0 + (10-0)*(sy+h-float64(my))/h)
 		}
 	}
-
-	s.Component.Update()
 }
 
 func (s *Slider) onMouseDown(e event.IEvent) {
@@ -112,14 +119,20 @@ func (s *Slider) onMouseUp(e event.IEvent) {
 }
 
 func (s *Slider) SetValue(value float64) {
-	if value < s.from {
-		value = s.from
-	} else if value > s.to {
-		value = s.to
+	if value == s.value {
+		return
+	}
+
+	if value < 0 {
+		value = 0
+	} else if value > 10 {
+		value = 10
 	}
 
 	s.value = value
-	s.marksOn = int(value / (s.to - s.from) * float64(s.marksCount))
+	s.marksOn = int(value / (10 - 0) * float64(s.marksCount))
+
+	s.remoteValue.SendGuiValue(value)
 
 	s.updateMarks()
 }

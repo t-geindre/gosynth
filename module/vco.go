@@ -22,8 +22,10 @@ func (v *VCO) Write(port Port, value float64) {
 	switch port {
 	case PortInVOct:
 		// CV v/oct input to frequency
-		v.Freq = 440 * math.Pow(2, value-5)
+		v.Freq = 440 * math.Pow(2, value*2)
 	}
+
+	v.Module.Write(port, value)
 }
 
 func (v *VCO) SetOctaveShift(octShift float64) {
@@ -36,10 +38,10 @@ func (v *VCO) Update(time time.Duration) {
 	freq := v.Freq * math.Pow(2, v.OctShift)
 
 	// Normalize 0-10V
-	v.ConnectionWrite(PortOutSin, v.oscSin(time, freq)*5+5)
-	v.ConnectionWrite(PortOutSquare, v.oscSquare(time, freq)*5+5)
-	v.ConnectionWrite(PortOutSaw, v.oscSaw(time, freq)*5+5)
-	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(time, freq)*5+5)
+	v.ConnectionWrite(PortOutSin, v.oscSin(time, freq))
+	v.ConnectionWrite(PortOutSquare, v.oscSquare(time, freq))
+	v.ConnectionWrite(PortOutSaw, v.oscSaw(time, freq))
+	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(time, freq))
 }
 
 func (v *VCO) oscSin(time time.Duration, freq float64) float64 {

@@ -2,46 +2,38 @@ package module
 
 import (
 	"github.com/gopxl/beep"
+	"gosynth/math/ramp"
 	"time"
 )
 
 type VCA struct {
 	*Module
-	Gain       float64
+	Gain       *ramp.Linear
 	MasterGain float64
 	Sample     float64
+	time       time.Duration
 }
 
 func (g *VCA) Init(rate beep.SampleRate) {
 	g.Module = &Module{}
 	g.Module.Init(rate, g)
-
-	g.Gain = 1
+	g.Gain = ramp.NewLinear(1) // Todo find a better way to smooth the gain
+	g.Write(PortCvIn, -1)
 }
 
 func (g *VCA) Write(port Port, value float64) {
 	switch port {
 	case PortCvIn:
-		// Normalize 0-10V to 0-1
-		g.Gain = value / 10
+		g.Gain.GoTo((value+1)/2, time.Millisecond*5, g.time)
 	case PortIn:
 		g.Sample += value
 	}
 	g.Module.Write(port, value)
 }
 
-func (g *VCA) Read(port Port) float64 {
-	switch port {
-	case PortCvIn:
-		return g.Gain*2 - 1
-	case PortIn:
-		return g.Sample
-	}
-	return 0
-}
-
 func (g *VCA) Update(t time.Duration) {
+	g.time = t
 	g.Module.Update(t)
-	g.ConnectionWrite(PortOut, g.Sample*g.Gain)
+	g.ConnectionWrite(PortOut, g.Sample*g.Gain.Value(t))
 	g.Sample = 0
 }

@@ -8,8 +8,6 @@ import (
 type IModule interface {
 	Init(rate beep.SampleRate)
 	Write(port Port, value float64)
-	// Read return data written to input port
-	Read(port Port) float64
 	Connect(srcPort Port, destModule IModule, destPort Port)
 	Disconnect(srcPort Port, destModule IModule, destPort Port)
 	Update(time time.Duration)

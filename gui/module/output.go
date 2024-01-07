@@ -15,11 +15,14 @@ func NewOutput(rack *audio.Rack) *Module {
 		Module: NewModule("OUT", 1),
 	}
 
-	v.Append(widget.NewLabel("L/M", widget.LabelPositionTop))
+	v.Append(widget.NewLabel("L", widget.LabelPositionTop))
 	v.Append(connection.NewPlug(connection.PlugDirectionIn, rack, audio.PortInL))
 
 	v.Append(widget.NewLabel("R", widget.LabelPositionTop))
 	v.Append(connection.NewPlug(connection.PlugDirectionIn, rack, audio.PortInR))
+
+	v.Append(widget.NewLabel("M", widget.LabelPositionTop))
+	v.Append(connection.NewPlug(connection.PlugDirectionIn, rack, audio.PortIn))
 
 	return v.Module
 }

@@ -45,6 +45,7 @@ func (a *Adsr) Write(port Port, value float64) {
 	case PortInGate:
 		a.On = value > 0
 	}
+	a.Module.Write(port, value)
 }
 
 func (a *Adsr) Update(time time.Duration) {

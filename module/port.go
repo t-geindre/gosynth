@@ -6,14 +6,13 @@ const (
 	// INPUTS
 
 	PortCvIn Port = iota
+	PortDelayIn
+	PortFeedbackIn
 	PortIn
 	PortInGate
 	PortInL
 	PortInR
 	PortInVOct
-
-	PortInGain
-	PortInFreq
 
 	// OUTPUTS
 

@@ -108,7 +108,6 @@ func (m *Module) Write(port Port, value float64) {
 	if len(m.WrittenInputs[port]) < chanPortBuffering {
 		m.WrittenInputs[port] <- value
 	}
-
 }
 
 func (m *Module) Read(port Port) float64 {

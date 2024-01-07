@@ -15,9 +15,9 @@ func NewVCA(vca *audio.VCA) *Module {
 		Module: NewModule("VCA", 1),
 	}
 
-	slider := widget.NewSlider(0, 1, 25)
+	slider := widget.NewSlider(25, vca, audio.PortCvIn)
 	slider.GetLayout().SetFill(80)
-	slider.SetValue(0.5)
+	slider.SetValue(10)
 	v.Append(slider)
 
 	vLine := widget.NewLine(false, float32(2))
