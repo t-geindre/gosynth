@@ -16,13 +16,14 @@ type VCO struct {
 
 func (v *VCO) Init(rate beep.SampleRate) {
 	v.Module.Init(rate, v)
+	v.Write(PortInVOct, 0)
 }
 
 func (v *VCO) Write(port Port, value float64) {
 	switch port {
 	case PortInVOct:
 		// CV v/oct input to frequency
-		v.Freq = 440 * math.Pow(2, value*2)
+		v.Freq = 440 * math.Pow(2, value*4)
 	}
 
 	v.Module.Write(port, value)

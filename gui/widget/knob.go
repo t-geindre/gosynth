@@ -53,7 +53,5 @@ func NewKnob(module audio.IModule, port audio.Port) *Knob {
 		e.StopPropagation()
 	})
 
-	k.remoteValue.SendGuiValue(k.Image.GetRotation())
-
 	return k
 }

@@ -18,7 +18,7 @@ func (g *VCA) Init(rate beep.SampleRate) {
 	g.Module = &Module{}
 	g.Module.Init(rate, g)
 	g.Gain = ramp.NewLinear(1) // Todo find a better way to smooth the gain
-	g.Write(PortCvIn, -1)
+	g.Write(PortCvIn, 1)
 }
 
 func (g *VCA) Write(port Port, value float64) {

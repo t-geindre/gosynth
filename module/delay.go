@@ -18,7 +18,9 @@ type Delay struct {
 func (d *Delay) Init(SampleRate beep.SampleRate) {
 	d.Module.Init(SampleRate, d)
 	d.sampleRate = SampleRate
-	d.SetDelay(0)
+
+	d.Write(PortDelayIn, -1)
+	d.Write(PortFeedbackIn, -1)
 }
 
 func (d *Delay) SetDelay(delay time.Duration) {
