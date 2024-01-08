@@ -3,7 +3,6 @@ package module
 import (
 	"github.com/gopxl/beep"
 	"math"
-	"time"
 )
 
 type FilterMode uint8
@@ -14,48 +13,50 @@ const (
 )
 
 type PassFilter struct {
-	Module
-	SampleRate beep.SampleRate
-	Sample     float64
-	Buffer     float64
-	Alpha      float64
-	Mode       FilterMode
+	*Module
+	sample float64
+	buffer float64
+	alpha  float64
+	mode   FilterMode
 }
 
-func (h *PassFilter) Init(SampleRate beep.SampleRate) {
-	h.Module.Init(SampleRate, h)
-	h.SampleRate = SampleRate
-	h.Alpha = 0
+func NewPassFilter(sr beep.SampleRate) *PassFilter {
+	p := &PassFilter{}
+	p.Module = NewModule(sr, p)
+
+	return p
+}
+func (p *PassFilter) Init(SampleRate beep.SampleRate) {
 }
 
-func (h *PassFilter) SetCutOff(cutoff float64) {
-	tan := math.Tan(math.Pi * cutoff / float64(h.SampleRate))
-	h.Alpha = (tan - 1) / (tan + 1)
+func (p *PassFilter) SetCutOff(cutoff float64) {
+	tan := math.Tan(math.Pi * cutoff / float64(p.GetSampleRate()))
+	p.alpha = (tan - 1) / (tan + 1)
 }
 
-func (h *PassFilter) SetMode(mode FilterMode) {
-	h.Mode = mode
+func (p *PassFilter) SetMode(mode FilterMode) {
+	p.mode = mode
 }
 
-func (h *PassFilter) Write(port Port, value float64) {
+func (p *PassFilter) Write(port Port, value float64) {
 	switch port {
 	case PortIn:
-		h.Sample += value
+		p.sample += value
 	}
 
-	h.Module.Write(port, value)
+	p.Module.Write(port, value)
 }
 
-func (h *PassFilter) Update(t time.Duration) {
-	h.Module.Update(t)
+func (p *PassFilter) Update() {
+	p.Module.Update()
 
-	pass := h.Alpha*h.Sample + h.Buffer
-	h.Buffer = h.Sample - h.Alpha*pass
+	pass := p.alpha*p.sample + p.buffer
+	p.buffer = p.sample - p.alpha*pass
 
-	if h.Mode == PassFilterModeHigh {
+	if p.mode == PassFilterModeHigh {
 		pass *= -1
 	}
 
-	h.ConnectionWrite(PortOut, h.Sample+pass)
-	h.Sample = 0
+	p.ConnectionWrite(PortOut, p.sample+pass)
+	p.sample = 0
 }

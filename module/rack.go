@@ -4,65 +4,57 @@ import (
 	"github.com/gopxl/beep"
 	"gosynth/event"
 	clock "gosynth/time"
-	"time"
 )
 
 type Rack struct {
-	Module
-	Modules        []IModule
-	Clock          *clock.Clock
-	SampleL        float64
-	SampleR        float64
-	SampleRate     beep.SampleRate
+	*Module
+	modules        []IModule
+	clock          *clock.Clock
+	sampleL        float64
+	sampleR        float64
 	connectionChan chan connectionCmd
 }
 
-func NewRack(clock *clock.Clock, rate beep.SampleRate) *Rack {
+func NewRack(clk *clock.Clock, rate beep.SampleRate) *Rack {
 	r := &Rack{}
-	r.Clock = clock
+	r.Module = NewModule(rate, r)
+	r.clock = clk
 	r.connectionChan = make(chan connectionCmd, 3)
-	r.Init(rate)
+	r.modules = make([]IModule, 0)
+
+	r.clock.AddListener(&r, clock.TickEvent, func(e event.IEvent) {
+		r.Update()
+	})
+
 	return r
 }
 
-func (r *Rack) Init(SampleRate beep.SampleRate) {
-	r.Module.Init(SampleRate, r)
-
-	r.SampleRate = SampleRate
-	r.Modules = make([]IModule, 0)
-
-	r.Clock.AddListener(r, clock.TickEvent, func(e event.IEvent) {
-		r.Update(e.GetSource().(*clock.Clock).GetTime())
-	})
-}
-
 func (r *Rack) AddModule(module IModule) {
-	module.Init(r.SampleRate)
-	r.Modules = append(r.Modules, module)
+	r.modules = append(r.modules, module)
 }
 
 func (r *Rack) Dispose() {
-	for _, module := range r.Modules {
+	for _, module := range r.modules {
 		module.Dispose()
 	}
-	r.Clock.RemoveListener(r, clock.TickEvent)
+	r.clock.RemoveListener(r, clock.TickEvent)
 }
 
 func (r *Rack) Write(port Port, value float64) {
 	switch port {
 	case PortInL:
-		r.SampleL += value
+		r.sampleL += value
 	case PortInR:
-		r.SampleR += value
+		r.sampleR += value
 	case PortIn:
-		r.SampleL += value
-		r.SampleR += value
+		r.sampleL += value
+		r.sampleR += value
 	}
 
 	r.Module.Write(port, value)
 }
 
-func (r *Rack) Update(time time.Duration) {
+func (r *Rack) Update() {
 	select {
 	case cmd := <-r.connectionChan:
 		switch cmd.Action {
@@ -74,22 +66,22 @@ func (r *Rack) Update(time time.Duration) {
 	default:
 	}
 
-	r.Module.Update(time)
+	r.Module.Update()
 
-	r.SampleL = 0
-	r.SampleR = 0
+	r.sampleL = 0
+	r.sampleR = 0
 
-	for _, module := range r.Modules {
-		module.Update(time)
+	for _, module := range r.modules {
+		module.Update()
 	}
 }
 
 func (r *Rack) GetSamples() (float64, float64) {
-	return r.SampleL, r.SampleR
+	return r.sampleL, r.sampleR
 }
 
 func (r *Rack) GetModules() []IModule {
-	return r.Modules
+	return r.modules
 }
 
 func (r *Rack) CreateModuleConnection(scr IModule, pSrc Port, dst IModule, pDst Port) {

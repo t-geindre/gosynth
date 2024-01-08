@@ -12,15 +12,15 @@ type Delay struct {
 	*Module
 }
 
-func NewDelay(delay *audio.Delay) *Module {
+func NewDelay(delay audio.IModule) *Module {
 	d := &Delay{
 		Module: NewModule("delay", 2),
 	}
 
-	d.appendControlLine("TIME", 70/4, delay, audio.PortDelayIn)
-	d.appendControlLine("FDBK", 70/4, delay, audio.PortFeedbackIn)
-	d.appendControlLine("COLOR", 70/4, delay, audio.PortFeedbackIn) // Todo
-	d.appendControlLine("MIX", 70/4, delay, audio.PortFeedbackIn)   // Todo
+	d.appendControlLine("TIME", 70/4, delay, audio.PortInDelay)
+	d.appendControlLine("FDBK", 70/4, delay, audio.PortInFeedback)
+	d.appendControlLine("COLOR", 70/4, delay, audio.PortInFeedback) // Todo
+	d.appendControlLine("MIX", 70/4, delay, audio.PortInFeedback)   // Todo
 
 	hr := widget.NewLine(true, float32(2))
 	hr.GetLayout().SetFill(5)
@@ -41,7 +41,7 @@ func NewDelay(delay *audio.Delay) *Module {
 	return d.Module
 }
 
-func (d *Delay) appendControlLine(label string, fill float64, delay *audio.Delay, port audio.Port) {
+func (d *Delay) appendControlLine(label string, fill float64, delay audio.IModule, port audio.Port) {
 	c := component.NewContainer()
 	c.GetLayout().SetContentOrientation(layout.Horizontal)
 	c.GetLayout().SetFill(fill)

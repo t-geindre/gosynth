@@ -10,12 +10,12 @@ type VCA struct {
 	*Module
 }
 
-func NewVCA(vca *audio.VCA) *Module {
+func NewVCA(vca audio.IModule) *Module {
 	v := &VCA{
 		Module: NewModule("VCA", 1),
 	}
 
-	slider := widget.NewSlider(25, vca, audio.PortCvIn)
+	slider := widget.NewSlider(25, vca, audio.PortInCV)
 	slider.GetLayout().SetFill(80)
 	slider.SetValue(10)
 	v.Append(slider)
@@ -24,7 +24,7 @@ func NewVCA(vca *audio.VCA) *Module {
 	vLine.GetLayout().SetFill(5)
 	v.Append(vLine)
 
-	v.Append(connection.NewPlug(connection.PlugDirectionIn, vca, audio.PortCvIn))
+	v.Append(connection.NewPlug(connection.PlugDirectionIn, vca, audio.PortInCV))
 	v.Append(widget.NewLabel("CV", widget.LabelPositionBottom))
 
 	hLine := widget.NewLine(true, float32(2))

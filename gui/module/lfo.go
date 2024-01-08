@@ -10,7 +10,7 @@ type LFO struct {
 	*Module
 }
 
-func NewLFO(lfo *audio.LFO) *Module {
+func NewLFO(lfo audio.IModule) *Module {
 	v := &LFO{
 		Module: NewModule("LFO", 1),
 	}

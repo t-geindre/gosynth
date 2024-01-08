@@ -21,65 +21,68 @@ type EnvPhase struct {
 	Target float64
 }
 
-type Adsr struct {
-	Module
-	State  EnvState
-	Phases [4]EnvPhase
-	On     bool
-	Ramp   ramp.Linear
+type ADSR struct {
+	*Module
+	state  EnvState
+	phases [4]EnvPhase
+	on     bool
+	ramp   *ramp.Linear
 }
 
-func (a *Adsr) Init(rate beep.SampleRate) {
-	a.Module.Init(rate, a)
-	a.State = EnvStateOff
-	a.Phases = [4]EnvPhase{
-		EnvPhase{time.Millisecond * 40, 1},  // Attack
-		EnvPhase{time.Millisecond * 20, .5}, // Decay
-		EnvPhase{0, .5},                     // Sustain
-		EnvPhase{time.Millisecond * 20, 0},  // Release
+func NewAdsr(rate beep.SampleRate) {
+	a := &ADSR{}
+	a.Module = NewModule(rate, a)
+	a.state = EnvStateOff
+	a.phases = [4]EnvPhase{
+		{time.Millisecond * 40, 1},  // Attack
+		{time.Millisecond * 20, .5}, // Decay
+		{0, .5},                     // Sustain
+		{time.Millisecond * 20, 0},  // Release
 	}
+	a.ramp = ramp.NewLinear(rate, 0)
 }
 
-func (a *Adsr) Write(port Port, value float64) {
+func (a *ADSR) Write(port Port, value float64) {
 	switch port {
 	case PortInGate:
-		a.On = value > 0
+		a.on = value > 0
 	}
 	a.Module.Write(port, value)
 }
 
-func (a *Adsr) Update(time time.Duration) {
-	a.Module.Update(time)
-	switch a.State {
+func (a *ADSR) Update() {
+	a.Module.Update()
+
+	switch a.state {
 	case EnvStateAttack:
-		if a.Ramp.IsFinished() {
-			a.GoToState(EnvStateDecay, time)
+		if a.ramp.IsFinished() {
+			a.GoToState(EnvStateDecay)
 		}
 	case EnvStateDecay:
-		if a.Ramp.IsFinished() {
-			a.GoToState(EnvStateSustain, time)
+		if a.ramp.IsFinished() {
+			a.GoToState(EnvStateSustain)
 		}
 	case EnvStateSustain:
-		if !a.On {
-			a.GoToState(EnvStateRelease, time)
+		if !a.on {
+			a.GoToState(EnvStateRelease)
 		}
 	case EnvStateRelease:
-		if a.Ramp.IsFinished() {
-			a.GoToState(EnvStateOff, time)
+		if a.ramp.IsFinished() {
+			a.GoToState(EnvStateOff)
 		}
 	case EnvStateOff:
-		if a.On {
-			a.GoToState(EnvStateAttack, time)
+		if a.on {
+			a.GoToState(EnvStateAttack)
 		}
 	}
 
-	a.ConnectionWrite(PortCvOut, a.Ramp.Value(time)*2-1)
+	a.ConnectionWrite(PortOutCv, a.ramp.Value()*2-1)
 }
 
-func (a *Adsr) GoToState(state EnvState, time time.Duration) {
-	a.State = state
+func (a *ADSR) GoToState(state EnvState) {
+	a.state = state
 	if state == EnvStateOff {
 		return
 	}
-	a.Ramp.GoTo(a.Phases[state].Target, a.Phases[state].Duration, time)
+	a.ramp.GoTo(a.phases[state].Target, a.phases[state].Duration)
 }

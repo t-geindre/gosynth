@@ -2,7 +2,6 @@ package module
 
 import (
 	"github.com/gopxl/beep"
-	"time"
 )
 
 const chanPortBuffering = 1
@@ -19,23 +18,31 @@ type Connection struct {
 }
 
 type Module struct {
-	Connections    []Connection
-	CommandChan    chan Command
-	WrittenInputs  map[Port]chan float64
-	WrittenOutputs map[Port]chan float64
+	connections    []Connection
+	commandChan    chan Command
+	writtenInputs  map[Port]chan float64
+	writtenOutputs map[Port]chan float64
+	sampleRate     beep.SampleRate
 	IModule        IModule
 }
 
-func (m *Module) Init(_ beep.SampleRate, imodule IModule) {
-	m.Connections = make([]Connection, 1)
-	m.CommandChan = make(chan Command, 1)
+func NewModule(sr beep.SampleRate, imodule IModule) *Module {
+	m := &Module{}
+	m.connections = make([]Connection, 1)
+	m.commandChan = make(chan Command, 1)
+	m.writtenInputs = make(map[Port]chan float64)
+	m.writtenOutputs = make(map[Port]chan float64)
+	m.sampleRate = sr
 	m.IModule = imodule
-	m.WrittenInputs = make(map[Port]chan float64)
-	m.WrittenOutputs = make(map[Port]chan float64)
+	return m
+}
+
+func (m *Module) GetSampleRate() beep.SampleRate {
+	return m.sampleRate
 }
 
 func (m *Module) Connect(srcPort Port, destModule IModule, destPort Port) {
-	m.Connections = append(m.Connections, Connection{
+	m.connections = append(m.connections, Connection{
 		SrcPort:    srcPort,
 		DestModule: destModule,
 		DestPort:   destPort,
@@ -43,24 +50,24 @@ func (m *Module) Connect(srcPort Port, destModule IModule, destPort Port) {
 }
 
 func (m *Module) Disconnect(srcPort Port, destModule IModule, destPort Port) {
-	for i, con := range m.Connections {
+	for i, con := range m.connections {
 		if con.SrcPort == srcPort && con.DestModule == destModule && con.DestPort == destPort {
-			m.Connections = append(m.Connections[:i], m.Connections[i+1:]...)
+			m.connections = append(m.connections[:i], m.connections[i+1:]...)
 			return
 		}
 	}
 }
 
 func (m *Module) ConnectionWrite(srcPort Port, value float64) {
-	if _, ok := m.WrittenOutputs[srcPort]; !ok {
-		m.WrittenOutputs[srcPort] = make(chan float64, chanPortBuffering)
+	if _, ok := m.writtenOutputs[srcPort]; !ok {
+		m.writtenOutputs[srcPort] = make(chan float64, chanPortBuffering)
 	}
 
-	if len(m.WrittenOutputs[srcPort]) < chanPortBuffering {
-		m.WrittenOutputs[srcPort] <- value
+	if len(m.writtenOutputs[srcPort]) < chanPortBuffering {
+		m.writtenOutputs[srcPort] <- value
 	}
 
-	for _, con := range m.Connections {
+	for _, con := range m.connections {
 		if con.SrcPort == srcPort {
 			con.DestModule.Write(con.DestPort, value)
 		}
@@ -69,17 +76,17 @@ func (m *Module) ConnectionWrite(srcPort Port, value float64) {
 
 // SendInput Thread-safe way to send a command to a module
 func (m *Module) SendInput(port Port, value float64) {
-	m.CommandChan <- Command{Port: port, Value: value}
+	m.commandChan <- Command{Port: port, Value: value}
 }
 
 // ReceiveInput Thread-safe way to read data sent to a module
 func (m *Module) ReceiveInput(port Port) *float64 {
-	if _, ok := m.WrittenInputs[port]; !ok {
+	if _, ok := m.writtenInputs[port]; !ok {
 		return nil
 	}
 
-	if len(m.WrittenInputs[port]) > 0 {
-		val := <-m.WrittenInputs[port]
+	if len(m.writtenInputs[port]) > 0 {
+		val := <-m.writtenInputs[port]
 		return &val
 	}
 
@@ -88,12 +95,12 @@ func (m *Module) ReceiveInput(port Port) *float64 {
 
 // ReceiveOutput Thread-safe way to get data output from a module
 func (m *Module) ReceiveOutput(port Port) *float64 {
-	if _, ok := m.WrittenOutputs[port]; !ok {
+	if _, ok := m.writtenOutputs[port]; !ok {
 		return nil
 	}
 
-	if len(m.WrittenOutputs[port]) > 0 {
-		val := <-m.WrittenOutputs[port]
+	if len(m.writtenOutputs[port]) > 0 {
+		val := <-m.writtenOutputs[port]
 		return &val
 	}
 
@@ -101,12 +108,12 @@ func (m *Module) ReceiveOutput(port Port) *float64 {
 }
 
 func (m *Module) Write(port Port, value float64) {
-	if _, ok := m.WrittenInputs[port]; !ok {
-		m.WrittenInputs[port] = make(chan float64, chanPortBuffering)
+	if _, ok := m.writtenInputs[port]; !ok {
+		m.writtenInputs[port] = make(chan float64, chanPortBuffering)
 	}
 
-	if len(m.WrittenInputs[port]) < chanPortBuffering {
-		m.WrittenInputs[port] <- value
+	if len(m.writtenInputs[port]) < chanPortBuffering {
+		m.writtenInputs[port] <- value
 	}
 }
 
@@ -117,14 +124,15 @@ func (m *Module) Read(port Port) float64 {
 func (m *Module) Dispose() {
 }
 
-func (m *Module) Update(time time.Duration) {
+func (m *Module) Update() {
 	select {
-	case cmd := <-m.CommandChan:
+	case cmd := <-m.commandChan:
 		m.GetIModule().Write(cmd.Port, cmd.Value)
 	default:
 	}
 }
 
 func (m *Module) GetIModule() IModule {
+	// Todo get rid of this method (and the IModule ref)
 	return m.IModule
 }

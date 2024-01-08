@@ -3,53 +3,48 @@ package module
 import (
 	"github.com/gopxl/beep"
 	"math"
-	"time"
 )
 
 type VCO struct {
-	Module
-	Freq             float64
-	currentPhase     float64
-	phaseAccumulator float64
-	phaseAdvance     float64
-	OctShift         float64
-	SampleRate       beep.SampleRate
+	*Module
+	phaseCur, phaseAdv, phaseAcc float64
+	octShift                     float64
+	freqRef, freqRange           float64
+	sDuration                    float64
 }
 
-func (v *VCO) Init(rate beep.SampleRate) {
-	v.Module.Init(rate, v)
-	v.SampleRate = rate
+func NewVCO(sr beep.SampleRate) *VCO {
+	v := &VCO{}
+	v.Module = NewModule(sr, v)
+	v.freqRef = 440 // std A4
+	v.freqRange = 4 // +-4 octaves
+	v.sDuration = v.GetSampleRate().D(1).Seconds()
 	v.Write(PortInVOct, 0)
+	return v
 }
 
 func (v *VCO) Write(port Port, value float64) {
 	switch port {
 	case PortInVOct:
-		// CV v/oct input to frequency
-		v.Freq = 440 * math.Pow(2, value*4) * math.Pow(2, v.OctShift)
-		v.phaseAdvance = v.Freq * v.SampleRate.D(1).Seconds()
+		// CV v/oct input to phase shifting
+		v.phaseAdv = v.freqRef * math.Pow(2, value*v.freqRange) * math.Pow(2, v.octShift) * v.sDuration
 	}
 
 	v.Module.Write(port, value)
 }
 
-func (v *VCO) SetOctaveShift(octShift float64) {
-	v.OctShift = octShift
-}
+func (v *VCO) Update() {
+	v.Module.Update()
 
-func (v *VCO) Update(time time.Duration) {
-	v.Module.Update(time)
-
-	v.currentPhase += v.phaseAdvance
-	if v.currentPhase >= 1 {
-		v.currentPhase -= 1
+	v.phaseCur += v.phaseAdv
+	if v.phaseCur >= 1 {
+		v.phaseCur -= 1
 	}
 
-	// Normalize 0-10V
-	v.ConnectionWrite(PortOutSin, v.oscSin(v.currentPhase))
-	v.ConnectionWrite(PortOutSquare, v.oscSquare(v.currentPhase))
-	v.ConnectionWrite(PortOutSaw, v.oscSaw(v.currentPhase))
-	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(v.currentPhase))
+	v.ConnectionWrite(PortOutSin, v.oscSin(v.phaseCur))
+	v.ConnectionWrite(PortOutSquare, v.oscSquare(v.phaseCur))
+	v.ConnectionWrite(PortOutSaw, v.oscSaw(v.phaseCur))
+	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(v.phaseCur))
 
 }
 

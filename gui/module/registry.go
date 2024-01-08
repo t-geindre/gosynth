@@ -35,25 +35,25 @@ func init() {
 	})
 
 	Registry.Register("VCO", func(rack *connection.Rack) {
-		audioVCO := &audio.VCO{}
+		audioVCO := audio.NewVCO(rack.GetAudioRack().GetSampleRate())
 		rack.GetAudioRack().AddModule(audioVCO)
 		rack.Append(NewVCO(audioVCO))
 	})
 
 	Registry.Register("LFO", func(rack *connection.Rack) {
-		audioLFO := &audio.LFO{}
+		audioLFO := audio.NewLFO(rack.GetAudioRack().GetSampleRate())
 		rack.GetAudioRack().AddModule(audioLFO)
 		rack.Append(NewLFO(audioLFO))
 	})
 
 	Registry.Register("VCA", func(rack *connection.Rack) {
-		audioVca := &audio.VCA{}
+		audioVca := audio.NewVCA(rack.GetAudioRack().GetSampleRate())
 		rack.GetAudioRack().AddModule(audioVca)
 		rack.Append(NewVCA(audioVca))
 	})
 
 	Registry.Register("delay", func(rack *connection.Rack) {
-		audioDelay := &audio.Delay{}
+		audioDelay := audio.NewDelay(rack.GetAudioRack().GetSampleRate())
 		rack.GetAudioRack().AddModule(audioDelay)
 		rack.Append(NewDelay(audioDelay))
 	})

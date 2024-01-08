@@ -1,52 +1,48 @@
 package ramp
 
 import (
+	"github.com/gopxl/beep"
 	"time"
 )
 
 type Linear struct {
-	From   float64
-	Target float64
-
-	Duration time.Duration
-	Start    time.Duration
-
-	Finished bool
+	from      float64
+	target    float64
+	sDuration int // samples
+	sDone     int // samples done
+	sRate     beep.SampleRate
 }
 
-func NewLinear(value float64) *Linear {
+func NewLinear(sr beep.SampleRate, value float64) *Linear {
 	return &Linear{
-		From:     value,
-		Target:   value,
-		Duration: time.Duration(0),
-		Start:    time.Duration(0),
-		Finished: true,
+		from:   value,
+		target: value,
+		sRate:  sr,
 	}
 }
 
-func (l *Linear) GoTo(target float64, duration, time time.Duration) {
-	l.GoFromTo(l.Value(time), target, duration, time)
+func (l *Linear) GoTo(target float64, duration time.Duration) {
+	l.GoFromTo(l.Value(), target, duration)
 }
 
-func (l *Linear) GoFromTo(from, target float64, duration, time time.Duration) {
-	l.From = from
-	l.Target = target
-	l.Duration = duration
-	l.Start = time
-	l.Finished = false
+func (l *Linear) GoFromTo(from, target float64, duration time.Duration) {
+	l.from = from
+	l.target = target
+	l.sDuration = l.sRate.N(duration)
+	l.sDone = 0
 }
 
-func (l *Linear) Value(time time.Duration) float64 {
-	elapsed := time - l.Start
-
-	if elapsed >= l.Duration {
-		l.Finished = true
-		return l.Target
+func (l *Linear) Value() float64 {
+	if l.IsFinished() {
+		return l.target
 	}
 
-	return l.From + (l.Target-l.From)*float64(elapsed)/float64(l.Duration)
+	value := l.from + (l.target-l.from)*float64(l.sDone)/float64(l.sDuration)
+	l.sDone++
+
+	return value
 }
 
 func (l *Linear) IsFinished() bool {
-	return l.Finished
+	return l.sDone >= l.sDuration
 }

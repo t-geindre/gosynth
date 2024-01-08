@@ -5,9 +5,9 @@ type Port uint8
 const (
 	// INPUTS
 
-	PortCvIn Port = iota
-	PortDelayIn
-	PortFeedbackIn
+	PortInCV Port = iota
+	PortInDelay
+	PortInFeedback
 	PortIn
 	PortInGate
 	PortInL
@@ -17,14 +17,11 @@ const (
 	// OUTPUTS
 
 	PortOut
-	PortCvOut
+	PortOutCv
 	PortOutSin
 	PortOutSquare
 	PortOutSaw
 	PortOutTriangle
-
-	PortOutFreq
-	PortOutGate
 )
 
 /*

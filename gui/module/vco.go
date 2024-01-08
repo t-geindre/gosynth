@@ -10,7 +10,7 @@ type VCO struct {
 	*Module
 }
 
-func NewVCO(vco *audio.VCO) *Module {
+func NewVCO(vco audio.IModule) *Module {
 	v := &VCO{
 		Module: NewModule("VCO", 1),
 	}
