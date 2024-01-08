@@ -57,4 +57,10 @@ func init() {
 		rack.GetAudioRack().AddModule(audioDelay)
 		rack.Append(NewDelay(audioDelay))
 	})
+
+	Registry.Register("Sequencer4", func(rack *connection.Rack) {
+		audioSequencer4 := audio.NewSequencer4(rack.GetAudioRack().GetSampleRate())
+		rack.GetAudioRack().AddModule(audioSequencer4)
+		rack.Append(NewSequencer4(audioSequencer4))
+	})
 }

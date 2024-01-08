@@ -13,6 +13,10 @@ const (
 	PortInL
 	PortInR
 	PortInVOct
+	PortInValue1
+	PortInValue2
+	PortInValue3
+	PortInValue4
 
 	// OUTPUTS
 
@@ -22,6 +26,8 @@ const (
 	PortOutSquare
 	PortOutSaw
 	PortOutTriangle
+	PortOutTrigger
+	PortOutGate
 )
 
 /*
