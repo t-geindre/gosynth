@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const chanPortBuffering = 3
+const chanPortBuffering = 1
 
 type Command struct {
 	Port  Port
@@ -27,7 +27,7 @@ type Module struct {
 }
 
 func (m *Module) Init(_ beep.SampleRate, imodule IModule) {
-	m.Connections = make([]Connection, 0)
+	m.Connections = make([]Connection, 1)
 	m.CommandChan = make(chan Command, 1)
 	m.IModule = imodule
 	m.WrittenInputs = make(map[Port]chan float64)

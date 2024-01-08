@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-type OscillatorShape int
-
 type VCO struct {
 	Module
 	Freq     float64
@@ -35,7 +33,6 @@ func (v *VCO) SetOctaveShift(octShift float64) {
 
 func (v *VCO) Update(time time.Duration) {
 	v.Module.Update(time)
-
 	freq := v.Freq * math.Pow(2, v.OctShift)
 
 	// Normalize 0-10V

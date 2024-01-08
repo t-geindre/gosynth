@@ -40,6 +40,12 @@ func init() {
 		rack.Append(NewVCO(audioVCO))
 	})
 
+	Registry.Register("LFO", func(rack *connection.Rack) {
+		audioLFO := &audio.LFO{}
+		rack.GetAudioRack().AddModule(audioLFO)
+		rack.Append(NewLFO(audioLFO))
+	})
+
 	Registry.Register("VCA", func(rack *connection.Rack) {
 		audioVca := &audio.VCA{}
 		rack.GetAudioRack().AddModule(audioVca)
