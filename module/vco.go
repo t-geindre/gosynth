@@ -8,12 +8,17 @@ import (
 
 type VCO struct {
 	Module
-	Freq     float64
-	OctShift float64
+	Freq             float64
+	currentPhase     float64
+	phaseAccumulator float64
+	phaseAdvance     float64
+	OctShift         float64
+	SampleRate       beep.SampleRate
 }
 
 func (v *VCO) Init(rate beep.SampleRate) {
 	v.Module.Init(rate, v)
+	v.SampleRate = rate
 	v.Write(PortInVOct, 0)
 }
 
@@ -21,7 +26,8 @@ func (v *VCO) Write(port Port, value float64) {
 	switch port {
 	case PortInVOct:
 		// CV v/oct input to frequency
-		v.Freq = 440 * math.Pow(2, value*4)
+		v.Freq = 440 * math.Pow(2, value*4) * math.Pow(2, v.OctShift)
+		v.phaseAdvance = v.Freq * v.SampleRate.D(1).Seconds()
 	}
 
 	v.Module.Write(port, value)
@@ -33,22 +39,28 @@ func (v *VCO) SetOctaveShift(octShift float64) {
 
 func (v *VCO) Update(time time.Duration) {
 	v.Module.Update(time)
-	freq := v.Freq * math.Pow(2, v.OctShift)
+
+	v.currentPhase += v.phaseAdvance
+	if v.currentPhase >= 1 {
+		v.currentPhase -= 1
+	}
 
 	// Normalize 0-10V
-	v.ConnectionWrite(PortOutSin, v.oscSin(time, freq))
-	v.ConnectionWrite(PortOutSquare, v.oscSquare(time, freq))
-	v.ConnectionWrite(PortOutSaw, v.oscSaw(time, freq))
-	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(time, freq))
+	v.ConnectionWrite(PortOutSin, v.oscSin(v.currentPhase))
+	v.ConnectionWrite(PortOutSquare, v.oscSquare(v.currentPhase))
+	v.ConnectionWrite(PortOutSaw, v.oscSaw(v.currentPhase))
+	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(v.currentPhase))
+
 }
 
-func (v *VCO) oscSin(time time.Duration, freq float64) float64 {
-	return math.Sin(2 * math.Pi * time.Seconds() * freq)
+func (v *VCO) oscSin(phase float64) float64 {
+	radiantPhase := 2 * math.Pi * phase
+	return math.Sin(radiantPhase)
 }
 
-func (v *VCO) oscSquare(time time.Duration, freq float64) float64 {
-	var val float64
-	if math.Sin(2*math.Pi*time.Seconds()*freq) > 0 {
+func (v *VCO) oscSquare(phase float64) float64 {
+	val := 0.0
+	if phase < 0.5 {
 		val = 1
 	} else {
 		val = -1
@@ -57,10 +69,20 @@ func (v *VCO) oscSquare(time time.Duration, freq float64) float64 {
 	return val
 }
 
-func (v *VCO) oscSaw(time time.Duration, freq float64) float64 {
-	return 2 * (time.Seconds()*freq - math.Floor(0.5+time.Seconds()*freq))
+func (v *VCO) oscSaw(phase float64) float64 {
+	if phase < 0.5 {
+		return 2 * phase
+	} else {
+		return 2*phase - 2
+	}
 }
 
-func (v *VCO) oscTriangle(time time.Duration, freq float64) float64 {
-	return math.Abs(2*(time.Seconds()*freq-math.Floor(0.5+time.Seconds()*freq))) - 1
+func (v *VCO) oscTriangle(phase float64) float64 {
+	if phase < 0.25 {
+		return 4 * phase
+	} else if phase < 0.75 {
+		return -4*phase + 2
+	} else {
+		return 4*phase - 4
+	}
 }
