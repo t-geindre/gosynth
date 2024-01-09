@@ -87,4 +87,20 @@ func init() {
 		rack.Append(guiMod)
 		r.OffsetX(guiMod)
 	})
+
+	Registry.Register("Mixer", func(r *registry, rack *connection.Rack) {
+		audioMixer := audio.NewMixer(rack.GetAudioRack().GetSampleRate())
+		rack.GetAudioRack().AddModule(audioMixer)
+		guiMod := NewMixer(audioMixer)
+		rack.Append(guiMod)
+		r.OffsetX(guiMod)
+	})
+
+	Registry.Register("Multiplier", func(r *registry, rack *connection.Rack) {
+		audioMultiplier := audio.NewMultiplier(rack.GetAudioRack().GetSampleRate())
+		rack.GetAudioRack().AddModule(audioMultiplier)
+		guiMod := NewMultiplier(audioMultiplier)
+		rack.Append(guiMod)
+		r.OffsetX(guiMod)
+	})
 }

@@ -22,16 +22,16 @@ func NewSequencer4(seq audio.IModule) *Sequencer4 {
 	s.Append(l)
 
 	s.Append(widget.NewLabel("V/OCT", widget.LabelPositionTop))
-	s.Append(widget.NewKnob(seq, audio.PortInValue1, 0))
+	s.Append(widget.NewKnob(seq, audio.PortIn1, 0))
 
 	s.Append(widget.NewLabel("V/OCT", widget.LabelPositionTop))
-	s.Append(widget.NewKnob(seq, audio.PortInValue2, 0))
+	s.Append(widget.NewKnob(seq, audio.PortIn2, 0))
 
 	s.Append(widget.NewLabel("V/OCT", widget.LabelPositionTop))
-	s.Append(widget.NewKnob(seq, audio.PortInValue3, 0))
+	s.Append(widget.NewKnob(seq, audio.PortIn3, 0))
 
 	s.Append(widget.NewLabel("V/OCT", widget.LabelPositionTop))
-	s.Append(widget.NewKnob(seq, audio.PortInValue4, 0))
+	s.Append(widget.NewKnob(seq, audio.PortIn4, 0))
 
 	l2 := widget.NewLine(true, 1)
 	l2.GetLayout().SetFill(25)

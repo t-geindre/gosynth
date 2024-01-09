@@ -9,14 +9,14 @@ const (
 	PortInDelay
 	PortInFeedback
 	PortIn
+	PortIn1
+	PortIn2
+	PortIn3
+	PortIn4
 	PortInGate
 	PortInL
 	PortInR
 	PortInVOct
-	PortInValue1
-	PortInValue2
-	PortInValue3
-	PortInValue4
 	PortInPwmFact
 	PortInPwm
 	PortInPw
@@ -28,6 +28,10 @@ const (
 	// OUTPUTS
 
 	PortOut
+	PortOut1
+	PortOut2
+	PortOut3
+	PortOut4
 	PortOutCv
 	PortOutSin
 	PortOutSquare
