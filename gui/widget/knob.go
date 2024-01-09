@@ -16,12 +16,25 @@ type Knob struct {
 	remoteValue *connection.Value
 }
 
-func NewKnob(module audio.IModule, port audio.Port) *Knob {
+func NewKnob(module audio.IModule, port audio.Port, initRot float64) *Knob {
+	return newKnob(module, port, initRot, theme.Images.Knob)
+}
+
+func NewMediumKnob(module audio.IModule, port audio.Port, initRot float64) *Knob {
+	return newKnob(module, port, initRot, theme.Images.KnobMedium)
+}
+
+func NewLargeKnob(module audio.IModule, port audio.Port, initRot float64) *Knob {
+	return newKnob(module, port, initRot, theme.Images.KnobLarge)
+}
+
+func newKnob(module audio.IModule, port audio.Port, initRot float64, image *ebiten.Image) *Knob {
 	k := &Knob{
-		Image:       component.NewImage(theme.Images.Knob),
+		Image:       component.NewImage(image),
 		remoteValue: connection.NewValue(-90, 90, module, port),
 	}
 
+	k.Image.SetRotation(initRot)
 	behavior.NewDraggable(k)
 
 	k.AddListener(&k, behavior.DragStartEvent, func(e event.IEvent) {

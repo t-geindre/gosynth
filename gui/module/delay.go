@@ -17,10 +17,10 @@ func NewDelay(delay audio.IModule) *Module {
 		Module: NewModule("delay", 2),
 	}
 
-	d.appendControlLine("TIME", 70/4, delay, audio.PortInDelay)
-	d.appendControlLine("FDBK", 70/4, delay, audio.PortInFeedback)
-	d.appendControlLine("COLOR", 70/4, delay, audio.PortInFeedback) // Todo
-	d.appendControlLine("MIX", 70/4, delay, audio.PortInFeedback)   // Todo
+	d.appendControlLine("TIME", 70/4, delay, audio.PortInDelay, -90)
+	d.appendControlLine("FDBK", 70/4, delay, audio.PortInFeedback, -90)
+	d.appendControlLine("COLOR", 70/4, delay, audio.PortInFeedback, -90) // Todo
+	d.appendControlLine("MIX", 70/4, delay, audio.PortInMix, 0)          // Todo
 
 	hr := widget.NewLine(true, float32(2))
 	hr.GetLayout().SetFill(5)
@@ -41,7 +41,7 @@ func NewDelay(delay audio.IModule) *Module {
 	return d.Module
 }
 
-func (d *Delay) appendControlLine(label string, fill float64, delay audio.IModule, port audio.Port) {
+func (d *Delay) appendControlLine(label string, fill float64, delay audio.IModule, port audio.Port, rot float64) {
 	c := component.NewContainer()
 	c.GetLayout().SetContentOrientation(layout.Horizontal)
 	c.GetLayout().SetFill(fill)
@@ -64,5 +64,5 @@ func (d *Delay) appendControlLine(label string, fill float64, delay audio.IModul
 	c.Append(kcc)
 
 	kcc.Append(widget.NewLabel(label, widget.LabelPositionTop))
-	kcc.Append(widget.NewKnob(delay, port))
+	kcc.Append(widget.NewKnob(delay, port, rot))
 }

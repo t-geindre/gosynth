@@ -1,6 +1,7 @@
 package widget
 
 import (
+	"golang.org/x/image/font"
 	"gosynth/gui-lib/component"
 	"gosynth/gui/theme"
 )
@@ -19,8 +20,20 @@ type Label struct {
 }
 
 func NewLabel(text string, position labelPosition) *Label {
+	return newLabel(text, position, theme.Fonts.Small)
+}
+
+func NewMediumLabel(text string, position labelPosition) *Label {
+	return newLabel(text, position, theme.Fonts.Medium)
+}
+
+func NewLargeLabel(text string, position labelPosition) *Label {
+	return newLabel(text, position, theme.Fonts.Large)
+}
+
+func newLabel(text string, position labelPosition, font font.Face) *Label {
 	t := &Label{
-		Text: component.NewText(text, theme.Fonts.Small, theme.Colors.Text, theme.Colors.Background),
+		Text: component.NewText(text, font, theme.Colors.Text, theme.Colors.Background),
 	}
 
 	switch position {

@@ -23,7 +23,7 @@ func NewVCA(sr beep.SampleRate) *VCA {
 func (g *VCA) Write(port Port, value float64) {
 	switch port {
 	case PortInCV:
-		g.gain.GoTo((value+1)/2, time.Millisecond*10)
+		g.gain.GoTo((value+1)/2, time.Millisecond*5)
 	case PortIn:
 		g.sample += value
 	}

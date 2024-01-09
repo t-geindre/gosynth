@@ -16,7 +16,7 @@ func NewLFO(lfo audio.IModule) *Module {
 	}
 
 	v.Append(widget.NewLabel("FRQ", widget.LabelPositionTop))
-	v.Append(widget.NewKnob(lfo, audio.PortInVOct))
+	v.Append(widget.NewKnob(lfo, audio.PortInVOct, 0))
 
 	v.Append(widget.NewLabel("V/OCT", widget.LabelPositionTop))
 	v.Append(connection.NewPlug(connection.PlugDirectionIn, lfo, audio.PortInVOct))

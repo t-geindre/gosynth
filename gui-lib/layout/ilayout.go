@@ -16,6 +16,7 @@ type ILayout interface {
 	GetParent() ILayout
 	SetParent(parent ILayout)
 	Append(child ILayout)
+	Prepend(child ILayout)
 	Remove(child ILayout)
 
 	GetMargin() (float64, float64, float64, float64)

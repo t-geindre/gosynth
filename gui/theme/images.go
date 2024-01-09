@@ -12,6 +12,8 @@ type imageList struct {
 	PlugInverted *ebiten.Image
 	Logo         *ebiten.Image
 	Knob         *ebiten.Image
+	KnobMedium   *ebiten.Image
+	KnobLarge    *ebiten.Image
 }
 
 func init() {
@@ -20,6 +22,8 @@ func init() {
 		PlugInverted: loadImage("assets/images/plug-inverted.png"),
 		Logo:         loadImage("assets/images/512px-Go_Logo_Blue.svg.png"),
 		Knob:         loadImage("assets/images/knob.png"),
+		KnobMedium:   loadImage("assets/images/knob-medium.png"),
+		KnobLarge:    loadImage("assets/images/knob-large.png"),
 	}
 }
 

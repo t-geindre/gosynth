@@ -48,6 +48,11 @@ func (l *Layout) Append(child ILayout) {
 	child.SetParent(l)
 }
 
+func (l *Layout) Prepend(child ILayout) {
+	l.children = append([]ILayout{child}, l.children...)
+	child.SetParent(l)
+}
+
 func (l *Layout) Remove(child ILayout) {
 	for i, c := range l.children {
 		if c == child {

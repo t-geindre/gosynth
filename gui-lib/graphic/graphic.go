@@ -46,6 +46,11 @@ func (g *Graphic) Append(child IGraphic) {
 	child.SetParent(g)
 }
 
+func (g *Graphic) Prepend(child IGraphic) {
+	g.children = append([]IGraphic{child}, g.children...)
+	child.SetParent(g)
+}
+
 func (g *Graphic) Remove(child IGraphic) {
 	for i, c := range g.children {
 		if c == child {

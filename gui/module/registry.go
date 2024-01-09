@@ -1,23 +1,25 @@
 package module
 
 import (
+	"gosynth/gui-lib/component"
 	"gosynth/gui/connection"
 	audio "gosynth/module"
 )
 
 type registry struct {
-	modules map[string]func(rack *connection.Rack)
+	modules map[string]func(r *registry, rack *connection.Rack)
+	xOffset float64
 }
 
 var Registry = &registry{
-	modules: make(map[string]func(rack *connection.Rack)),
+	modules: make(map[string]func(r *registry, rack *connection.Rack)),
 }
 
-func (r *registry) Register(name string, constructor func(rack *connection.Rack)) {
+func (r *registry) Register(name string, constructor func(r *registry, rack *connection.Rack)) {
 	r.modules[name] = constructor
 }
 
-func (r *registry) Get(name string) func(rack *connection.Rack) {
+func (r *registry) Get(name string) func(r *registry, rack *connection.Rack) {
 	return r.modules[name]
 }
 
@@ -29,38 +31,60 @@ func (r *registry) GetNames() []string {
 	return names
 }
 
+func (r *registry) OffsetX(m component.IComponent) {
+	w, _ := m.GetLayout().GetSize()
+	m.GetLayout().SetPosition(r.xOffset, 0)
+	r.xOffset += w
+	maxWidth, _ := m.GetRoot().GetLayout().GetSize()
+	if r.xOffset > maxWidth {
+		r.xOffset = 0
+	}
+}
+
 func init() {
-	Registry.Register("Output", func(rack *connection.Rack) {
-		rack.Append(NewOutput(rack.GetAudioRack()))
+	Registry.Register("Output", func(r *registry, rack *connection.Rack) {
+		guiMod := NewOutput(rack.GetAudioRack())
+		rack.Append(guiMod)
+		r.OffsetX(guiMod)
 	})
 
-	Registry.Register("VCO", func(rack *connection.Rack) {
-		audioVCO := audio.NewVCO(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioVCO)
-		rack.Append(NewVCO(audioVCO))
+	Registry.Register("VCO", func(r *registry, rack *connection.Rack) {
+		audioMod := audio.NewVCO(rack.GetAudioRack().GetSampleRate())
+		rack.GetAudioRack().AddModule(audioMod)
+		guiMod := NewVCO(audioMod)
+		rack.Append(guiMod)
+		r.OffsetX(guiMod)
 	})
 
-	Registry.Register("LFO", func(rack *connection.Rack) {
-		audioLFO := audio.NewLFO(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioLFO)
-		rack.Append(NewLFO(audioLFO))
+	Registry.Register("LFO", func(r *registry, rack *connection.Rack) {
+		audioMod := audio.NewLFO(rack.GetAudioRack().GetSampleRate())
+		rack.GetAudioRack().AddModule(audioMod)
+		guiMod := NewLFO(audioMod)
+		rack.Append(guiMod)
+		r.OffsetX(guiMod)
 	})
 
-	Registry.Register("VCA", func(rack *connection.Rack) {
-		audioVca := audio.NewVCA(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioVca)
-		rack.Append(NewVCA(audioVca))
+	Registry.Register("VCA", func(r *registry, rack *connection.Rack) {
+		audioMod := audio.NewVCA(rack.GetAudioRack().GetSampleRate())
+		rack.GetAudioRack().AddModule(audioMod)
+		guiMod := NewVCA(audioMod)
+		rack.Append(guiMod)
+		r.OffsetX(guiMod)
 	})
 
-	Registry.Register("delay", func(rack *connection.Rack) {
-		audioDelay := audio.NewDelay(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioDelay)
-		rack.Append(NewDelay(audioDelay))
+	Registry.Register("delay", func(r *registry, rack *connection.Rack) {
+		audioMod := audio.NewDelay(rack.GetAudioRack().GetSampleRate())
+		rack.GetAudioRack().AddModule(audioMod)
+		guiMod := NewDelay(audioMod)
+		rack.Append(guiMod)
+		r.OffsetX(guiMod)
 	})
 
-	Registry.Register("Sequencer4", func(rack *connection.Rack) {
+	Registry.Register("Sequencer4", func(r *registry, rack *connection.Rack) {
 		audioSequencer4 := audio.NewSequencer4(rack.GetAudioRack().GetSampleRate())
 		rack.GetAudioRack().AddModule(audioSequencer4)
-		rack.Append(NewSequencer4(audioSequencer4))
+		guiMod := NewSequencer4(audioSequencer4)
+		rack.Append(guiMod)
+		r.OffsetX(guiMod)
 	})
 }

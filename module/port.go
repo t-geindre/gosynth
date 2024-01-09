@@ -17,6 +17,13 @@ const (
 	PortInValue2
 	PortInValue3
 	PortInValue4
+	PortInPwmFact
+	PortInPwm
+	PortInPw
+	PortInMix
+	PortInSync
+	PortInFmFact
+	PortInFm
 
 	// OUTPUTS
 

@@ -18,17 +18,23 @@ type fontList struct {
 var Fonts fontList
 
 func init() {
-	fontSrc, err := os.ReadFile("assets/fonts/LEMONMILK-Medium.otf")
+	fontMedium, err := os.ReadFile("assets/fonts/LEMONMILK-Medium.otf")
+
+	if err != nil {
+		panic(err)
+	}
+
+	fontLight, err := os.ReadFile("assets/fonts/LEMONMILK-Light.otf")
 
 	if err != nil {
 		panic(err)
 	}
 
 	Fonts = fontList{
-		Title:  getFontFace(fontSrc, 18),
-		Large:  getFontFace(fontSrc, 14),
-		Medium: getFontFace(fontSrc, 12),
-		Small:  getFontFace(fontSrc, 10),
+		Title:  getFontFace(fontMedium, 18),
+		Large:  getFontFace(fontLight, 18),
+		Medium: getFontFace(fontLight, 12),
+		Small:  getFontFace(fontLight, 10),
 	}
 }
 

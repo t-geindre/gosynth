@@ -7,10 +7,12 @@ import (
 
 type VCO struct {
 	*Module
-	phaseCur, phaseAdv, phaseAcc float64
-	octShift                     float64
-	freqRef, freqRange           float64
-	sDuration                    float64
+	phaseAcc             float64
+	freqRef, freqRange   float64
+	freq                 float64
+	freqMod, freqModFact float64
+	sDuration            float64
+	pwm                  float64
 }
 
 func NewVCO(sr beep.SampleRate) *VCO {
@@ -19,15 +21,30 @@ func NewVCO(sr beep.SampleRate) *VCO {
 	v.freqRef = 440 // std A4
 	v.freqRange = 4 // +-4 octaves
 	v.sDuration = v.GetSampleRate().D(1).Seconds()
+
 	v.Write(PortInVOct, 0)
+	v.Write(PortInPw, 0)
+	v.Write(PortInFmFact, 0)
+
 	return v
 }
 
 func (v *VCO) Write(port Port, value float64) {
 	switch port {
 	case PortInVOct:
-		// CV v/oct input to phase shifting
-		v.phaseAdv = v.freqRef * math.Pow(2, value*v.freqRange) * math.Pow(2, v.octShift) * v.sDuration
+		v.freq = v.freqRef * math.Pow(2, value*v.freqRange)
+	case PortInPw:
+		v.pwm = (value+1)/2*0.45 + 0.05
+	case PortInSync:
+		v.phaseAcc = 0
+	case PortInPwmFact:
+		// Todo
+	case PortInPwm:
+		// Todo
+	case PortInFmFact:
+		v.freqModFact = (value + 1) / 2
+	case PortInFm:
+		v.freqMod = v.freqRef * math.Pow(2, value*v.freqRange)
 	}
 
 	v.Module.Write(port, value)
@@ -36,16 +53,20 @@ func (v *VCO) Write(port Port, value float64) {
 func (v *VCO) Update() {
 	v.Module.Update()
 
-	v.phaseCur += v.phaseAdv
-	if v.phaseCur >= 1 {
-		v.phaseCur -= 1
+	freq := v.freq
+	if v.freqMod != 0 {
+		freq += v.freqModFact * v.freqMod
 	}
 
-	v.ConnectionWrite(PortOutSin, v.oscSin(v.phaseCur))
-	v.ConnectionWrite(PortOutSquare, v.oscSquare(v.phaseCur))
-	v.ConnectionWrite(PortOutSaw, v.oscSaw(v.phaseCur))
-	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(v.phaseCur))
+	v.phaseAcc += freq * v.sDuration
+	if v.phaseAcc >= 1 {
+		v.phaseAcc -= 1
+	}
 
+	v.ConnectionWrite(PortOutSin, v.oscSin(v.phaseAcc))
+	v.ConnectionWrite(PortOutSquare, v.oscSquare(v.phaseAcc))
+	v.ConnectionWrite(PortOutSaw, v.oscSaw(v.phaseAcc))
+	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(v.phaseAcc))
 }
 
 func (v *VCO) oscSin(phase float64) float64 {
@@ -55,7 +76,7 @@ func (v *VCO) oscSin(phase float64) float64 {
 
 func (v *VCO) oscSquare(phase float64) float64 {
 	val := 0.0
-	if phase < 0.5 {
+	if phase < v.pwm {
 		val = 1
 	} else {
 		val = -1

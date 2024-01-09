@@ -65,6 +65,20 @@ func (c *Component) Append(child IComponent) {
 	child.SetParent(c)
 }
 
+func (c *Component) Prepend(child IComponent) {
+	if cComp, ok := child.(*Component); ok {
+		if cComp == c {
+			panic("cannot prepend component to itself")
+		}
+	}
+
+	c.Children = append([]IComponent{child}, c.Children...)
+	c.Graphic.Prepend(child.GetGraphic())
+	c.Layout.Prepend(child.GetLayout())
+
+	child.SetParent(c)
+}
+
 func (c *Component) Remove(child IComponent) {
 	for i, ch := range c.Children {
 		if ch == child {

@@ -12,6 +12,7 @@ type IGraphic interface {
 	GetParent() IGraphic
 	SetParent(parent IGraphic)
 	Append(child IGraphic)
+	Prepend(child IGraphic)
 	Remove(child IGraphic)
 	MoveFront(child IGraphic)
 

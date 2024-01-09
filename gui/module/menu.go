@@ -49,7 +49,7 @@ func NewMenu(rack *connection.Rack) *Menu {
 	for _, op := range Registry.GetNames() {
 		menu.AddOption(op, func(op string, rack *connection.Rack) func() {
 			return func() {
-				Registry.Get(op)(rack)
+				Registry.Get(op)(Registry, rack)
 			}
 		}(op, rack))
 	}
