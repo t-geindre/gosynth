@@ -67,44 +67,37 @@ func (v *VCO) Update() {
 		v.phaseAcc -= 1
 	}
 
-	phase := v.phaseAcc + v.phaseShift
-	v.ConnectionWrite(PortOutSin, v.oscSin(phase))
-	v.ConnectionWrite(PortOutSquare, v.oscSquare(phase))
-	v.ConnectionWrite(PortOutSaw, v.oscSaw(phase))
-	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(phase))
+	v.ConnectionWrite(PortOutSin, v.oscSin(v.phaseAcc))
+	v.ConnectionWrite(PortOutSquare, v.oscSquare(v.phaseAcc))
+	v.ConnectionWrite(PortOutSaw, v.oscSaw(v.phaseAcc))
+	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(v.phaseAcc))
 
 	v.freqMod = 0
 }
 
 func (v *VCO) oscSin(phase float64) float64 {
-	radiantPhase := 2 * math.Pi * phase
+	radiantPhase := 2 * math.Pi * (phase + v.phaseShift)
 	return math.Sin(radiantPhase)
 }
 
 func (v *VCO) oscSquare(phase float64) float64 {
-	val := 0.0
-	if phase < v.pwm+v.phaseShift {
-		val = 1
+	// Todo phase shift not working here
+	if phase+v.phaseShift < v.pwm+v.phaseShift {
+		return 1
 	} else {
-		val = -1
+		return -1
 	}
-
-	return val
 }
 
 func (v *VCO) oscSaw(phase float64) float64 {
-	if phase < 0.5 {
-		return 2 * phase
-	} else {
-		return 2*phase - 2
-	}
+	// Todo phase shift may not be working here
+	return 2*math.Mod(phase+v.phaseShift, 1) - 1
 }
 
 func (v *VCO) oscTriangle(phase float64) float64 {
-	if phase < 0.25+v.phaseShift {
+	// Todo phase shift may not be working here
+	if phase+v.phaseShift < 0.5+v.phaseShift {
 		return 4 * phase
-	} else if phase < 0.75+v.phaseShift {
-		return -4*phase + 2
 	} else {
 		return 4*phase - 4
 	}
