@@ -17,6 +17,8 @@ const (
 	PortInL
 	PortInR
 	PortInVOct
+	PortInOctShift
+	PortInPhaseShift
 	PortInPwmFact
 	PortInPwm
 	PortInPw

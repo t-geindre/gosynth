@@ -33,7 +33,7 @@ func (r *registry) GetNames() []string {
 
 func (r *registry) OffsetX(m component.IComponent) {
 	w, _ := m.GetLayout().GetSize()
-	m.GetLayout().SetPosition(r.xOffset, 0)
+	m.GetLayout().SetPosition(r.xOffset, 100)
 	r.xOffset += w
 	maxWidth, _ := m.GetRoot().GetLayout().GetSize()
 	if r.xOffset > maxWidth {
@@ -52,14 +52,6 @@ func init() {
 		audioMod := audio.NewVCO(rack.GetAudioRack().GetSampleRate())
 		rack.GetAudioRack().AddModule(audioMod)
 		guiMod := NewVCO(audioMod)
-		rack.Append(guiMod)
-		r.OffsetX(guiMod)
-	})
-
-	Registry.Register("LFO", func(r *registry, rack *connection.Rack) {
-		audioMod := audio.NewLFO(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioMod)
-		guiMod := NewLFO(audioMod)
 		rack.Append(guiMod)
 		r.OffsetX(guiMod)
 	})

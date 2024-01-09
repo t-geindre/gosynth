@@ -7,9 +7,9 @@ import (
 
 type VCO struct {
 	*Module
-	phaseAcc             float64
+	phaseAcc, phaseShift float64
 	freqRef, freqRange   float64
-	freq                 float64
+	freq, octShift       float64
 	freqMod, freqModFact float64
 	sDuration            float64
 	pwm                  float64
@@ -45,6 +45,10 @@ func (v *VCO) Write(port Port, value float64) {
 		v.freqModFact = (value + 1) / 2
 	case PortInFm:
 		v.freqMod = v.freqRef * math.Pow(2, value*v.freqRange)
+	case PortInOctShift:
+		v.octShift = math.Round(value * 8)
+	case PortInPhaseShift:
+		v.phaseShift = (value + 1) / 2
 	}
 
 	v.Module.Write(port, value)
@@ -53,7 +57,7 @@ func (v *VCO) Write(port Port, value float64) {
 func (v *VCO) Update() {
 	v.Module.Update()
 
-	freq := v.freq
+	freq := v.freq * math.Pow(2, v.octShift)
 	if v.freqMod != 0 {
 		freq += v.freqModFact * v.freqMod
 	}
@@ -63,10 +67,13 @@ func (v *VCO) Update() {
 		v.phaseAcc -= 1
 	}
 
-	v.ConnectionWrite(PortOutSin, v.oscSin(v.phaseAcc))
-	v.ConnectionWrite(PortOutSquare, v.oscSquare(v.phaseAcc))
-	v.ConnectionWrite(PortOutSaw, v.oscSaw(v.phaseAcc))
-	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(v.phaseAcc))
+	phase := v.phaseAcc + v.phaseShift
+	v.ConnectionWrite(PortOutSin, v.oscSin(phase))
+	v.ConnectionWrite(PortOutSquare, v.oscSquare(phase))
+	v.ConnectionWrite(PortOutSaw, v.oscSaw(phase))
+	v.ConnectionWrite(PortOutTriangle, v.oscTriangle(phase))
+
+	v.freqMod = 0
 }
 
 func (v *VCO) oscSin(phase float64) float64 {
@@ -76,7 +83,7 @@ func (v *VCO) oscSin(phase float64) float64 {
 
 func (v *VCO) oscSquare(phase float64) float64 {
 	val := 0.0
-	if phase < v.pwm {
+	if phase < v.pwm+v.phaseShift {
 		val = 1
 	} else {
 		val = -1
@@ -94,9 +101,9 @@ func (v *VCO) oscSaw(phase float64) float64 {
 }
 
 func (v *VCO) oscTriangle(phase float64) float64 {
-	if phase < 0.25 {
+	if phase < 0.25+v.phaseShift {
 		return 4 * phase
-	} else if phase < 0.75 {
+	} else if phase < 0.75+v.phaseShift {
 		return -4*phase + 2
 	} else {
 		return 4*phase - 4
