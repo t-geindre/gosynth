@@ -40,10 +40,10 @@ func NewVCO(vco audio.IModule) *Module {
 	inputs := component.NewContainer()
 
 	inputs.GetLayout().SetContentOrientation(layout.Horizontal)
-	inputs.Append(v.addInput("FM", vco, audio.PortInFm, audio.PortInFmFact, 25))
-	inputs.Append(v.addInput("V/OCT", vco, audio.PortInVOct, audio.PortInOctShift, 25))
-	inputs.Append(v.addInput("SYNC", vco, audio.PortInSync, audio.PortInPhaseShift, 25))
-	inputs.Append(v.addInput("PWM", vco, audio.PortInPwm, audio.PortInPwmFact, 25))
+	inputs.Append(v.addInput("FM", vco, audio.PortInFm, audio.PortInFmFact, 0, 25))
+	inputs.Append(v.addInput("V/OCT", vco, audio.PortInVOct, audio.PortInOctShift, 0, 25))
+	inputs.Append(v.addInput("SYNC", vco, audio.PortInSync, audio.PortInPhaseShift, -90, 25))
+	inputs.Append(v.addInput("PWM", vco, audio.PortInPwm, audio.PortInPwmFact, 0, 25))
 
 	inputs.GetLayout().SetFill(25)
 	inputs.GetLayout().SetPadding(0, 10, 0, 0)
@@ -65,10 +65,10 @@ func NewVCO(vco audio.IModule) *Module {
 	return v.Module
 }
 
-func (v *VCO) addInput(label string, module audio.IModule, pPort, kPort audio.Port, fill float64) component.IComponent {
+func (v *VCO) addInput(label string, module audio.IModule, pPort, kPort audio.Port, rot, fill float64) component.IComponent {
 	c := component.NewContainer()
 	c.GetLayout().SetFill(fill)
-	c.Append(widget.NewKnob(module, kPort, 0))
+	c.Append(widget.NewKnob(module, kPort, rot))
 	l := widget.NewLine(false, 2)
 	l.GetLayout().SetFill(100)
 	c.Append(l)

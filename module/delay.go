@@ -17,6 +17,14 @@ type Delay struct {
 func NewDelay(sr beep.SampleRate) *Delay {
 	d := &Delay{}
 	d.Module = NewModule(sr, d)
+
+	d.AddInput(PortIn)
+	d.AddInput(PortInDelay)
+	d.AddInput(PortInFeedback)
+	d.AddInput(PortInMix)
+
+	d.AddOutput(PortOut)
+
 	d.Write(PortInDelay, -1)
 	d.Write(PortInFeedback, -1)
 	d.Write(PortInMix, 0)

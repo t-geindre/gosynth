@@ -40,6 +40,14 @@ func NewAdsr(rate beep.SampleRate) {
 		{time.Millisecond * 20, -1}, // Release
 	}
 	a.ramp = ramp.NewLinear(rate, 0)
+
+	a.AddInput(PortInGate)
+	a.AddInput(PortInAttack)
+	a.AddInput(PortInDecay)
+	a.AddInput(PortInSustain)
+	a.AddInput(PortInRelease)
+
+	a.AddOutput(PortOutCv)
 }
 
 func (a *ADSR) Write(port Port, value float64) {

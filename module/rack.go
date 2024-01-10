@@ -22,6 +22,10 @@ func NewRack(clk *clock.Clock, rate beep.SampleRate) *Rack {
 	r.connectionChan = make(chan connectionCmd, 3)
 	r.modules = make([]IModule, 0)
 
+	r.AddInput(PortInL)
+	r.AddInput(PortInR)
+	r.AddInput(PortIn)
+
 	r.clock.AddListener(&r, clock.TickEvent, func(e event.IEvent) {
 		r.Update()
 	})

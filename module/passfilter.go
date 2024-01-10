@@ -24,6 +24,8 @@ func NewPassFilter(sr beep.SampleRate) *PassFilter {
 	p := &PassFilter{}
 	p.Module = NewModule(sr, p)
 
+	p.AddInput(PortIn)
+
 	return p
 }
 func (p *PassFilter) Init(SampleRate beep.SampleRate) {

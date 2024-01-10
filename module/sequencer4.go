@@ -16,6 +16,19 @@ type Sequencer4 struct {
 func NewSequencer4(sr beep.SampleRate) *Sequencer4 {
 	s := &Sequencer4{}
 	s.Module = NewModule(sr, s)
+
+	s.AddInput(PortIn1)
+	s.AddInput(PortIn2)
+	s.AddInput(PortIn3)
+	s.AddInput(PortIn4)
+	s.AddInput(PortInCV)
+
+	s.AddOutput(PortOutGate)
+	s.AddOutput(PortOutTrigger)
+	s.AddOutput(PortOutCv)
+
+	s.Write(PortInCV, 0)
+
 	return s
 }
 

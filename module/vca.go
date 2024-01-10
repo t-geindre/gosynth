@@ -17,6 +17,10 @@ func NewVCA(sr beep.SampleRate) *VCA {
 	v.Module = NewModule(sr, v)
 	v.gain = ramp.NewLinear(sr, 0)
 
+	v.AddInput(PortIn)
+	v.AddInput(PortInCV)
+	v.AddOutput(PortOut)
+
 	return v
 }
 

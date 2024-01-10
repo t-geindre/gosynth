@@ -6,6 +6,8 @@ type IModule interface {
 	Disconnect(srcPort Port, destModule IModule, destPort Port)
 	Update()
 	Dispose()
+	AddOutput(port Port)
+	AddInput(port Port)
 	// SendInput Thread-safe way to send a command to a module
 	SendInput(port Port, value float64)
 	// ReceiveInput Thread-safe way to read data sent to a module

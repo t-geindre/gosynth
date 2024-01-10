@@ -58,9 +58,13 @@ func (m *Module) Disconnect(srcPort Port, destModule IModule, destPort Port) {
 	}
 }
 
+func (m *Module) AddOutput(port Port) {
+	m.writtenOutputs[port] = make(chan float64, chanPortBuffering)
+}
+
 func (m *Module) ConnectionWrite(srcPort Port, value float64) {
 	if _, ok := m.writtenOutputs[srcPort]; !ok {
-		m.writtenOutputs[srcPort] = make(chan float64, chanPortBuffering)
+		panic("Add output port before writing to it")
 	}
 
 	if len(m.writtenOutputs[srcPort]) < chanPortBuffering {
@@ -107,9 +111,13 @@ func (m *Module) ReceiveOutput(port Port) *float64 {
 	return nil
 }
 
+func (m *Module) AddInput(port Port) {
+	m.writtenInputs[port] = make(chan float64, chanPortBuffering)
+}
+
 func (m *Module) Write(port Port, value float64) {
 	if _, ok := m.writtenInputs[port]; !ok {
-		m.writtenInputs[port] = make(chan float64, chanPortBuffering)
+		panic("Add input port before writing to it")
 	}
 
 	if len(m.writtenInputs[port]) < chanPortBuffering {

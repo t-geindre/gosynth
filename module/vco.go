@@ -7,6 +7,8 @@ import (
 
 type VCO struct {
 	*Module
+	// Todo phase shift not on all osc shapes
+	// Could also be a ramp to avoid clapping on phase shifting
 	phaseAcc, phaseShift float64
 	freqRef, freqRange   float64
 	freq, octShift       float64
@@ -22,9 +24,26 @@ func NewVCO(sr beep.SampleRate) *VCO {
 	v.freqRange = 4 // +-4 octaves
 	v.sDuration = v.GetSampleRate().D(1).Seconds()
 
+	v.AddInput(PortInVOct)
+	v.AddInput(PortInPw)
+	v.AddInput(PortInSync)
+	v.AddInput(PortInPwmFact)
+	v.AddInput(PortInPwm)
+	v.AddInput(PortInFmFact)
+	v.AddInput(PortInFm)
+	v.AddInput(PortInOctShift)
+	v.AddInput(PortInPhaseShift)
+
+	v.AddOutput(PortOutSin)
+	v.AddOutput(PortOutSquare)
+	v.AddOutput(PortOutSaw)
+	v.AddOutput(PortOutTriangle)
+
 	v.Write(PortInVOct, 0)
 	v.Write(PortInPw, 0)
 	v.Write(PortInFmFact, 0)
+	v.Write(PortInOctShift, 0)
+	v.Write(PortInPwmFact, 0)
 
 	return v
 }
@@ -96,6 +115,7 @@ func (v *VCO) oscSaw(phase float64) float64 {
 
 func (v *VCO) oscTriangle(phase float64) float64 {
 	// Todo phase shift may not be working here
+	// Todo is this really a triangle?
 	if phase+v.phaseShift < 0.5+v.phaseShift {
 		return 4 * phase
 	} else {

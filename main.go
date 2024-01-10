@@ -22,7 +22,7 @@ func main() {
 	go func() {
 		runtime.LockOSThread()
 
-		err := speaker.Init(SampleRate, SampleRate.N(time.Millisecond*16))
+		err := speaker.Init(SampleRate, SampleRate.N(time.Millisecond*50))
 		if err != nil {
 			panic(err)
 		}

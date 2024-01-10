@@ -30,6 +30,7 @@ const (
 	PortInDecay
 	PortInSustain
 	PortInRelease
+	PortInTime
 
 	// OUTPUTS
 
