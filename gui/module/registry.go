@@ -2,96 +2,104 @@ package module
 
 import (
 	"gosynth/gui-lib/component"
-	"gosynth/gui/connection"
 	audio "gosynth/module"
+	"slices"
+	"strings"
 )
 
-type registry struct {
-	modules map[string]func(r *registry, rack *connection.Rack)
-	lastMod component.IComponent
+type Registry struct {
+	rack      *audio.Rack
+	container component.IComponent
 }
 
-var Registry = &registry{
-	modules: make(map[string]func(r *registry, rack *connection.Rack)),
-}
-
-func (r *registry) Register(name string, constructor func(r *registry, rack *connection.Rack)) {
-	r.modules[name] = constructor
-}
-
-func (r *registry) Get(name string) func(r *registry, rack *connection.Rack) {
-	return r.modules[name]
-}
-
-func (r *registry) GetNames() []string {
-	names := make([]string, 0)
-	for name := range r.modules {
-		names = append(names, name)
+func NewRegistry(rack *audio.Rack, container component.IComponent) *Registry {
+	return &Registry{
+		rack:      rack,
+		container: container,
 	}
-	return names
 }
 
-func (r *registry) Offset(m component.IComponent) {
-	if r.lastMod != nil {
-		x, y := r.lastMod.GetLayout().GetPosition()
-		w, _ := r.lastMod.GetLayout().GetSize()
-		m.GetLayout().SetPosition(x+w, y)
+func (r *Registry) GetModules() []*moduleEntry {
+	mods := make([]*moduleEntry, 0, len(modules))
+	for _, m := range modules {
+		mods = append(mods, m)
 	}
-	r.lastMod = m
+
+	// Sort by Name
+	slices.SortFunc[[]*moduleEntry, *moduleEntry](mods, func(a, b *moduleEntry) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	return mods
+}
+
+func (r *Registry) Build(id moduleId) {
+	modules[id].Build(r.rack, r.container)
+}
+
+type moduleId uint8
+type moduleBuilder func(rack *audio.Rack, container component.IComponent)
+type moduleEntry struct {
+	Build moduleBuilder
+	Id    moduleId
+	Name  string
+}
+
+var lastId moduleId
+var modules = make(map[moduleId]*moduleEntry)
+
+func Register(name string, build moduleBuilder) {
+	modules[lastId] = &moduleEntry{
+		Build: build,
+		Id:    lastId,
+		Name:  name,
+	}
+	lastId++
 }
 
 func init() {
-	Registry.Register("Output", func(r *registry, rack *connection.Rack) {
-		guiMod := NewOutput(rack.GetAudioRack())
-		rack.Append(guiMod)
-		r.Offset(guiMod)
+	Register("Output", func(rack *audio.Rack, container component.IComponent) {
+		guiMod := NewOutput(rack)
+		container.Append(guiMod)
 	})
-
-	Registry.Register("VCO", func(r *registry, rack *connection.Rack) {
-		audioMod := audio.NewVCO(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioMod)
+	Register("VCO", func(rack *audio.Rack, container component.IComponent) {
+		audioMod := audio.NewVCO(rack.GetSampleRate())
+		rack.AddModule(audioMod)
 		guiMod := NewVCO(audioMod)
-		rack.Append(guiMod)
-		r.Offset(guiMod)
+		container.Append(guiMod)
 	})
-
-	Registry.Register("VCA", func(r *registry, rack *connection.Rack) {
-		audioMod := audio.NewVCA(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioMod)
+	Register("VCA", func(rack *audio.Rack, container component.IComponent) {
+		audioMod := audio.NewVCA(rack.GetSampleRate())
+		rack.AddModule(audioMod)
 		guiMod := NewVCA(audioMod)
-		rack.Append(guiMod)
-		r.Offset(guiMod)
+		container.Append(guiMod)
 	})
 
-	Registry.Register("delay", func(r *registry, rack *connection.Rack) {
-		audioMod := audio.NewDelay(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioMod)
+	Register("delay", func(rack *audio.Rack, container component.IComponent) {
+		audioMod := audio.NewDelay(rack.GetSampleRate())
+		rack.AddModule(audioMod)
 		guiMod := NewDelay(audioMod)
-		rack.Append(guiMod)
-		r.Offset(guiMod)
+		container.Append(guiMod)
 	})
 
-	Registry.Register("Sequencer4", func(r *registry, rack *connection.Rack) {
-		audioSequencer4 := audio.NewSequencer4(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioSequencer4)
+	Register("Sequencer4", func(rack *audio.Rack, container component.IComponent) {
+		audioSequencer4 := audio.NewSequencer4(rack.GetSampleRate())
+		rack.AddModule(audioSequencer4)
 		guiMod := NewSequencer4(audioSequencer4)
-		rack.Append(guiMod)
-		r.Offset(guiMod)
+		container.Append(guiMod)
 	})
 
-	Registry.Register("Mixer", func(r *registry, rack *connection.Rack) {
-		audioMixer := audio.NewMixer(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioMixer)
+	Register("Mixer", func(rack *audio.Rack, container component.IComponent) {
+		audioMixer := audio.NewMixer(rack.GetSampleRate())
+		rack.AddModule(audioMixer)
 		guiMod := NewMixer(audioMixer)
-		rack.Append(guiMod)
-		r.Offset(guiMod)
+		container.Append(guiMod)
 	})
 
-	Registry.Register("Multiplier", func(r *registry, rack *connection.Rack) {
-		audioMultiplier := audio.NewMultiplier(rack.GetAudioRack().GetSampleRate())
-		rack.GetAudioRack().AddModule(audioMultiplier)
+	Register("Multiplier", func(rack *audio.Rack, container component.IComponent) {
+		audioMultiplier := audio.NewMultiplier(rack.GetSampleRate())
+		rack.AddModule(audioMultiplier)
 		guiMod := NewMultiplier(audioMultiplier)
-		rack.Append(guiMod)
-		r.Offset(guiMod)
+		container.Append(guiMod)
 	})
 }

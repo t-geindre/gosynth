@@ -16,7 +16,7 @@ type Menu struct {
 	rack *connection.Rack
 }
 
-func NewMenu(rack *connection.Rack) *Menu {
+func NewMenu(registry *Registry) *Menu {
 	m := &Menu{
 		Component: component.NewComponent(),
 	}
@@ -46,12 +46,12 @@ func NewMenu(rack *connection.Rack) *Menu {
 	m.Append(btn)
 
 	menu := widget.NewDropdown()
-	for _, op := range Registry.GetNames() {
-		menu.AddOption(op, func(op string, rack *connection.Rack) func() {
+	for _, mod := range registry.GetModules() {
+		menu.AddOption(mod.Name, func(mod *moduleEntry) func() {
 			return func() {
-				Registry.Get(op)(Registry, rack)
+				registry.Build(mod.Id)
 			}
-		}(op, rack))
+		}(mod))
 	}
 	m.GetRoot().Append(menu)
 

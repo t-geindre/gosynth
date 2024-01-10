@@ -2,7 +2,6 @@ package connection
 
 import (
 	"gosynth/event"
-	"gosynth/gui-lib/behavior"
 	"gosynth/gui-lib/component"
 	"gosynth/gui-lib/graphic"
 	audio "gosynth/module"
@@ -22,9 +21,6 @@ func NewRack(audioRack *audio.Rack) *Rack {
 		audioRack: audioRack,
 	}
 
-	behavior.NewDraggable(r)
-
-	r.AddListener(&r, behavior.DragEvent, r.onDrag)
 	r.AddListener(&r, ConnectionStartEvent, r.onConnectionStart)
 	r.AddListener(&r, ConnectionStopEvent, r.onConnectionStop)
 	r.AddListener(&r, ConnectionEnterEvent, r.onConnectionEnter)
@@ -36,15 +32,6 @@ func NewRack(audioRack *audio.Rack) *Rack {
 	r.GetLayout().SetFill(100)
 
 	return r
-}
-
-func (r *Rack) onDrag(e event.IEvent) {
-	ev := e.(*behavior.DragEventDetails)
-	for _, c := range r.GetChildren() {
-		x, y := c.GetLayout().GetPosition()
-		c.GetLayout().SetPosition(float64(ev.DeltaX)+x, float64(ev.DeltaY)+y)
-	}
-	e.StopPropagation()
 }
 
 func (r *Rack) onDrawStart(e event.IEvent) {

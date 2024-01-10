@@ -39,10 +39,12 @@ func newKnob(module audio.IModule, port audio.Port, initRot float64, image *ebit
 
 	k.AddListener(&k, behavior.DragStartEvent, func(e event.IEvent) {
 		control.Cursor.Push(ebiten.CursorShapeEWResize)
+		e.StopPropagation()
 	})
 
 	k.AddListener(&k, behavior.DragStopEvent, func(e event.IEvent) {
 		control.Cursor.Pop()
+		e.StopPropagation()
 	})
 
 	k.AddListener(&k, behavior.DragEvent, func(e event.IEvent) {

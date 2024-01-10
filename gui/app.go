@@ -5,6 +5,7 @@ import (
 	"gosynth/gui-lib/component"
 	"gosynth/gui/connection"
 	"gosynth/gui/module"
+	"gosynth/gui/widget"
 	audio "gosynth/module"
 )
 
@@ -24,8 +25,12 @@ func NewApp(audioRack *audio.Rack) *App {
 
 	a.Root = component.NewRoot()
 
+	grid := widget.NewGrid(module.ModuleUWidth, module.ModuleHeight)
+
+	menu := module.NewMenu(module.NewRegistry(audioRack, grid))
+
 	rack := connection.NewRack(audioRack)
-	menu := module.NewMenu(rack)
+	rack.Append(grid)
 
 	a.Root.Append(menu)
 	a.Root.Append(rack)
