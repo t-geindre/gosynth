@@ -8,7 +8,7 @@ import (
 
 type registry struct {
 	modules map[string]func(r *registry, rack *connection.Rack)
-	xOffset float64
+	lastMod component.IComponent
 }
 
 var Registry = &registry{
@@ -31,21 +31,20 @@ func (r *registry) GetNames() []string {
 	return names
 }
 
-func (r *registry) OffsetX(m component.IComponent) {
-	w, _ := m.GetLayout().GetSize()
-	m.GetLayout().SetPosition(r.xOffset, 100)
-	r.xOffset += w
-	maxWidth, _ := m.GetRoot().GetLayout().GetSize()
-	if r.xOffset > maxWidth {
-		r.xOffset = 0
+func (r *registry) Offset(m component.IComponent) {
+	if r.lastMod != nil {
+		x, y := r.lastMod.GetLayout().GetPosition()
+		w, _ := r.lastMod.GetLayout().GetSize()
+		m.GetLayout().SetPosition(x+w, y)
 	}
+	r.lastMod = m
 }
 
 func init() {
 	Registry.Register("Output", func(r *registry, rack *connection.Rack) {
 		guiMod := NewOutput(rack.GetAudioRack())
 		rack.Append(guiMod)
-		r.OffsetX(guiMod)
+		r.Offset(guiMod)
 	})
 
 	Registry.Register("VCO", func(r *registry, rack *connection.Rack) {
@@ -53,7 +52,7 @@ func init() {
 		rack.GetAudioRack().AddModule(audioMod)
 		guiMod := NewVCO(audioMod)
 		rack.Append(guiMod)
-		r.OffsetX(guiMod)
+		r.Offset(guiMod)
 	})
 
 	Registry.Register("VCA", func(r *registry, rack *connection.Rack) {
@@ -61,7 +60,7 @@ func init() {
 		rack.GetAudioRack().AddModule(audioMod)
 		guiMod := NewVCA(audioMod)
 		rack.Append(guiMod)
-		r.OffsetX(guiMod)
+		r.Offset(guiMod)
 	})
 
 	Registry.Register("delay", func(r *registry, rack *connection.Rack) {
@@ -69,7 +68,7 @@ func init() {
 		rack.GetAudioRack().AddModule(audioMod)
 		guiMod := NewDelay(audioMod)
 		rack.Append(guiMod)
-		r.OffsetX(guiMod)
+		r.Offset(guiMod)
 	})
 
 	Registry.Register("Sequencer4", func(r *registry, rack *connection.Rack) {
@@ -77,7 +76,7 @@ func init() {
 		rack.GetAudioRack().AddModule(audioSequencer4)
 		guiMod := NewSequencer4(audioSequencer4)
 		rack.Append(guiMod)
-		r.OffsetX(guiMod)
+		r.Offset(guiMod)
 	})
 
 	Registry.Register("Mixer", func(r *registry, rack *connection.Rack) {
@@ -85,7 +84,7 @@ func init() {
 		rack.GetAudioRack().AddModule(audioMixer)
 		guiMod := NewMixer(audioMixer)
 		rack.Append(guiMod)
-		r.OffsetX(guiMod)
+		r.Offset(guiMod)
 	})
 
 	Registry.Register("Multiplier", func(r *registry, rack *connection.Rack) {
@@ -93,6 +92,6 @@ func init() {
 		rack.GetAudioRack().AddModule(audioMultiplier)
 		guiMod := NewMultiplier(audioMultiplier)
 		rack.Append(guiMod)
-		r.OffsetX(guiMod)
+		r.Offset(guiMod)
 	})
 }

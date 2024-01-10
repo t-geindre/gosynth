@@ -100,8 +100,7 @@ func (v *VCO) oscSin(phase float64) float64 {
 }
 
 func (v *VCO) oscSquare(phase float64) float64 {
-	// Todo phase shift not working here
-	if phase+v.phaseShift < v.pwm+v.phaseShift {
+	if phase > v.phaseShift && phase < v.phaseShift+v.pwm {
 		return 1
 	} else {
 		return -1
@@ -109,16 +108,14 @@ func (v *VCO) oscSquare(phase float64) float64 {
 }
 
 func (v *VCO) oscSaw(phase float64) float64 {
-	// Todo phase shift may not be working here
-	return 2*math.Mod(phase+v.phaseShift, 1) - 1
+	phase = math.Mod(phase+v.phaseShift, 1)
+	return 2*phase - 1
 }
 
 func (v *VCO) oscTriangle(phase float64) float64 {
-	// Todo phase shift may not be working here
-	// Todo is this really a triangle?
-	if phase+v.phaseShift < 0.5+v.phaseShift {
-		return 4 * phase
+	if phase > v.phaseShift && phase < v.phaseShift+0.5 {
+		return 4*phase - 1
 	} else {
-		return 4*phase - 4
+		return -4*phase + 3
 	}
 }
