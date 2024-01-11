@@ -2,6 +2,7 @@ package module
 
 import (
 	"github.com/gopxl/beep"
+	"gosynth/math/normalizer"
 	"math"
 )
 
@@ -14,7 +15,7 @@ type VCO struct {
 	freq, octShift       float64
 	freqMod, freqModFact float64
 	sDuration            float64
-	pwm                  float64
+	pw, pwm, pwf         float64
 }
 
 func NewVCO(sr beep.SampleRate) *VCO {
@@ -51,19 +52,19 @@ func NewVCO(sr beep.SampleRate) *VCO {
 func (v *VCO) Write(port Port, value float64) {
 	switch port {
 	case PortInVOct:
-		v.freq = v.freqRef * math.Pow(2, value*v.freqRange)
+		v.freq = normalizer.CvToFrequency(value) //v.freqRef * math.Pow(2, value*v.freqRange)
 	case PortInPw:
-		v.pwm = (value+1)/2*0.45 + 0.05
+		v.pw = (value+1)/2*0.45 + 0.05
 	case PortInSync:
 		v.phaseAcc = 0
 	case PortInPwmFact:
-		// Todo
+		v.pwf = (value + 1) / 2
 	case PortInPwm:
-		// Todo
+		v.pwm = value
 	case PortInFmFact:
 		v.freqModFact = (value + 1) / 2
 	case PortInFm:
-		v.freqMod = v.freqRef * math.Pow(2, value*v.freqRange)
+		v.freqMod = normalizer.CvToFrequency(value) //v.freqRef * math.Pow(2, value*v.freqRange)
 	case PortInOctShift:
 		v.octShift = math.Round(value * 8)
 	case PortInPhaseShift:
@@ -100,7 +101,8 @@ func (v *VCO) oscSin(phase float64) float64 {
 }
 
 func (v *VCO) oscSquare(phase float64) float64 {
-	if phase > v.phaseShift && phase < v.phaseShift+v.pwm {
+	pw := v.pw + v.pwf*v.pwm
+	if phase > v.phaseShift && phase < v.phaseShift+pw {
 		return 1
 	} else {
 		return -1
