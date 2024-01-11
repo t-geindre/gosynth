@@ -7,44 +7,57 @@ import (
 )
 
 type Mouse struct {
-	target         ITarget
-	leftDownTarget ITarget
-	enterTarget    ITarget
+	rootNode       ITarget
+	targetHandlers map[event.Id]ITarget
 }
 
-func NewMouse(target ITarget) *Mouse {
+func NewMouse(rootNode ITarget) *Mouse {
 	return &Mouse{
-		target: target,
+		rootNode: rootNode,
+		targetHandlers: map[event.Id]ITarget{
+			RightMouseUpEvent: nil,
+			LeftMouseUpEvent:  nil,
+			MouseEnterEvent:   nil,
+		},
 	}
 }
 
 func (m *Mouse) Update() {
-	mouseTarget, _ := m.target.GetTargetAt(ebiten.CursorPosition())
+	currentTarget, _ := m.rootNode.GetTargetAt(ebiten.CursorPosition())
+	m.mouseEnterLeave(currentTarget)
+	m.mouseDownUp(currentTarget, ebiten.MouseButtonLeft, LeftMouseUpEvent, LeftMouseDownEvent)
+	m.mouseDownUp(currentTarget, ebiten.MouseButtonRight, RightMouseUpEvent, RightMouseDownEvent)
+}
 
-	if mouseTarget != m.enterTarget {
-		if m.enterTarget != nil {
-			m.enterTarget.Dispatch(event.NewEvent(MouseLeaveEvent, m.enterTarget))
+func (m *Mouse) mouseEnterLeave(currentTarget ITarget) {
+	if currentTarget != m.targetHandlers[MouseEnterEvent] {
+		if m.targetHandlers[MouseEnterEvent] != nil {
+			m.targetHandlers[MouseEnterEvent].Dispatch(event.NewEvent(MouseLeaveEvent, m.targetHandlers[MouseEnterEvent]))
 		}
-		if mouseTarget != nil {
-			mouseTarget.Dispatch(event.NewEvent(MouseEnterEvent, mouseTarget))
+		if currentTarget != nil {
+			currentTarget.Dispatch(event.NewEvent(MouseEnterEvent, currentTarget))
 		}
-		m.enterTarget = mouseTarget
+		m.targetHandlers[MouseEnterEvent] = currentTarget
+	}
+}
+
+func (m *Mouse) mouseDownUp(currentTarget ITarget, button ebiten.MouseButton, upEvent, downEvent event.Id) {
+	if inpututil.IsMouseButtonJustPressed(button) {
+		if m.targetHandlers[upEvent] != nil {
+			m.targetHandlers[upEvent].Dispatch(event.NewEvent(upEvent, m.targetHandlers[upEvent]))
+		}
+
+		m.targetHandlers[upEvent] = currentTarget
+		if m.targetHandlers[upEvent] != nil {
+			m.targetHandlers[upEvent].Dispatch(event.NewEvent(downEvent, m.targetHandlers[upEvent]))
+			if upEvent == LeftMouseUpEvent {
+				m.targetHandlers[upEvent].Dispatch(event.NewEvent(FocusEvent, m.targetHandlers[upEvent]))
+			}
+		}
 	}
 
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		if m.leftDownTarget != nil {
-			m.leftDownTarget.Dispatch(event.NewEvent(LeftMouseUpEvent, m.leftDownTarget))
-		}
-
-		m.leftDownTarget = mouseTarget
-		if m.leftDownTarget != nil {
-			m.leftDownTarget.Dispatch(event.NewEvent(LeftMouseDownEvent, m.leftDownTarget))
-			m.leftDownTarget.Dispatch(event.NewEvent(FocusEvent, m.leftDownTarget))
-		}
-	}
-
-	if inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) && m.leftDownTarget != nil {
-		m.leftDownTarget.Dispatch(event.NewEvent(LeftMouseUpEvent, m.leftDownTarget))
-		m.leftDownTarget = nil
+	if inpututil.IsMouseButtonJustReleased(button) && m.targetHandlers[upEvent] != nil {
+		m.targetHandlers[upEvent].Dispatch(event.NewEvent(upEvent, m.targetHandlers[upEvent]))
+		m.targetHandlers[upEvent] = nil
 	}
 }

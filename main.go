@@ -22,6 +22,8 @@ func main() {
 	go func() {
 		runtime.LockOSThread()
 
+		// Todo check if 50ms is enough (especially on Windows)
+		// higher value would mean more latency, might be an issue for live performance (MIDI keyboard)
 		err := speaker.Init(SampleRate, SampleRate.N(time.Millisecond*50))
 		if err != nil {
 			panic(err)
