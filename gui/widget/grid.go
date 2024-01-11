@@ -64,9 +64,11 @@ func (r *Grid) Append(c component.IComponent) {
 		r.setComponentPosition(c)
 	})
 
+	x, y := ebiten.CursorPosition()
 	c.GetLayout().SetAbsolutePositioning(true)
-	r.setComponentPosition(c)
+	c.GetLayout().SetPosition(float64(x), float64(y))
 
+	r.setComponentPosition(c)
 }
 
 func (r *Grid) Remove(c component.IComponent) {
