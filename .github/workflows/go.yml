@@ -20,6 +20,9 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.21'
+
+    - name: Setup system dependencies
+      run: sudo apt-get install xorg-dev libgl1-mesa-dev libopenal1 libopenal-dev libvorbis0a libvorbis-dev libvorbisfile3
         
     - name: Build
       run: go build -v ./...
