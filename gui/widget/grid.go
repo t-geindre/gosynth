@@ -86,34 +86,27 @@ func (r *Grid) onChildDrag(c component.IComponent, e event.IEvent) {
 
 func (r *Grid) setComponentPosition(c component.IComponent) {
 	l := c.GetLayout()
-	w, _ := l.GetSize()
-
-	x, y := r.GetLayout().GetAbsolutePosition()
-	mx, my := ebiten.CursorPosition()
-	x, y = x+float64(mx), y+float64(my)
 
 	shiftX := float64(int(r.shiftX) % int(r.cellW))
 	shiftY := float64(int(r.shiftY) % int(r.cellH))
 
-	// Compute cell position where the mouse is inside
-	cx := float64(int(x/r.cellW))*r.cellW + shiftX - w + r.cellW
+	x, y := l.GetPosition()
+	if x < 0 {
+		x -= r.cellW / 2
+	} else {
+		x += r.cellW / 2
+	}
+	if y < 0 {
+		y -= r.cellH / 2
+	} else {
+		y += r.cellH / 2
+	}
+
+	x -= shiftX
+	y -= shiftY
+
+	cx := float64(int(x/r.cellW))*r.cellW + shiftX
 	cy := float64(int(y/r.cellH))*r.cellH + shiftY
-
-	if x < cx {
-		cx -= r.cellW
-	}
-
-	if y < cy {
-		cy -= r.cellH
-	}
-
-	if y > cy+r.cellH {
-		cy += r.cellH
-	}
-
-	if x > cx+r.cellW {
-		cx += r.cellW
-	}
 
 	l.SetPosition(cx, cy)
 }
