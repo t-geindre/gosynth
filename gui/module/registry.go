@@ -102,4 +102,11 @@ func init() {
 		guiMod := NewMultiplier(audioMultiplier)
 		container.Append(guiMod)
 	})
+
+	Register("Quantizer (CMS)", func(rack *audio.Rack, container component.IComponent) {
+		audioQuantizer := audio.NewQuantizer(rack.GetSampleRate())
+		rack.AddModule(audioQuantizer)
+		guiMod := NewQuantizer(audioQuantizer)
+		container.Append(guiMod)
+	})
 }

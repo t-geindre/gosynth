@@ -44,7 +44,7 @@ func (s *Sequencer4) Write(port Port, value float64) {
 	case PortIn4:
 		s.values[3] = value
 	case PortInCV:
-		s.ticksTrigger = s.GetSampleRate().N(time.Duration(int((value+1)/2*1000)) * time.Millisecond)
+		s.ticksTrigger = s.GetSampleRate().N(time.Duration(int((1-(value+1)/2)*1000)) * time.Millisecond)
 	}
 }
 
