@@ -31,6 +31,7 @@ const (
 	PortInSustain
 	PortInRelease
 	PortInTime
+	PortInTrigger
 
 	// OUTPUTS
 

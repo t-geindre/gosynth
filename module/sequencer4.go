@@ -2,15 +2,13 @@ package module
 
 import (
 	"github.com/gopxl/beep"
-	"time"
 )
 
 type Sequencer4 struct {
 	*Module
-	ticks        int
-	ticksTrigger int
-	values       [4]float64
-	cursor       int
+	values  [4]float64
+	cursor  int
+	trigger bool
 }
 
 func NewSequencer4(sr beep.SampleRate) *Sequencer4 {
@@ -21,13 +19,10 @@ func NewSequencer4(sr beep.SampleRate) *Sequencer4 {
 	s.AddInput(PortIn2)
 	s.AddInput(PortIn3)
 	s.AddInput(PortIn4)
-	s.AddInput(PortInCV)
+	s.AddInput(PortInTrigger)
 
 	s.AddOutput(PortOutGate)
-	s.AddOutput(PortOutTrigger)
 	s.AddOutput(PortOutCv)
-
-	s.Write(PortInCV, 0)
 
 	return s
 }
@@ -43,24 +38,20 @@ func (s *Sequencer4) Write(port Port, value float64) {
 		s.values[2] = value
 	case PortIn4:
 		s.values[3] = value
-	case PortInCV:
-		s.ticksTrigger = s.GetSampleRate().N(time.Duration(int((1-(value+1)/2)*1000)) * time.Millisecond)
+	case PortInTrigger:
+		s.trigger = value > 0
 	}
 }
 
 func (s *Sequencer4) Update() {
 	s.Module.Update()
 
-	if s.ticks > s.ticksTrigger {
-		s.ticks = 0
+	if s.trigger {
+		s.trigger = false
 		s.cursor = (s.cursor + 1) % 4
 		s.ConnectionWrite(PortOutGate, -1)
-		s.ConnectionWrite(PortOutTrigger, 1)
 	}
 
 	s.ConnectionWrite(PortOutGate, 1)
 	s.ConnectionWrite(PortOutCv, s.values[s.cursor])
-
-	s.ticks++
-
 }

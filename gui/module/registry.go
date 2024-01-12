@@ -109,4 +109,11 @@ func init() {
 		guiMod := NewQuantizer(audioQuantizer)
 		container.Append(guiMod)
 	})
+
+	Register("Clock", func(rack *audio.Rack, container component.IComponent) {
+		audioClock := audio.NewClock(rack.GetSampleRate())
+		rack.AddModule(audioClock)
+		guiMod := NewClock(audioClock)
+		container.Append(guiMod)
+	})
 }

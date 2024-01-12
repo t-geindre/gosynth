@@ -15,7 +15,7 @@ func NewSequencer4(seq audio.IModule) *Sequencer4 {
 	s.Module = NewModule("SQR", 1)
 
 	s.Append(widget.NewLabel("CLK", widget.LabelPositionTop))
-	s.Append(widget.NewKnob(seq, audio.PortInCV, 0))
+	s.Append(connection.NewPlug(connection.PlugDirectionIn, seq, audio.PortInTrigger))
 
 	l := widget.NewLine(true, 1)
 	l.GetLayout().SetFill(25)
@@ -39,9 +39,6 @@ func NewSequencer4(seq audio.IModule) *Sequencer4 {
 
 	s.Append(widget.NewLabel("V/OCT", widget.LabelPositionTop))
 	s.Append(connection.NewPlug(connection.PlugDirectionOut, seq, audio.PortOutCv))
-
-	s.Append(widget.NewLabel("TRIG", widget.LabelPositionTop))
-	s.Append(connection.NewPlug(connection.PlugDirectionOut, seq, audio.PortOutTrigger))
 
 	s.Append(widget.NewLabel("GATE", widget.LabelPositionTop))
 	s.Append(connection.NewPlug(connection.PlugDirectionOut, seq, audio.PortOutGate))
