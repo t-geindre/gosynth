@@ -22,7 +22,7 @@ func NewGrid(cellW, cellH float64) *Grid {
 	}
 
 	r.GetLayout().SetFill(100)
-	r.GetGraphic().AddListener(&r, graphic.DrawStartEvent, func(e event.IEvent) {
+	r.GetGraphic().AddListener(&r, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		r.GetGraphic().GetImage().Clear()
 	})
 
@@ -30,6 +30,7 @@ func NewGrid(cellW, cellH float64) *Grid {
 	r.AddListener(&r, behavior.DragEvent, func(e event.IEvent) {
 		dragEvent := e.(*behavior.DragEventDetails)
 		r.Shift(float64(dragEvent.DeltaX), float64(dragEvent.DeltaY))
+		r.GetGraphic().ScheduleUpdate()
 	})
 
 	return r
@@ -83,6 +84,7 @@ func (r *Grid) onChildDrag(c component.IComponent, e event.IEvent) {
 		px, py := c.GetLayout().GetPosition()
 		c.GetLayout().SetPosition(float64(dEv.DeltaX)+px, float64(dEv.DeltaY)+py)
 		e.StopPropagation()
+		r.GetGraphic().ScheduleUpdate()
 	}
 }
 
@@ -111,4 +113,6 @@ func (r *Grid) setComponentPosition(c component.IComponent) {
 	cy := float64(int(y/r.cellH))*r.cellH + shiftY
 
 	l.SetPosition(cx, cy)
+
+	r.GetGraphic().ScheduleUpdate()
 }

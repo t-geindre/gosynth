@@ -2,7 +2,9 @@ package gui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"gosynth/event"
 	"gosynth/gui-lib/component"
+	"gosynth/gui-lib/control"
 	"gosynth/gui/connection"
 	"gosynth/gui/module"
 	"gosynth/gui/widget"
@@ -24,18 +26,30 @@ func NewApp(audioRack *audio.Rack) *App {
 	a := &App{}
 
 	a.Root = component.NewRoot()
-
 	grid := widget.NewGrid(module.ModuleUWidth, module.ModuleHeight)
-
-	menu := module.NewMenu(module.NewRegistry(audioRack, grid))
-
+	header := module.NewHeader()
 	rack := connection.NewRack(audioRack)
 	rack.Append(grid)
-
-	a.Root.Append(menu)
+	a.Root.Append(header)
 	a.Root.Append(rack)
-
 	a.Root.Append(component.NewFPS())
+
+	menu := widget.NewMenu()
+	registry := module.NewRegistry(audioRack, grid)
+	for _, mod := range registry.GetModules() {
+		menu.AddOption(mod.Name, func(mod *module.ModuleEntry) func() {
+			return func() {
+				registry.Build(mod.Id)
+			}
+		}(mod))
+	}
+	menu.SetContainer(rack)
+	rack.AddListener(&a, control.RightMouseUpEvent, func(e event.IEvent) {
+		menu.Open()
+	})
+	rack.AddListener(&a, control.FocusEvent, func(e event.IEvent) {
+		menu.Close()
+	})
 
 	return a
 }

@@ -19,14 +19,14 @@ func NewRegistry(rack *audio.Rack, container component.IComponent) *Registry {
 	}
 }
 
-func (r *Registry) GetModules() []*moduleEntry {
-	mods := make([]*moduleEntry, 0, len(modules))
+func (r *Registry) GetModules() []*ModuleEntry {
+	mods := make([]*ModuleEntry, 0, len(modules))
 	for _, m := range modules {
 		mods = append(mods, m)
 	}
 
 	// Sort by Name
-	slices.SortFunc[[]*moduleEntry, *moduleEntry](mods, func(a, b *moduleEntry) int {
+	slices.SortFunc[[]*ModuleEntry, *ModuleEntry](mods, func(a, b *ModuleEntry) int {
 		return strings.Compare(a.Name, b.Name)
 	})
 
@@ -39,17 +39,17 @@ func (r *Registry) Build(id moduleId) {
 
 type moduleId uint8
 type moduleBuilder func(rack *audio.Rack, container component.IComponent)
-type moduleEntry struct {
+type ModuleEntry struct {
 	Build moduleBuilder
 	Id    moduleId
 	Name  string
 }
 
 var lastId moduleId
-var modules = make(map[moduleId]*moduleEntry)
+var modules = make(map[moduleId]*ModuleEntry)
 
 func Register(name string, build moduleBuilder) {
-	modules[lastId] = &moduleEntry{
+	modules[lastId] = &ModuleEntry{
 		Build: build,
 		Id:    lastId,
 		Name:  name,

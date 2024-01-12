@@ -11,15 +11,19 @@ import (
 
 type Text struct {
 	*Component
-	str  string
-	w, h int
-	font font.Face
+	str     string
+	w, h    int
+	font    font.Face
+	bgColor color.Color
+	color   color.Color
 }
 
 func NewText(str string, fontFace font.Face, color, bgColor color.RGBA) *Text {
 	t := &Text{
 		Component: NewComponent(),
 		font:      fontFace,
+		color:     color,
+		bgColor:   bgColor,
 	}
 
 	t.SetText(str)
@@ -27,8 +31,8 @@ func NewText(str string, fontFace font.Face, color, bgColor color.RGBA) *Text {
 	t.GetGraphic().AddListener(&t, graphic.DrawUpdateRequiredEvent, func(e event.IEvent) {
 		// Write on a new image to allow scale down if required
 		img := ebiten.NewImage(t.w, t.h)
-		img.Fill(bgColor)
-		text.Draw(img, t.str, t.font, 0, t.h, color)
+		img.Fill(t.bgColor)
+		text.Draw(img, t.str, t.font, 0, t.h, t.color)
 
 		destImg := t.GetGraphic().GetImage()
 		destImg.Clear()
@@ -69,5 +73,15 @@ func (t *Text) SetText(str string) {
 	t.w = font.MeasureString(t.font, t.str).Round()
 	t.h = t.font.Metrics().CapHeight.Round()
 	t.GetLayout().SetWantedSize(float64(t.w), float64(t.h))
+	t.GetGraphic().ScheduleUpdate()
+}
+
+func (t *Text) SetBackgroundColor(color color.Color) {
+	t.bgColor = color
+	t.GetGraphic().ScheduleUpdate()
+}
+
+func (t *Text) SetColor(color color.Color) {
+	t.color = color
 	t.GetGraphic().ScheduleUpdate()
 }
