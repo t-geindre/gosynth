@@ -43,12 +43,9 @@ func NewApp(audioRack *audio.Rack) *App {
 			}
 		}(mod))
 	}
-	menu.SetContainer(rack)
+	rack.Append(menu)
 	rack.AddListener(&a, control.RightMouseUpEvent, func(e event.IEvent) {
 		menu.Open()
-	})
-	rack.AddListener(&a, control.FocusEvent, func(e event.IEvent) {
-		menu.Close()
 	})
 
 	return a

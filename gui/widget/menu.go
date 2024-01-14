@@ -37,18 +37,24 @@ func NewMenu() *Menu {
 		img := m.GetGraphic().GetImage()
 		img.Fill(theme.Colors.Background)
 		w, h := m.GetLayout().GetSize()
-		vector.StrokeRect(img, 0, 0, float32(w), float32(h), 1, theme.Colors.BackgroundInverted, false)
+		vector.StrokeRect(img, 1, 1, float32(w)-1, float32(h)-1, 1, theme.Colors.BackgroundInverted, false)
 	})
 
 	return m
 }
 
-func (m *Menu) SetContainer(c component.IComponent) {
-	if m.GetParent() != nil {
-		m.GetParent().Remove(m)
-		m.Open()
+func (m *Menu) SetParent(c component.IComponent) {
+	if m.container == nil {
+		m.container = c.GetRoot()
+		m.container.AddListener(&m, control.FocusEvent, func(e event.IEvent) {
+			m.Close()
+		})
 	}
-	m.container = c
+	if !m.opened && c != nil {
+		c.Remove(m)
+		return
+	}
+	m.Component.SetParent(c)
 }
 
 func (m *Menu) AddOption(label string, callback func()) {
@@ -59,6 +65,7 @@ func (m *Menu) AddOption(label string, callback func()) {
 	op.Append(lbl)
 	op.AddListener(&m, control.LeftMouseUpEvent, func(e event.IEvent) {
 		callback()
+		m.Close()
 	})
 	op.Append(component.NewFiller(100))
 	op.AddListener(&m, control.MouseEnterEvent, func(e event.IEvent) {
@@ -85,11 +92,10 @@ func (m *Menu) Open() {
 	if m.opened {
 		m.Close()
 	}
-	m.container.Append(m)
 	m.opened = true
+	m.container.Append(m)
 	x, y := ebiten.CursorPosition()
-	sx, sy := m.GetParent().GetLayout().GetAbsolutePosition()
-	m.GetLayout().SetPosition(float64(x)-sx, float64(y)-sy)
+	m.GetLayout().SetPosition(float64(x), float64(y))
 }
 
 func (m *Menu) Close() {
