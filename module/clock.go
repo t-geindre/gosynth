@@ -2,63 +2,75 @@ package module
 
 import (
 	"github.com/gopxl/beep"
+	"math"
 	"time"
 )
 
+type clockTrigger struct {
+	port       Port
+	ticks      int
+	trigger    int
+	multiplier float64
+}
+
 type Clock struct {
 	*Module
-	ticksTrigger int
-	ticks1       int
-	ticks2       int
-	ticks4       int
-	ticks8       int
+	triggers map[Port]*clockTrigger
+	ticksRef int
 }
 
 func NewClock(sr beep.SampleRate) *Clock {
 	c := &Clock{}
 	c.Module = NewModule(sr, c)
 
-	c.AddInput(PortInCV)
-	c.AddOutput(PortOut1) // 1/1
-	c.AddOutput(PortOut2) // 1/2
-	c.AddOutput(PortOut3) // 1/4
-	c.AddOutput(PortOut4) // 1/8
+	c.triggers = make(map[Port]*clockTrigger)
+	c.triggers[PortInCV1] = &clockTrigger{port: PortOut1}
+	c.triggers[PortInCV2] = &clockTrigger{port: PortOut2}
+	c.triggers[PortInCV3] = &clockTrigger{port: PortOut3}
+	c.triggers[PortInCV4] = &clockTrigger{port: PortOut4}
+	c.triggers[PortInCV5] = &clockTrigger{port: PortOut5}
+	c.triggers[PortInCV6] = &clockTrigger{port: PortOut6}
 
+	for portIn, trigger := range c.triggers {
+		c.AddInput(portIn)
+		c.AddOutput(trigger.port)
+		c.Write(portIn, 0)
+	}
+
+	c.AddInput(PortInCV)
 	c.Write(PortInCV, 0)
 
 	return c
 }
 
 func (c *Clock) Write(port Port, value float64) {
+	c.Module.Write(port, value)
+
+	if trigger, ok := c.triggers[port]; ok {
+		trigger.multiplier = math.Pow(2, math.Round(value*3))
+		if trigger.multiplier > 0 {
+			trigger.multiplier = 1 / trigger.multiplier
+		}
+		trigger.multiplier = math.Abs(trigger.multiplier)
+		trigger.trigger = int(trigger.multiplier * float64(c.ticksRef))
+		return
+	}
+
 	if port == PortInCV {
-		c.ticksTrigger = c.GetSampleRate().N(time.Duration(int((1-(value+1)/2)*1000)) * time.Millisecond)
+		c.ticksRef = c.GetSampleRate().N(time.Duration(int((1-(value+1)/2)*1000)) * time.Millisecond)
+		for _, trigger := range c.triggers {
+			trigger.trigger = int(trigger.multiplier * float64(c.ticksRef))
+		}
 	}
 }
 
 func (c *Clock) Update() {
 	c.Module.Update()
-
-	c.ticks1++
-	c.ticks2++
-	c.ticks4++
-	c.ticks8++
-
-	if c.ticks8 > c.ticksTrigger/8 {
-		c.ticks8 = 0
-		c.ConnectionWrite(PortOut4, 1)
-	}
-
-	if c.ticks4 > c.ticksTrigger/4 {
-		c.ticks4 = 0
-		c.ConnectionWrite(PortOut3, 1)
-	}
-	if c.ticks2 > c.ticksTrigger/2 {
-		c.ticks2 = 0
-		c.ConnectionWrite(PortOut2, 1)
-	}
-
-	if c.ticks1 > c.ticksTrigger {
-		c.ticks1 = 0
-		c.ConnectionWrite(PortOut1, 1)
+	for _, trigger := range c.triggers {
+		trigger.ticks++
+		if trigger.ticks >= trigger.trigger {
+			trigger.ticks = 0
+			c.ConnectionWrite(trigger.port, 1)
+		}
 	}
 }

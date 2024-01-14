@@ -6,6 +6,12 @@ const (
 	// INPUTS
 
 	PortInCV Port = iota
+	PortInCV1
+	PortInCV2
+	PortInCV3
+	PortInCV4
+	PortInCV5
+	PortInCV6
 	PortInDelay
 	PortInFeedback
 	PortIn
@@ -40,6 +46,9 @@ const (
 	PortOut2
 	PortOut3
 	PortOut4
+	PortOut5
+	PortOut6
+	PortOut7
 	PortOutCv
 	PortOutSin
 	PortOutSquare

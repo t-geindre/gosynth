@@ -3,6 +3,7 @@ package component
 import (
 	"gosynth/event"
 	"gosynth/gui-lib/graphic"
+	"gosynth/gui-lib/layout"
 	"image/color"
 )
 
@@ -10,6 +11,18 @@ type Container struct {
 	*Component
 	inverted bool
 	bgColor  color.Color
+}
+
+func NewHContainter() *Container {
+	c := NewContainer()
+	c.GetLayout().SetContentOrientation(layout.Horizontal)
+	return c
+}
+
+func NewVContainter() *Container {
+	c := NewContainer()
+	c.GetLayout().SetContentOrientation(layout.Vertical)
+	return c
 }
 
 func NewContainer() *Container {

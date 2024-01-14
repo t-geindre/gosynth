@@ -8,6 +8,14 @@ import (
 	"gosynth/gui/theme"
 )
 
+func NewHLine(width float32) *component.Component {
+	return NewLine(true, width)
+}
+
+func NewVLine(width float32) *component.Component {
+	return NewLine(false, width)
+}
+
 func NewLine(horizontal bool, width float32) *component.Component {
 	l := component.NewComponent()
 
