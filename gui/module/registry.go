@@ -1,7 +1,9 @@
 package module
 
 import (
+	"gosynth/event"
 	"gosynth/gui-lib/component"
+	"gosynth/gui/widget"
 	audio "gosynth/module"
 	"slices"
 	"strings"
@@ -34,11 +36,18 @@ func (r *Registry) GetModules() []*ModuleEntry {
 }
 
 func (r *Registry) Build(id moduleId) {
-	modules[id].Build(r.rack, r.container)
+	mod := modules[id].Build(r.rack)
+	r.container.Append(mod)
+	mod.AddListener(&r, widget.MenuOpenEvent, func(e event.IEvent) {
+		e.GetSource().(*widget.Menu).AddContextualOption("Remove", func() {
+			r.container.Remove(mod)
+			r.container.GetGraphic().ScheduleUpdate()
+		})
+	})
 }
 
 type moduleId uint8
-type moduleBuilder func(rack *audio.Rack, container component.IComponent)
+type moduleBuilder func(rack *audio.Rack) component.IComponent
 type ModuleEntry struct {
 	Build moduleBuilder
 	Id    moduleId
@@ -58,62 +67,53 @@ func Register(name string, build moduleBuilder) {
 }
 
 func init() {
-	Register("Output", func(rack *audio.Rack, container component.IComponent) {
-		guiMod := NewOutput(rack)
-		container.Append(guiMod)
+	Register("Output", func(rack *audio.Rack) component.IComponent {
+		return NewOutput(rack)
 	})
-	Register("VCO", func(rack *audio.Rack, container component.IComponent) {
+	Register("VCO", func(rack *audio.Rack) component.IComponent {
 		audioMod := audio.NewVCO(rack.GetSampleRate())
 		rack.AddModule(audioMod)
-		guiMod := NewVCO(audioMod)
-		container.Append(guiMod)
+		return NewVCO(audioMod)
 	})
-	Register("VCA", func(rack *audio.Rack, container component.IComponent) {
+	Register("VCA", func(rack *audio.Rack) component.IComponent {
 		audioMod := audio.NewVCA(rack.GetSampleRate())
 		rack.AddModule(audioMod)
-		guiMod := NewVCA(audioMod)
-		container.Append(guiMod)
+		return NewVCA(audioMod)
 	})
 
-	Register("delay", func(rack *audio.Rack, container component.IComponent) {
+	Register("delay", func(rack *audio.Rack) component.IComponent {
 		audioMod := audio.NewDelay(rack.GetSampleRate())
 		rack.AddModule(audioMod)
-		guiMod := NewDelay(audioMod)
-		container.Append(guiMod)
+		return NewDelay(audioMod)
 	})
 
-	Register("Sequencer4", func(rack *audio.Rack, container component.IComponent) {
+	Register("Sequencer4", func(rack *audio.Rack) component.IComponent {
 		audioSequencer4 := audio.NewSequencer4(rack.GetSampleRate())
 		rack.AddModule(audioSequencer4)
-		guiMod := NewSequencer4(audioSequencer4)
-		container.Append(guiMod)
+		return NewSequencer4(audioSequencer4)
 	})
 
-	Register("Mixer", func(rack *audio.Rack, container component.IComponent) {
+	Register("Mixer", func(rack *audio.Rack) component.IComponent {
 		audioMixer := audio.NewMixer(rack.GetSampleRate())
 		rack.AddModule(audioMixer)
-		guiMod := NewMixer(audioMixer)
-		container.Append(guiMod)
+		return NewMixer(audioMixer)
 	})
 
-	Register("Multiplier", func(rack *audio.Rack, container component.IComponent) {
+	Register("Multiplier", func(rack *audio.Rack) component.IComponent {
 		audioMultiplier := audio.NewMultiplier(rack.GetSampleRate())
 		rack.AddModule(audioMultiplier)
-		guiMod := NewMultiplier(audioMultiplier)
-		container.Append(guiMod)
+		return NewMultiplier(audioMultiplier)
 	})
 
-	Register("Quantizer (CMS)", func(rack *audio.Rack, container component.IComponent) {
+	Register("Quantizer (CMS)", func(rack *audio.Rack) component.IComponent {
 		audioQuantizer := audio.NewQuantizer(rack.GetSampleRate())
 		rack.AddModule(audioQuantizer)
-		guiMod := NewQuantizer(audioQuantizer)
-		container.Append(guiMod)
+		return NewQuantizer(audioQuantizer)
 	})
 
-	Register("Clock", func(rack *audio.Rack, container component.IComponent) {
+	Register("Clock", func(rack *audio.Rack) component.IComponent {
 		audioClock := audio.NewClock(rack.GetSampleRate())
 		rack.AddModule(audioClock)
-		guiMod := NewClock(audioClock)
-		container.Append(guiMod)
+		return NewClock(audioClock)
 	})
 }

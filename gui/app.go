@@ -2,9 +2,7 @@ package gui
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"gosynth/event"
 	"gosynth/gui-lib/component"
-	"gosynth/gui-lib/control"
 	"gosynth/gui/connection"
 	"gosynth/gui/module"
 	"gosynth/gui/widget"
@@ -19,34 +17,10 @@ type App struct {
 }
 
 func NewApp(audioRack *audio.Rack) *App {
-	ebiten.SetWindowTitle("Gosynth")
-	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
-	ebiten.SetWindowSize(WindowWidth, WindowHeight)
 
 	a := &App{}
-
-	a.Root = component.NewRoot()
-	grid := widget.NewGrid(module.ModuleUWidth, module.ModuleHeight)
-	header := module.NewHeader()
-	rack := connection.NewRack(audioRack)
-	rack.Append(grid)
-	a.Root.Append(header)
-	a.Root.Append(rack)
-	a.Root.Append(component.NewFPS())
-
-	menu := widget.NewMenu()
-	registry := module.NewRegistry(audioRack, grid)
-	for _, mod := range registry.GetModules() {
-		menu.AddOption(mod.Name, func(mod *module.ModuleEntry) func() {
-			return func() {
-				registry.Build(mod.Id)
-			}
-		}(mod))
-	}
-	rack.Append(menu)
-	rack.AddListener(&a, control.RightMouseUpEvent, func(e event.IEvent) {
-		menu.Open()
-	})
+	a.windowSetup()
+	a.uiSetup(audioRack)
 
 	return a
 }
@@ -66,4 +40,35 @@ func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight
 	w, h := float64(outsideWidth)*s, float64(outsideHeight)*s
 	a.Root.GetLayout().SetSize(w, h)
 	return int(w), int(h)
+}
+
+func (a *App) windowSetup() {
+	ebiten.SetWindowTitle("Gosynth")
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+	ebiten.SetWindowSize(WindowWidth, WindowHeight)
+}
+
+func (a *App) uiSetup(audioRack *audio.Rack) {
+	a.Root = component.NewRoot()
+
+	grid := widget.NewGrid(module.ModuleUWidth, module.ModuleHeight)
+	header := module.NewHeader()
+	rack := connection.NewRack(audioRack)
+	rack.Append(grid)
+
+	a.Root.Append(header)
+	a.Root.Append(rack)
+	a.Root.Append(component.NewFPS())
+
+	menu := widget.NewMenu()
+	registry := module.NewRegistry(audioRack, grid)
+
+	for _, mod := range registry.GetModules() {
+		menu.AddOption(mod.Name, func(mod *module.ModuleEntry) func() {
+			return func() {
+				registry.Build(mod.Id)
+			}
+		}(mod))
+	}
+	rack.Append(menu)
 }

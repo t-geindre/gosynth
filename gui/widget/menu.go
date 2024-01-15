@@ -13,7 +13,7 @@ import (
 
 type Menu struct {
 	*component.Component
-	options   map[string]func()
+	cOptions  []component.IComponent
 	container component.IComponent
 	opened    bool
 }
@@ -46,9 +46,8 @@ func NewMenu() *Menu {
 func (m *Menu) SetParent(c component.IComponent) {
 	if m.container == nil {
 		m.container = c.GetRoot()
-		m.container.AddListener(&m, control.FocusEvent, func(e event.IEvent) {
-			m.Close()
-		})
+		m.container.AddListener(&m, control.FocusEvent, m.Close)
+		m.container.AddListener(&m, control.RightMouseUpEvent, m.Open)
 	}
 	if !m.opened && c != nil {
 		c.Remove(m)
@@ -57,7 +56,7 @@ func (m *Menu) SetParent(c component.IComponent) {
 	m.Component.SetParent(c)
 }
 
-func (m *Menu) AddOption(label string, callback func()) {
+func (m *Menu) AddOption(label string, callback func()) component.IComponent {
 	op := component.NewContainer()
 	op.GetLayout().SetContentOrientation(layout.Horizontal)
 	op.GetLayout().SetPadding(3, 3, 5, 5)
@@ -65,7 +64,7 @@ func (m *Menu) AddOption(label string, callback func()) {
 	op.Append(lbl)
 	op.AddListener(&m, control.LeftMouseUpEvent, func(e event.IEvent) {
 		callback()
-		m.Close()
+		m.Close(nil)
 	})
 	op.Append(component.NewFiller(100))
 	op.AddListener(&m, control.MouseEnterEvent, func(e event.IEvent) {
@@ -83,25 +82,50 @@ func (m *Menu) AddOption(label string, callback func()) {
 	})
 	m.Append(op)
 	m.GetLayout().ScheduleUpdate()
+
+	return op
 }
 
-func (m *Menu) Open() {
+func (m *Menu) AddContextualOption(label string, callback func()) {
+	m.cOptions = append(m.cOptions, m.AddOption(label, callback))
+}
+
+func (m *Menu) Open(e event.IEvent) {
 	if m.container == nil {
 		return
 	}
+
 	if m.opened {
-		m.Close()
+		m.Close(nil)
 	}
+
+	if src, ok := e.GetSource().(component.IComponent); ok {
+		m.cOptions = make([]component.IComponent, 0)
+		src.Dispatch(event.NewEvent(MenuOpenEvent, m))
+	}
+
 	m.opened = true
 	m.container.Append(m)
 	x, y := ebiten.CursorPosition()
 	m.GetLayout().SetPosition(float64(x), float64(y))
 }
 
-func (m *Menu) Close() {
+func (m *Menu) Close(_ event.IEvent) {
 	if m.container == nil || m.GetParent() == nil {
 		return
 	}
 	m.container.Remove(m)
+	for _, op := range m.cOptions {
+		m.Remove(op)
+	}
+	m.GetLayout().ScheduleUpdate()
 	m.opened = false
+}
+
+// Menu events
+
+var MenuOpenEvent event.Id
+
+func init() {
+	MenuOpenEvent = event.Register()
 }
