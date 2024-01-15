@@ -116,4 +116,10 @@ func init() {
 		rack.AddModule(audioClock)
 		return NewClock(audioClock)
 	})
+
+	Register("VCF", func(rack *audio.Rack) component.IComponent {
+		audioVCF := audio.NewVCF(rack.GetSampleRate())
+		rack.AddModule(audioVCF)
+		return NewVCF(audioVCF)
+	})
 }

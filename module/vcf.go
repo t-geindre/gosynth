@@ -2,6 +2,7 @@ package module
 
 import (
 	"github.com/gopxl/beep"
+	"gosynth/math/normalizer"
 	"math"
 )
 
@@ -12,7 +13,7 @@ const (
 	PassFilterModeHigh
 )
 
-type PassFilter struct {
+type VCF struct {
 	*Module
 	sample float64
 	buffer float64
@@ -20,36 +21,34 @@ type PassFilter struct {
 	mode   FilterMode
 }
 
-func NewPassFilter(sr beep.SampleRate) *PassFilter {
-	p := &PassFilter{}
+func NewVCF(sr beep.SampleRate) *VCF {
+	p := &VCF{}
 	p.Module = NewModule(sr, p)
 
 	p.AddInput(PortIn)
+	p.AddInput(PortInCV)
+	p.AddOutput(PortOut)
 
 	return p
 }
-func (p *PassFilter) Init(SampleRate beep.SampleRate) {
-}
 
-func (p *PassFilter) SetCutOff(cutoff float64) {
-	tan := math.Tan(math.Pi * cutoff / float64(p.GetSampleRate()))
-	p.alpha = (tan - 1) / (tan + 1)
-}
-
-func (p *PassFilter) SetMode(mode FilterMode) {
+func (p *VCF) SetMode(mode FilterMode) {
 	p.mode = mode
 }
 
-func (p *PassFilter) Write(port Port, value float64) {
+func (p *VCF) Write(port Port, value float64) {
 	switch port {
 	case PortIn:
 		p.sample += value
+	case PortInCV:
+		tan := math.Tan(math.Pi * normalizer.CvToFrequency(value) / float64(p.GetSampleRate()))
+		p.alpha = (tan - 1) / (tan + 1)
 	}
 
 	p.Module.Write(port, value)
 }
 
-func (p *PassFilter) Update() {
+func (p *VCF) Update() {
 	p.Module.Update()
 
 	pass := p.alpha*p.sample + p.buffer
